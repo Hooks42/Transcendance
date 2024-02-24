@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hello</title>
+</head>
+<body>
+    <h1>Bienvenue sur le projet Transcendance</h1>
+    <p>En cours de developpement</p>
+    {% if user.is_authenticated %}
+        <h1>Bon {{user.username}} pour l'instant le site est trop nul tu peux que te deconnecter mais t'inquiete pas ca arrive 🥰</h1>
+        <a href="{% url 'logout' %}" class="btn btn-primary">Se deconnecter ❌</a>
+        <br></br>
+        <a href="{% url 'chat-room' %}" class="btn btn-primary">Viens tchatter ici 💬</a>
+    {% else %}
+        <a href="{% url 'signin' %}" class="btn btn-primary">S'inscrire 🔥</a>
+        <br></br>
+        <a href="{% url 'login' %}" class="btn btn-primary">Se connecter ✅</a>
+    {% endif %}
+</body>
+</html>

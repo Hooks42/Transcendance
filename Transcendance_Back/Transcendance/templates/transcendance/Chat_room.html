@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat en temps réel</title>
+    <script>
+        // Connexion WebSocket avec le serveur
+        var socket = new WebSocket('ws://localhost:8000/ws/chat/');
+
+        // Écoute des événements de la connexion WebSocket
+        socket.onopen = function(event) {
+            console.log('Connexion WebSocket établie');
+        };
+
+        socket.onclose = function(event) {
+            console.log('Connexion WebSocket fermée');
+        };
+    </script>
+</head>
+<body>
+    <h1>Chat en temps réel</h1>
+
+    <div id="chat-messages">
+        {% if message %}
+            {% for msg in message %}
+                <div>
+                    <p>{{ msg.user }} | {{ msg.timestamp }}</p>
+                    <p>{{msg.content}}</p>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div id="no-messages">Aucun message pour le moment</div>
+        {% endif %}
+    </div>
+
+    <form id="chat-form" method="post">
+        {% csrf_token %}
+        <input type="text" id="message-input" placeholder="Entrez votre message... 🔱" autocomplete="off">
+        <button type="submit">Envoyer ✅</button>
+    </form>
+
+    <script>
+        // Écoute de l'événement de soumission du formulaire
+        document.querySelector('#chat-form').addEventListener('submit', function(event) {
+            // Empêche le comportement par défaut du formulaire (rechargement de la page)
+            event.preventDefault();
+
+            // Récupère le contenu du champ de texte
+            var messageInput = document.querySelector('#message-input');
+            var messageContent = messageInput.value;
+
+            // Envoie le message au serveur via WebSocket
+            socket.send(JSON.stringify({
+                'type': 'send_message',
+                'message': messageContent
+            }));
+
+            // Efface le champ de texte après l'envoi du message
+            messageInput.value = '';
+        });
+
+        // Fonction pour afficher les messages reçus
+        function displayMessage(messageData) {
+            var messageElement = document.createElement('div');
+            var userTimestampElement = document.createElement('p');
+            var messageContentElement = document.createElement('p');
+
+            userTimestampElement.textContent = messageData.username + ' | ' + messageData.timestamp;
+            messageContentElement.textContent = messageData.message;
+
+            messageElement.appendChild(userTimestampElement);
+            messageElement.appendChild(messageContentElement);
+
+            document.querySelector('#chat-messages').appendChild(messageElement);
+        }
+
+        // Écoute des messages reçus via WebSocket
+        socket.onmessage = function(event) {
+            var messageData = JSON.parse(event.data);
+
+            var noMessagesDiv = document.getElementById('no-messages');
+            if (noMessagesDiv) {
+                noMessagesDiv.remove();
+            }
+            displayMessage(messageData);
+        };
+    </script>
+</body>
+</html>
