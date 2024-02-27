@@ -41,6 +41,12 @@ class ChatConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de c
         if not message: # Si le message est vide, ne rien faire
             return
         
+        user = self.scope['user']  # Récupère l'utilisateur de la portée
+        username = user.username if user.is_authenticated else "Anonyme"  # Récupère le nom d'utilisateur de l'utilisateur ou "Anonyme" si l'utilisateur n'est pas authentifié
+
+        new_message = Message(user=user, content=message)  # Crée un nouveau message
+        await self.save_message(new_message)  # Sauvegarde le message dans la base de données
+
         timestamp = datetime.now()  # Récupère le timestamp actuel
         formatted_timestamp = timestamp.strftime('%b. %d, %Y, %I:%M %p')  # Format the timestamp
         formatted_timestamp = formatted_timestamp.replace("AM", "a.m.").replace("PM", "p.m.")  # Change AM/PM to a.m./p.m.
@@ -49,7 +55,7 @@ class ChatConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de c
             {
                 "type": "chat_message", 
                 "message": message,
-                "username": self.user.username,
+                "username": username,
                 "timestamp": formatted_timestamp
             }
         )
@@ -58,10 +64,6 @@ class ChatConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de c
         message = event['message']  # Récupère le message de l'événement
         timestamp = event.get("timestamp", "")  # Récupère le timestamp de l'événement
         username = event.get("username", "Anonyme")  # Récupère le nom d'utilisateur de l'événement
-        user = self.scope['user']  # Récupère l'utilisateur de la portée
-        new_message = Message(user=user, content=message)  # Crée un nouveau message
-        await self.save_message(new_message)  # Sauvegarde le message dans la base de données
-
         await self.send(text_data=json.dumps({"message": message, "username" : username, "timestamp" : timestamp}))  # Envoie le message au client
 
     @database_sync_to_async

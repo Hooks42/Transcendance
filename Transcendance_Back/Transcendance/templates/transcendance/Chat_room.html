@@ -6,7 +6,7 @@
     <title>Chat en temps réel</title>
     <script>
         // Connexion WebSocket avec le serveur
-        var socket = new WebSocket('ws://localhost:8000/ws/chat/');
+        var socket = new WebSocket('wss://localhost/ws/chat/');
 
         // Écoute des événements de la connexion WebSocket
         socket.onopen = function(event) {
