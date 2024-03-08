@@ -1,7 +1,7 @@
 import json  # Importe le module json pour manipuler les données JSON
 from channels.db import database_sync_to_async  # Importe l'utilitaire pour exécuter du code synchrone dans un contexte asynchrone
 from channels.generic.websocket import AsyncWebsocketConsumer  # Importe la classe de base pour les consommateurs WebSocket asynchrones
-from Transcendance.models import Message  # Importe le modèle Message de votre application
+from Transcendance.models import Message, User  # Importe le modèle Message de votre application
 from datetime import datetime
 
 #! ATTENTION A L'HORODATAGE CE N'EST PAS LE BON FUSEAU HORAIRE

@@ -16,7 +16,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from Transcendance.views import Hello, AccountCreation, AccountLogin, LoginPage, FailedLogin, Logout, ChatView
+from Transcendance.views import Hello, AccountCreation, AccountLogin, LoginPage, FailedLogin,Logout, ChatView, redirect_to_provider, callback_view, AccountUpdate
+from django.conf import settings
+from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('hello/', Hello, name='hello'),
@@ -26,4 +28,9 @@ urlpatterns = [
     path('failed-login/', FailedLogin, name='failed-login'),
     path('logout/', Logout, name='logout'),
     path('chatroom/', ChatView, name='chat-room'),
+    path('oauth/', redirect_to_provider, name='redirect-to-provider'),
+    path('callback/', callback_view, name='callback-view'),
+    path('update-account/', AccountUpdate, name='update-account'),
+
 ]
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

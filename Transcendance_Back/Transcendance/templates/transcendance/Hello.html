@@ -8,15 +8,28 @@
 <body>
     <h1>Bienvenue sur le projet Transcendance</h1>
     <p>En cours de developpement</p>
+    <p>
+        {% if user.is_authenticated %}
+            Bonjour {{ user.username }}
+            <br></br>
+            <img src="https://localhost/media/{{ user.avatar }}" alt="Profile picture" width="100" height="100">
+        {% else %}
+            Bonjour inconnu
+        {% endif %}
+
+    </p>
     {% if user.is_authenticated %}
-        <h1>Bon {{user.username}} pour l'instant le site est trop nul tu peux que te deconnecter mais t'inquiete pas ca arrive 🥰</h1>
         <a href="{% url 'logout' %}" class="btn btn-primary">Se deconnecter ❌</a>
         <br></br>
         <a href="{% url 'chat-room' %}" class="btn btn-primary">Viens tchatter ici 💬</a>
+        <br></br>
+        <a href="{% url 'update-account' %}" class="btn btn-primary">Modifier mon compte ♻️</a>
     {% else %}
         <a href="{% url 'signin' %}" class="btn btn-primary">S'inscrire 🔥</a>
         <br></br>
         <a href="{% url 'login' %}" class="btn btn-primary">Se connecter ✅</a>
+        <br></br>
+        <a href="{% url 'redirect-to-provider' %}" class="btn btn-primary">Se connecter avec 4️⃣2️⃣</a>
     {% endif %}
 </body>
 </html>
