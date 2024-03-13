@@ -37,7 +37,9 @@
                 <div>
                     <p>
                         {{ msg.user }} | {{ msg.timestamp }}
-                        <button class="add_friend_button" data-username="{{ msg.user }}">Ajouter en ami</button>
+                        {% if msg.user.username != user.username and not user.is_friend(msg.user.username)%}
+                            <button class="add_friend_button" data-username="{{ msg.user }}">Ajouter en ami</button>
+                        {% endif %}
                     </p>
                     <p>{{msg.content}}</p>
                 </div>
@@ -54,6 +56,10 @@
     </form>
 
     <script>
+        //GLOBAL VARIABLES
+        var friends = [];
+        var currentUser = document.getElementById('currentUser').textContent;
+
         // Écoute de l'événement de soumission du formulaire
         document.querySelector('#chat-form').addEventListener('submit', function(event) {
             // Empêche le comportement par défaut du formulaire (rechargement de la page)
@@ -73,6 +79,17 @@
             messageInput.value = '';
         });
 
+        function send_get_friends_infos(currentUser)
+        {
+            var message = {
+                'command': 'get_friends_infos',
+                'user_to_add': currentUser
+            }
+
+            var messageJson = JSON.stringify(message);
+            socket2.send(messageJson);
+        }
+
         // Fonction pour afficher les messages reçus
         function displayMessage(messageData) {
 
@@ -83,16 +100,21 @@
             var container = document.createElement('div');
             
             container.style.display = 'flex'
-
-            addFriendButton.textContent = 'Ajouter en ami';
-            addFriendButton.dataset.username = messageData.username;
-            addFriendButton.className = 'add_friend_button';
+            
 
             userTimestampElement.textContent = messageData.username + ' | ' + messageData.timestamp;
             messageContentElement.textContent = messageData.message;
 
             container.appendChild(userTimestampElement);
-            container.appendChild(addFriendButton);
+            send_get_friends_infos(currentUser);
+            if (messageData.username != currentUser && messageData.username.includes(friends) == false)
+            {
+                addFriendButton.textContent = 'Ajouter en ami';
+                addFriendButton.dataset.username = messageData.username;
+                addFriendButton.className = 'add_friend_button';
+
+                container.appendChild(addFriendButton);
+            }
 
             messageElement.appendChild(container);
             messageElement.appendChild(messageContentElement);
@@ -103,7 +125,7 @@
                 var username = event.target.dataset.username;
                 socket2.send(JSON.stringify({
                     'command': 'add_friend',
-                    'original_user': document.getElementById('currentUser').textContent,
+                    'original_user': currentUser,
                     'user_to_add' : messageData.username,
                 }));
             });
@@ -117,7 +139,7 @@
                     var username = event.target.dataset.username;
                     socket2.send(JSON.stringify({
                         'command': 'add_friend',
-                        'original_user': document.getElementById('currentUser').textContent,
+                        'original_user': currentUser,
                         'user_to_add' : username,
                     }));
                 });
@@ -133,6 +155,15 @@
                 noMessagesDiv.remove();
             }
             displayMessage(messageData);
+        };
+
+        socket2.onmessage = function(event)
+        {
+            var data = JSON.parse(event.data);
+            var data = JSON.parse(message);
+            
+            if (data.original_user === currentUser && data.command === "get_friends_infos")
+                friends = data.friends;
         };
     </script>
 </body>

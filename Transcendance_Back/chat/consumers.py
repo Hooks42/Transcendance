@@ -34,36 +34,70 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
     async def receive(self, text_data):  # Méthode appelée lorsqu'un message est reçu du client
         json_text = json.loads(text_data)  # Convertit le texte en JSON
         command = json_text["command"]  # Récupère le message du JSON
-        original_user = json_text["original_user"]
-        user_to_add = json_text["user_to_add"]
-        original_user = await self.get_user(original_user)  # Récupère l'utilisateur qui veut effectuer la commande
-        user_to_add = await self.get_user(user_to_add)
+        original_user = None
+        user_to_add = None
+        if "original_user" in json_text:
+            original_user = json_text["original_user"]
+            original_user = await self.get_user(original_user)
+        if "user_to_add" in json_text:
+            user_to_add = json_text["user_to_add"]
+            user_to_add = await self.get_user(user_to_add)
         await self.command_handler(command, original_user, user_to_add)
     
     async def command_handler(self, command, original_user, user_to_add):
         if command == 'add_friend':
-            print(f'🔱 command --> {command}\n 🔱 current_user --> {original_user}\n 🔱 user_to_add --> {user_to_add}')
-            # await self.add_friend_request(original_user, user_to_add)
-            # self.channel_layer.group_send(
-            #     self.room_group_name,
-            #     {
-            #         "type": "system_message",
-            #         'message': json.dumps({
-            #             'username': user_to_add.username,
-            #             'command': 'add_friend'
-            #         })
-            #     }
-            # )
+            add_friend = await self.add_friend_request(original_user, user_to_add)
+            if add_friend:
+                self.channel_layer.group_send(
+                    self.room_group_name,
+                    {
+                        "type": "system_message",
+                        'message': json.dumps({
+                            'command': command,
+                            'user_to_add': user_to_add.username,
+                            'original_user': 'None'
+                        })
+                    }
+                )
         if command == 'accept_friend':
             await self.accept_friend_request(original_user, user_to_add)
         if command == 'reject_friend':
             await self.reject_friend_request(original_user, user_to_add)
+        if command == 'get_friends_infos':
+            friends_infos = await self.get_friends_infos_request(user_to_add)
+            self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    "type": "system_message",
+                    'message': friends_infos
+                }
+            )
 
 
 #! add_friend : original_user, user_to_add
 #! accept_friend : original_user, user_to_add
 #! reject_friend : original_user, user_to_add
-            
+    async def system_message(self, event):
+        # Extract the message from the event
+        message = event['message']
+
+        # Send the message to the WebSocket
+        await self.send(text_data=json.dumps({
+            'message': message
+        }))
+
+    @database_sync_to_async
+    def get_user(self, username):
+        return User.objects.get(username=username)
+
+    @database_sync_to_async
+    def add_friend_request(self, original_user, user_to_add):
+        if original_user.username not in user_to_add.friend_request: 
+            user_to_add.friend_request.append(original_user.username)
+            user_to_add.save()
+            return True
+        return False
+
     @database_sync_to_async
     def accept_friend_request(self, original_user, user_to_add):
         original_user.friends.add(user_to_add)
@@ -75,15 +109,18 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
     def reject_friend_request(self, original_user, user_to_add):
         user_to_add.friend_request.remove(original_user.username)
         user_to_add.save()
-    
-    @database_sync_to_async
-    def add_friend_request(self, original_user, user_to_add):
-        user_to_add.friend_request.append(original_user.username)
-        user_to_add.save()
 
     @database_sync_to_async
-    def get_user(self, username):
-        return User.objects.get(username=username)
+    def get_friends_infos_request(self, user):
+        data = {
+            'command': 'get_friends_infos',
+            'user_to_add': user.username,
+            'original_user': 'None',
+            'friends': [friend.username for friend in user.friends.all()],
+            'friend_request': list(user.friend_request)
+        }
+        json_infos = json.dumps(data)
+        return json_infos
 
 
 

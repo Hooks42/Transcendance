@@ -40,3 +40,6 @@ class User(AbstractUser):
     is_online = models.BooleanField(default=False)
     friends = models.ManyToManyField('self', blank=True)
     friend_request = ArrayField(models.CharField(max_length=200), blank=True, default=list)
+
+    def is_friend(self, username):
+        return self.friends.filter(username=username).exists()

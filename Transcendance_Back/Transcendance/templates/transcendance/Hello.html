@@ -7,15 +7,33 @@
 </head>
 
 {% if user.is_authenticated %}
+    <div id="currentUser" style="display: none;">{{ user.username }}</div>  
+
     <script>
         // Connexion WebSocket avec le serveur
         var socket = new WebSocket('wss://localhost/ws/system/');
+        var currentUser = document.getElementById('currentUser').textContent;
         
-        socket.onopen = function(event) {
+        function send_get_friends_infos(currentUser)
+        {
+            var message = {
+                'command': 'get_friends_infos',
+                'user_to_add': currentUser
+            }
+
+            var messageJson = JSON.stringify(message);
+            socket.send(messageJson);
+        }
+
+        socket.onopen = function(event)
+        {
             console.log('Connexion au system établie');
+
+            send_get_friends_infos(currentUser);
         };
 
-        socket.onclose = function(event) {
+        socket.onclose = function(event)
+        {
             console.log('Connexion au system fermée');
         };
     </script>
@@ -42,7 +60,8 @@
         <br></br>
         <a href="{% url 'update-account' %}" class="btn btn-primary">Modifier mon compte ♻️</a>
         <br></br>
-        <div id="friends_requests">
+        <div id="friends_requests"> </div>
+        <div id="friends"> </div>
 
                 
     {% else %}
@@ -53,4 +72,57 @@
         <a href="{% url 'redirect-to-provider' %}" class="btn btn-primary">Se connecter avec 4️⃣2️⃣</a>
     {% endif %}
 </body>
+
+<script>
+
+    socket.onmessage = function(event)
+    {
+        var message = event.data;
+        var data = JSON.parse(message);
+        if (data.original_user === document.getElementById('currentUser').textContent)
+        {
+            if (data.command === 'get_friends_infos' && data.user_to_add === currentUser || data.command === 'add_friend' && data.user_to_add === currentUser)
+            {
+                if (data.command === 'add_friend')
+                {
+                    send_get_friends_infos(currentUser);
+                    message = data.message;
+                    data = JSON.parse(message);
+                }
+
+                var friends = data.friends;
+                var friends_requests = data.friends_requests;
+
+                var friendsDiv = document.getElementById('friends');
+                var friendsRequestsDiv = document.getElementById('friends_requests');
+
+                if (friends_requests.length > 0)
+                {
+                    friendsRequestsDiv.innerHTML = '<h2>Demande d\'amis</h2>';
+                    for (var i = 0; i < friends_requests.length; i++)
+                    {
+                        var friendRequest = friends_requests[i];
+                        var friendRequestDiv = document.createElement('div');
+                        friendRequestDiv.innerHTML = '<p>' + friendRequest.username +
+                            ' <button id="acceptFriendRequestButton">Accepter</button>' +
+                            ' <button id="rejectFriendRequestButton">Refuser</button></p>';
+                        friendsRequestsDiv.appendChild(friendRequestDiv);
+                    }
+                }
+
+                if (friends.length > 0)
+                {
+                    friendsDiv.innerHTML = '<h2>Amis</h2>';
+                    for (var i = 0; i < friends.length; i++)
+                    {
+                        var friend = friends[i];
+                        var friendDiv = document.createElement('div');
+                        friendDiv.innerHTML = '<p>' + friend.username + '</p>';
+                        friendsDiv.appendChild(friendDiv);
+                    }
+                }
+            }
+        }
+    }
+</script>
 </html>
