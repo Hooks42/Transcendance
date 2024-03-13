@@ -1,4 +1,5 @@
 from django.contrib.auth.models import AbstractUser
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.contrib.postgres.fields import HStoreField
 from django.conf import settings
@@ -36,3 +37,6 @@ class Message(models.Model):
 class User(AbstractUser):
     id_42 = models.IntegerField(null=True, blank=True)
     avatar = models.ImageField(upload_to='avatars/', default='avatars/default_avatar.jpg', null=True, blank=True)
+    is_online = models.BooleanField(default=False)
+    friends = models.ManyToManyField('self', blank=True)
+    friend_request = ArrayField(models.CharField(max_length=200), blank=True, default=list)

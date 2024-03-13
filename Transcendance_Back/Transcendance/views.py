@@ -13,6 +13,7 @@ from urllib.parse import urlencode
 from django.urls import reverse
 from django.http import HttpResponse
 from Transcendance.management.OAuth20.get_info_from_42 import register_user 
+from django.shortcuts import get_object_or_404
 
 
 
@@ -34,7 +35,11 @@ def AccountLogin(request):
     if request.method == 'POST':
         form = AccountLoginForm(request.POST)
         if form.is_valid():
+            email = form.cleaned_data.get('email')
             if form.Login(request):
+                user = get_object_or_404(User, email=email)
+                user.is_online = True
+                user.save()
                 return redirect('hello')
     else:
         form = AccountLoginForm()
@@ -50,8 +55,11 @@ def FailedLogin(request):
     return render(request, 'Failed_login.html')
 
 def Logout(request):
+    user = request.user
+    user.is_online = False
+    user.save()
     logout(request)
-    return render(request, 'Logout.html')
+    return redirect('hello')
 
 def ChatView(request):
     message_backup = Message.objects.all()
@@ -87,8 +95,7 @@ def callback_view(request):
         access_token = response_data['access_token']
         user = register_user(access_token)
         login(request, user)
-    return render(request, 'Hello.html', {"user": user})
-
+    return redirect('hello')
 
 def AccountUpdate(request):
     user = User.objects.get(username=request.user.username)
@@ -115,14 +122,12 @@ def AccountUpdate(request):
                 'first_name': user.first_name,
                 'last_name': user.last_name,
                 'email': user.email,
-                'avatar': ''
             }, instance=user)
         else:
             form = RegularAccountUpdateForm(initial={
                 'username': user.username,
                 'first_name': user.first_name,
                 'last_name': user.last_name,
-                'email': "",
-                'avatar': ""
+                'email': ""
             }, instance=user)
     return render(request, 'Update_account.html', {'form': form})

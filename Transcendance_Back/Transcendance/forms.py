@@ -7,6 +7,7 @@ from collections import OrderedDict
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 import uuid
+from django.forms.widgets import FileInput
 
 
 class AccountCreationForm(forms.ModelForm):
@@ -57,6 +58,8 @@ class AccountCreationForm(forms.ModelForm):
         user = authenticate(username=email, password=password)
         if user is not None:
             login(request, user)
+            user.is_online = True
+            user.save()
         return user
 
 class AccountLoginForm(forms.Form):
@@ -83,7 +86,7 @@ class AccountLoginForm(forms.Form):
         else:
             self.add_error('email', "L'email ou le mot de passe est incorrect. ❌")
             return False
-        
+
 class RegularAccountUpdateForm(forms.ModelForm):
     username = forms.CharField(required=False, widget=forms.TextInput(attrs={'autocomplete': 'off'}))
     first_name = forms.CharField(required=False, widget=forms.TextInput(attrs={'autocomplete': 'off'}))
@@ -92,7 +95,7 @@ class RegularAccountUpdateForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput(render_value=False), required=False)
     new_password = forms.CharField(widget=forms.PasswordInput(render_value=False), required=False)
     confirm_password = forms.CharField(widget=forms.PasswordInput(render_value=True), required=False)
-    avatar = forms.ImageField(required=False)
+    avatar = forms.ImageField(required=False, widget=FileInput)
 
     def __init__(self, *args, **kwargs):
         super(RegularAccountUpdateForm, self).__init__(*args, **kwargs)
@@ -176,14 +179,12 @@ class RegularAccountUpdateForm(forms.ModelForm):
     def clean_avatar(self):
         avatar = self.cleaned_data.get('avatar')
 
-        if avatar:
-            if avatar.size > 100*1024*1024:
-                raise forms.ValidationError("La taille de l'image ne peut pas dépasser 5mb.")
+        if avatar != self.user.avatar:
             try:
                 from PIL import Image
                 Image.open(avatar)
             except Exception:
-                raise forms.ValidationError("Le fichier uploadé n'est pas une image valide.")
+                self.add_error("Le fichier uploadé n'est pas une image valide. ❌")
         return avatar
 
     def clean(self):
@@ -196,16 +197,11 @@ class RegularAccountUpdateForm(forms.ModelForm):
         new_password = cleaned_data.get('new_password')
         confirm_password = cleaned_data.get('confirm_password')
         avatar = cleaned_data.get('avatar')
-
-        if password == "":
-            password = None
-        if password and username == self.user.username and first_name == self.user.first_name and last_name == self.user.last_name and email == "" and new_password == "" and confirm_password == "" and avatar == None:
-            self.add_error('username', "Aucun champ n'a été modifié. ❌")
-        if not password and username == self.user.username and first_name == self.user.first_name and last_name == self.user.last_name and email == "" and new_password == "" and confirm_password == "" and avatar == None:
+        
+        if username == self.user.username and first_name == self.user.first_name and last_name == self.user.last_name and email == "" and new_password == "" and confirm_password == "" and avatar == self.user.avatar:
             self.add_error('username', "Aucun champ n'a été modifié. ❌")
 
-
-        if avatar:
+        if avatar != self.user.avatar:
             if "default_avatar" not in str(self.user.avatar):
                 self.user.avatar.delete()
             unique_id = uuid.uuid4()
@@ -225,6 +221,7 @@ class RegularAccountUpdateForm(forms.ModelForm):
             self.add_error('confirm_password', "Veuillez confirmer votre mot de passe. ❌")
         elif new_password and password and confirm_password and new_password != confirm_password:
             self.add_error('confirm_password', "Les mots de passe ne sont pas identique. Veuillez les saisir a nouveau ❌")
+
         return cleaned_data
 
     def save(self, commit=True):
@@ -250,7 +247,7 @@ class RegularAccountUpdateForm(forms.ModelForm):
         if new_password:
             user.set_password(new_password)
             update_field.append('password')
-        if avatar:
+        if avatar != self.user.avatar:
             user.avatar = avatar
             update_field.append('avatar')
         if commit:
@@ -263,7 +260,7 @@ class Auth42AccountUpdateForm(forms.ModelForm):
     first_name = forms.CharField(required=False, widget=forms.TextInput(attrs={'autocomplete': 'off'}))
     last_name = forms.CharField(required=False, widget=forms.TextInput(attrs={'autocomplete': 'off'}))
     email = forms.EmailField(required=False, widget=forms.EmailInput(attrs={'autocomplete': 'off'}))
-    avatar = forms.ImageField(required=False)
+    avatar = forms.ImageField(required=False, widget=FileInput)
 
     def __init__(self, *args, **kwargs):
         super(Auth42AccountUpdateForm, self).__init__(*args, **kwargs)
@@ -313,20 +310,18 @@ class Auth42AccountUpdateForm(forms.ModelForm):
     
     def clean_avatar(self):
         avatar = self.cleaned_data.get('avatar')
-
-        if avatar:
-            if avatar.size > 100*1024*1024:
-                raise forms.ValidationError("La taille de l'image ne peut pas dépasser 5mb.")
-            try:
-                from PIL import Image
-                Image.open(avatar)
-            except Exception:
-                raise forms.ValidationError("Le fichier uploadé n'est pas une image valide.")
-        
-        if avatar:
-                self.user.avatar.delete()
-                unique_id = uuid.uuid4()
-                avatar.name = f"{unique_id}.jpg"
+        print(f"✅avatar: {str(avatar)}")
+        try:
+            from PIL import Image
+            Image.open(avatar)
+        except Exception:
+            self.add_error("Le fichier uploadé n'est pas une image valide. ❌")
+   
+        if self.user.avatar:
+            self.user.avatar.delete()
+        unique_id = uuid.uuid4()
+        avatar.name = f"{unique_id}.jpg"
+        print(f"🔥avatar: {str(avatar)}")
         return avatar
     
     

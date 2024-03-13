@@ -5,6 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hello</title>
 </head>
+
+{% if user.is_authenticated %}
+    <script>
+        // Connexion WebSocket avec le serveur
+        var socket = new WebSocket('wss://localhost/ws/system/');
+        
+        socket.onopen = function(event) {
+            console.log('Connexion au system établie');
+        };
+
+        socket.onclose = function(event) {
+            console.log('Connexion au system fermée');
+        };
+    </script>
+{% endif %}
+
+
 <body>
     <h1>Bienvenue sur le projet Transcendance</h1>
     <p>En cours de developpement</p>
@@ -16,14 +33,18 @@
         {% else %}
             Bonjour inconnu
         {% endif %}
-
     </p>
+
     {% if user.is_authenticated %}
         <a href="{% url 'logout' %}" class="btn btn-primary">Se deconnecter ❌</a>
         <br></br>
         <a href="{% url 'chat-room' %}" class="btn btn-primary">Viens tchatter ici 💬</a>
         <br></br>
         <a href="{% url 'update-account' %}" class="btn btn-primary">Modifier mon compte ♻️</a>
+        <br></br>
+        <div id="friends_requests">
+
+                
     {% else %}
         <a href="{% url 'signin' %}" class="btn btn-primary">S'inscrire 🔥</a>
         <br></br>

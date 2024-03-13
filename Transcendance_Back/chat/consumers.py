@@ -17,6 +17,76 @@ from datetime import datetime
 #!-------------------------------------------------------------------------------------------------------
 '''
 
+class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de consommateur WebSocket
+    async def connect(self):  # Méthode appelée lorsqu'un client se connecte
+        self.room_name = 'system_room'  # Définit le nom de la salle
+        self.room_group_name = self.room_name # Utilise le nom de la salle comme nom du groupe
+        await self.channel_layer.group_add(  # Ajoute le canal du client au groupe
+            self.room_group_name, self.channel_name
+        )
+        await self.accept()  # Accepte la connexion WebSocket
+    
+    async def disconnect(self, code):  # Méthode appelée lorsqu'un client se déconnecte
+        await self.channel_layer.group_discard(  # Retire le canal du client du groupe
+            self.room_group_name, self.channel_name
+        )
+
+    async def receive(self, text_data):  # Méthode appelée lorsqu'un message est reçu du client
+        json_text = json.loads(text_data)  # Convertit le texte en JSON
+        command = json_text["command"]  # Récupère le message du JSON
+        original_user = json_text["original_user"]
+        user_to_add = json_text["user_to_add"]
+        original_user = await self.get_user(original_user)  # Récupère l'utilisateur qui veut effectuer la commande
+        user_to_add = await self.get_user(user_to_add)
+        await self.command_handler(command, original_user, user_to_add)
+    
+    async def command_handler(self, command, original_user, user_to_add):
+        if command == 'add_friend':
+            print(f'🔱 command --> {command}\n 🔱 current_user --> {original_user}\n 🔱 user_to_add --> {user_to_add}')
+            # await self.add_friend_request(original_user, user_to_add)
+            # self.channel_layer.group_send(
+            #     self.room_group_name,
+            #     {
+            #         "type": "system_message",
+            #         'message': json.dumps({
+            #             'username': user_to_add.username,
+            #             'command': 'add_friend'
+            #         })
+            #     }
+            # )
+        if command == 'accept_friend':
+            await self.accept_friend_request(original_user, user_to_add)
+        if command == 'reject_friend':
+            await self.reject_friend_request(original_user, user_to_add)
+
+
+#! add_friend : original_user, user_to_add
+#! accept_friend : original_user, user_to_add
+#! reject_friend : original_user, user_to_add
+            
+    @database_sync_to_async
+    def accept_friend_request(self, original_user, user_to_add):
+        original_user.friends.add(user_to_add)
+        user_to_add.friend_request.remove(original_user.username)
+        original_user.save()
+        user_to_add.save()
+
+    @database_sync_to_async
+    def reject_friend_request(self, original_user, user_to_add):
+        user_to_add.friend_request.remove(original_user.username)
+        user_to_add.save()
+    
+    @database_sync_to_async
+    def add_friend_request(self, original_user, user_to_add):
+        user_to_add.friend_request.append(original_user.username)
+        user_to_add.save()
+
+    @database_sync_to_async
+    def get_user(self, username):
+        return User.objects.get(username=username)
+
+
+
 class ChatConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de consommateur WebSocket
     async def connect(self):  # Méthode appelée lorsqu'un client se connecte
         self.room_name = 'public_room'  # Définit le nom de la salle

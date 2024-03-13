@@ -4,17 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat en temps réel</title>
+    <div id="currentUser" style="display: none;">{{ user.username }}</div>
     <script>
         // Connexion WebSocket avec le serveur
         var socket = new WebSocket('wss://localhost/ws/chat/');
+        var socket2 = new WebSocket('wss://localhost/ws/system/');
 
         // Écoute des événements de la connexion WebSocket
         socket.onopen = function(event) {
-            console.log('Connexion WebSocket établie');
+            console.log('Connexion au chat établie');
+        
+            socket2.onopen = function(event) {
+                console.log('Connexion au system établie');
+            };
         };
 
         socket.onclose = function(event) {
-            console.log('Connexion WebSocket fermée');
+            console.log('Connexion au chat fermée');
+        };
+
+        socket2.onclose = function(event) {
+            console.log('Connexion au system fermée');
         };
     </script>
 </head>
@@ -25,7 +35,10 @@
         {% if message %}
             {% for msg in message %}
                 <div>
-                    <p>{{ msg.user }} | {{ msg.timestamp }}</p>
+                    <p>
+                        {{ msg.user }} | {{ msg.timestamp }}
+                        <button class="add_friend_button" data-username="{{ msg.user }}">Ajouter en ami</button>
+                    </p>
                     <p>{{msg.content}}</p>
                 </div>
             {% endfor %}
@@ -62,18 +75,54 @@
 
         // Fonction pour afficher les messages reçus
         function displayMessage(messageData) {
+
             var messageElement = document.createElement('div');
             var userTimestampElement = document.createElement('p');
             var messageContentElement = document.createElement('p');
+            var addFriendButton = document.createElement('button');
+            var container = document.createElement('div');
+            
+            container.style.display = 'flex'
+
+            addFriendButton.textContent = 'Ajouter en ami';
+            addFriendButton.dataset.username = messageData.username;
+            addFriendButton.className = 'add_friend_button';
 
             userTimestampElement.textContent = messageData.username + ' | ' + messageData.timestamp;
             messageContentElement.textContent = messageData.message;
 
-            messageElement.appendChild(userTimestampElement);
+            container.appendChild(userTimestampElement);
+            container.appendChild(addFriendButton);
+
+            messageElement.appendChild(container);
             messageElement.appendChild(messageContentElement);
 
             document.querySelector('#chat-messages').appendChild(messageElement);
+
+            addFriendButton.addEventListener('click', function(event) {
+                var username = event.target.dataset.username;
+                socket2.send(JSON.stringify({
+                    'command': 'add_friend',
+                    'original_user': document.getElementById('currentUser').textContent,
+                    'user_to_add' : messageData.username,
+                }));
+            });
         }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var addFriendButtons = document.querySelectorAll('.add_friend_button');
+
+            addFriendButtons.forEach(function(addFriendButton) {
+                addFriendButton.addEventListener('click', function(event) {
+                    var username = event.target.dataset.username;
+                    socket2.send(JSON.stringify({
+                        'command': 'add_friend',
+                        'original_user': document.getElementById('currentUser').textContent,
+                        'user_to_add' : username,
+                    }));
+                });
+            });
+        });
 
         // Écoute des messages reçus via WebSocket
         socket.onmessage = function(event) {
