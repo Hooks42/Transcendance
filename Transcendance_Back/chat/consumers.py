@@ -18,7 +18,7 @@ from datetime import datetime
 '''
 
 class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de consommateur WebSocket
-    async def connect(self):  # Méthode appelée lorsqu'un client se connecte
+    async def connect(self):  # Méthode appelée lorsqu'un §client se connecte
         self.room_name = 'system_room'  # Définit le nom de la salle
         self.room_group_name = self.room_name # Utilise le nom de la salle comme nom du groupe
         await self.channel_layer.group_add(  # Ajoute le canal du client au groupe
@@ -48,7 +48,7 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
         if command == 'add_friend':
             add_friend = await self.add_friend_request(original_user, user_to_add)
             if add_friend:
-                self.channel_layer.group_send(
+                await self.channel_layer.group_send(
                     self.room_group_name,
                     {
                         "type": "system_message",
@@ -65,14 +65,13 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
             await self.reject_friend_request(original_user, user_to_add)
         if command == 'get_friends_infos':
             friends_infos = await self.get_friends_infos_request(user_to_add)
-            self.channel_layer.group_send(
+            await self.channel_layer.group_send(
                 self.room_group_name,
                 {
                     "type": "system_message",
                     'message': friends_infos
                 }
             )
-
 
 #! add_friend : original_user, user_to_add
 #! accept_friend : original_user, user_to_add
@@ -119,8 +118,7 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
             'friends': [friend.username for friend in user.friends.all()],
             'friend_request': list(user.friend_request)
         }
-        json_infos = json.dumps(data)
-        return json_infos
+        return data
 
 
 

@@ -16,6 +16,7 @@
         
             socket2.onopen = function(event) {
                 console.log('Connexion au system établie');
+                send_get_friends_infos(currentUser);
             };
         };
 
@@ -35,11 +36,9 @@
         {% if message %}
             {% for msg in message %}
                 <div>
-                    <p>
-                        {{ msg.user }} | {{ msg.timestamp }}
-                        {% if msg.user.username != user.username and not user.is_friend(msg.user.username)%}
-                            <button class="add_friend_button" data-username="{{ msg.user }}">Ajouter en ami</button>
-                        {% endif %}
+                    <p class="user_timestamp_button">
+                        <span class="msg_user">{{ msg.user }}</span> | {{ msg.timestamp }}
+                        <span id="database_check_add_friend_button-{{forloop.counter}}"</span>
                     </p>
                     <p>{{msg.content}}</p>
                 </div>
@@ -88,6 +87,7 @@
 
             var messageJson = JSON.stringify(message);
             socket2.send(messageJson);
+            console.log("Demande d'infos sur les amis envoyée");
         }
 
         // Fonction pour afficher les messages reçus
@@ -131,6 +131,27 @@
             });
         }
 
+        
+        // Creation de Bouton pour le moment ou l'on check la database
+        var msg_user = document.getElementsByClassName('msg_user');
+        for (var i = 0; i < msg_user.length; i++)
+        {
+            if (msg_user[i].textContent != currentUser && friends.includes(msg_user[i].textContent) == false)
+            {
+                var username = msg_user[i].textContent;
+                if (username != currentUser)
+                {
+                    var addFriendButton = document.createElement('button');
+                    addFriendButton.textContent = 'Ajouter en ami';
+                    addFriendButton.dataset.username = username;
+                    
+                    var friendButtonContainer = document.getElementById('database_check_add_friend_button-' + (i + 1));
+                    friendButtonContainer.appendChild(addFriendButton);
+                }
+            }
+        }
+
+
         document.addEventListener('DOMContentLoaded', function() {
             var addFriendButtons = document.querySelectorAll('.add_friend_button');
 
@@ -159,11 +180,19 @@
 
         socket2.onmessage = function(event)
         {
-            var data = JSON.parse(event.data);
-            var data = JSON.parse(message);
+            var data = event.data;
+            data = JSON.parse(data);
+            console.log(data)
             
-            if (data.original_user === currentUser && data.command === "get_friends_infos")
+            if (data.message.user_to_add === currentUser && data.message.command === "get_friends_infos")
+            {
                 friends = data.friends;
+                console.log("infos sur les amis reçues");
+            }
+            else
+            {
+                console.log("Commande: " + data.message.command + " non reconnue");
+            }
         };
     </script>
 </body>
