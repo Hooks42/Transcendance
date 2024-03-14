@@ -13,23 +13,13 @@
         // Connexion WebSocket avec le serveur
         var socket = new WebSocket('wss://localhost/ws/system/');
         var currentUser = document.getElementById('currentUser').textContent;
-        
-        function send_get_friends_infos(currentUser)
-        {
-            var message = {
-                'command': 'get_friends_infos',
-                'user_to_add': currentUser
-            }
-
-            var messageJson = JSON.stringify(message);
-            socket.send(messageJson);
-        }
 
         socket.onopen = function(event)
         {
             console.log('Connexion au system établie');
 
             send_get_friends_infos(currentUser);
+            console.log('Demande d\'infos sur les amis envoyée');
         };
 
         socket.onclose = function(event)
@@ -60,8 +50,8 @@
         <br></br>
         <a href="{% url 'update-account' %}" class="btn btn-primary">Modifier mon compte ♻️</a>
         <br></br>
-        <div id="friends_requests"> </div>
-        <div id="friends"> </div>
+        <div class="friends_requests"> </div>
+        <div class="friends"> </div>
 
                 
     {% else %}
@@ -75,53 +65,108 @@
 
 <script>
 
+    //--------------------------------------------------------------------------------
+    //                              GLOBAL VARIABLES
+    //--------------------------------------------------------------------------------
+    var friends = [];
+    var friends_requests = [];
+    var currentUser = document.getElementById('currentUser').textContent;
+
+    //--------------------------------------------------------------------------------
+    //                                  FUNCTIONS
+    //--------------------------------------------------------------------------------
+
+    // Demande d'informations sur les amis
+    function send_get_friends_infos(currentUser)
+    {
+        var message = {
+            'command': 'get_friends_infos',
+            'user_to_add': currentUser
+        }
+
+        var messageJson = JSON.stringify(message);
+        socket.send(messageJson);
+    }
+
+    // Affichage des demandes d'amis
+    function display_friends_requests()
+    {
+        if (friends_requests.length > 0)
+        {
+            var friendsRequestsDiv = document.getElementsByClassName('friends_requests')[0];
+
+            var friendsRequestTitle = document.createElement('h2');
+            friendsRequestTitle.textContent = 'Demandes d\'amis';
+            friendsRequestsDiv.appendChild(friendsRequestTitle);
+
+            for (var i = 0; i < friends_requests.length; i++)
+            {
+                var friendRequestDiv = document.createElement('div');
+                friendRequestDiv.id = 'friend_request-' + i;
+                friendRequestDiv.style.display = 'flex';
+                friendsRequestsDiv.appendChild(friendRequestDiv);
+
+                var friendRequestP = document.createElement('p');
+                friendRequestP.textContent = friends_requests[i];
+                friendRequestDiv.appendChild(friendRequestP);
+
+                var friendRequestAcceptButton = document.createElement('button');
+                friendRequestAcceptButton.textContent = 'Accepter';
+                friendRequestAcceptButton.id = 'accept_friend_request_button-' + i;
+                friendRequestDiv.appendChild(friendRequestAcceptButton);
+
+                var friendRequestDeclineButton = document.createElement('button');
+                friendRequestDeclineButton.textContent = 'Refuser';
+                friendRequestDeclineButton.id = 'decline_friend_request_button-' + i;
+                friendRequestDiv.appendChild(friendRequestDeclineButton);
+
+                var friendRequestBlockedButton = document.createElement('button');
+                friendRequestBlockedButton.textContent = 'Bloquer';
+                friendRequestBlockedButton.id = 'block_friend_request_button-' + i;
+                friendRequestDiv.appendChild(friendRequestBlockedButton);
+
+                friendRequestAcceptButton.addEventListener('click', function(event)
+                {
+                    var user_to_add = event.target.parentElement.firstChild.textContent;
+                    //SEND ACCEPT FRIEND REQUEST
+                });
+
+                friendRequestDeclineButton.addEventListener('click', function(event)
+                {
+                    var user_to_add = event.target.parentElement.firstChild.textContent;
+                    //SEND DECLINE FRIEND REQUEST
+                });
+
+                friendRequestBlockedButton.addEventListener('click', function(event)
+                {
+                    var user_to_add = event.target.parentElement.firstChild.textContent;
+                    //SEND BLOCK FRIEND REQUEST
+                });
+            }
+        }
+    }
+    //--------------------------------------------------------------------------------
+    //                           Affichage des requetes d'amis
+    //--------------------------------------------------------------------------------
+    
+    
+
+    
+
+    //--------------------------------------------------------------------------------
+    //                           Gestion des messages system
+    //--------------------------------------------------------------------------------
     socket.onmessage = function(event)
     {
-        var message = event.data;
-        var data = JSON.parse(message);
-        if (data.original_user === document.getElementById('currentUser').textContent)
+        var data = event.data;
+        data = JSON.parse(data);
+
+        if (data.message.command == 'get_friends_infos' && data.message.user_to_add == currentUser)
         {
-            if (data.command === 'get_friends_infos' && data.user_to_add === currentUser || data.command === 'add_friend' && data.user_to_add === currentUser)
-            {
-                if (data.command === 'add_friend')
-                {
-                    send_get_friends_infos(currentUser);
-                    message = data.message;
-                    data = JSON.parse(message);
-                }
-
-                var friends = data.friends;
-                var friends_requests = data.friends_requests;
-
-                var friendsDiv = document.getElementById('friends');
-                var friendsRequestsDiv = document.getElementById('friends_requests');
-
-                if (friends_requests.length > 0)
-                {
-                    friendsRequestsDiv.innerHTML = '<h2>Demande d\'amis</h2>';
-                    for (var i = 0; i < friends_requests.length; i++)
-                    {
-                        var friendRequest = friends_requests[i];
-                        var friendRequestDiv = document.createElement('div');
-                        friendRequestDiv.innerHTML = '<p>' + friendRequest.username +
-                            ' <button id="acceptFriendRequestButton">Accepter</button>' +
-                            ' <button id="rejectFriendRequestButton">Refuser</button></p>';
-                        friendsRequestsDiv.appendChild(friendRequestDiv);
-                    }
-                }
-
-                if (friends.length > 0)
-                {
-                    friendsDiv.innerHTML = '<h2>Amis</h2>';
-                    for (var i = 0; i < friends.length; i++)
-                    {
-                        var friend = friends[i];
-                        var friendDiv = document.createElement('div');
-                        friendDiv.innerHTML = '<p>' + friend.username + '</p>';
-                        friendsDiv.appendChild(friendDiv);
-                    }
-                }
-            }
+            friends = data.message.friends;
+            friends_requests = data.message.friend_request;
+            console.log('Information sur les amis recues');
+            display_friends_requests();
         }
     }
 </script>

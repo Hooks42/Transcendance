@@ -55,9 +55,44 @@
     </form>
 
     <script>
-        //GLOBAL VARIABLES
+        //--------------------------------------------------------------------------------
+        //                              GLOBAL VARIABLES
+        //--------------------------------------------------------------------------------
         var friends = [];
         var currentUser = document.getElementById('currentUser').textContent;
+
+        //--------------------------------------------------------------------------------
+        //                                  FUNCTIONS
+        //--------------------------------------------------------------------------------
+
+        function send_get_friends_infos(currentUser)
+        {
+            var message = {
+                'command': 'get_friends_infos',
+                'user_to_add': currentUser
+            }
+
+            var messageJson = JSON.stringify(message);
+            socket2.send(messageJson);
+            console.log("Demande d'infos sur les amis envoyée");
+        }
+
+        function send_add_friend_request(currentUser, user_to_add)
+        {
+            var message = {
+                'command': 'add_friend',
+                'original_user': currentUser,
+                'user_to_add' : user_to_add,
+            }
+
+            var messageJson = JSON.stringify(message);
+            socket2.send(messageJson);
+            console.log("Demande d'ajout d'ami envoyée");
+        }
+
+        //--------------------------------------------------------------------------------
+        //                                  ELSE
+        //--------------------------------------------------------------------------------
 
         // Écoute de l'événement de soumission du formulaire
         document.querySelector('#chat-form').addEventListener('submit', function(event) {
@@ -78,18 +113,6 @@
             messageInput.value = '';
         });
 
-        function send_get_friends_infos(currentUser)
-        {
-            var message = {
-                'command': 'get_friends_infos',
-                'user_to_add': currentUser
-            }
-
-            var messageJson = JSON.stringify(message);
-            socket2.send(messageJson);
-            console.log("Demande d'infos sur les amis envoyée");
-        }
-
         // Fonction pour afficher les messages reçus
         function displayMessage(messageData) {
 
@@ -106,7 +129,7 @@
             messageContentElement.textContent = messageData.message;
 
             container.appendChild(userTimestampElement);
-            send_get_friends_infos(currentUser);
+            //send_get_friends_infos(currentUser);
             if (messageData.username != currentUser && messageData.username.includes(friends) == false)
             {
                 addFriendButton.textContent = 'Ajouter en ami';
@@ -123,11 +146,7 @@
 
             addFriendButton.addEventListener('click', function(event) {
                 var username = event.target.dataset.username;
-                socket2.send(JSON.stringify({
-                    'command': 'add_friend',
-                    'original_user': currentUser,
-                    'user_to_add' : messageData.username,
-                }));
+                send_add_friend_request(currentUser, messageData.username);
             });
         }
 
@@ -147,25 +166,14 @@
                     
                     var friendButtonContainer = document.getElementById('database_check_add_friend_button-' + (i + 1));
                     friendButtonContainer.appendChild(addFriendButton);
+
+                    addFriendButton.addEventListener('click', function(event) {
+                    var username = event.target.dataset.username;
+                    send_add_friend_request(currentUser, username);
+                    });
                 }
             }
         }
-
-
-        document.addEventListener('DOMContentLoaded', function() {
-            var addFriendButtons = document.querySelectorAll('.add_friend_button');
-
-            addFriendButtons.forEach(function(addFriendButton) {
-                addFriendButton.addEventListener('click', function(event) {
-                    var username = event.target.dataset.username;
-                    socket2.send(JSON.stringify({
-                        'command': 'add_friend',
-                        'original_user': currentUser,
-                        'user_to_add' : username,
-                    }));
-                });
-            });
-        });
 
         // Écoute des messages reçus via WebSocket
         socket.onmessage = function(event) {
@@ -182,16 +190,11 @@
         {
             var data = event.data;
             data = JSON.parse(data);
-            console.log(data)
             
             if (data.message.user_to_add === currentUser && data.message.command === "get_friends_infos")
             {
                 friends = data.friends;
                 console.log("infos sur les amis reçues");
-            }
-            else
-            {
-                console.log("Commande: " + data.message.command + " non reconnue");
             }
         };
     </script>

@@ -42,7 +42,8 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
         if "user_to_add" in json_text:
             user_to_add = json_text["user_to_add"]
             user_to_add = await self.get_user(user_to_add)
-        await self.command_handler(command, original_user, user_to_add)
+        if original_user is not None and user_to_add is not None or "get" in command:
+            await self.command_handler(command, original_user, user_to_add)
     
     async def command_handler(self, command, original_user, user_to_add):
         if command == 'add_friend':
@@ -59,6 +60,7 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
                         })
                     }
                 )
+            print(f'✅ add_friend : {original_user} -> {user_to_add}')
         if command == 'accept_friend':
             await self.accept_friend_request(original_user, user_to_add)
         if command == 'reject_friend':
@@ -91,7 +93,7 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
 
     @database_sync_to_async
     def add_friend_request(self, original_user, user_to_add):
-        if original_user.username not in user_to_add.friend_request: 
+        if not user_to_add.friends.filter(username=original_user.username).exists():
             user_to_add.friend_request.append(original_user.username)
             user_to_add.save()
             return True
