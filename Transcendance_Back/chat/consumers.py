@@ -161,7 +161,7 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
 
     @database_sync_to_async
     def add_friend_request(self, original_user, user_to_add):
-        if not user_to_add.friends.filter(username=original_user.username).exists() and user_to_add.friend_request.filter(username=original_user.username).exists():
+        if not user_to_add.friends.filter(username=original_user.username).exists() and not original_user.username in user_to_add.friend_request:
             user_to_add.friend_request.append(original_user.username)
             user_to_add.save()
             return True
@@ -169,21 +169,26 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
 
     @database_sync_to_async
     def accept_friend_request(self, original_user, user_to_add):
-        original_user.friends.add(user_to_add)
-        user_to_add.friend_request.remove(original_user.username)
-        original_user.save()
-        user_to_add.save()
+        if not original_user.friends.filter(username=user_to_add.username).exists():
+            original_user.friends.add(user_to_add)
+            original_user.save()
+            if original_user.username in user_to_add.friend_request:
+                user_to_add.friend_request.remove(original_user.username)
+                user_to_add.save()
+            
 
     @database_sync_to_async
     def reject_friend_request(self, original_user, user_to_add):
-        user_to_add.friend_request.remove(original_user.username)
-        user_to_add.save()
+        if original_user.username in user_to_add.friend_request:
+            user_to_add.friend_request.remove(original_user.username)
+            user_to_add.save()
 
 
     @database_sync_to_async
     def delete_friend_request(self, friend_to_delete, original_user):
-        original_user.friends.remove(friend_to_delete)
-        original_user.save()
+        if original_user.friends.filter(username=friend_to_delete.username).exists():
+            original_user.friends.remove(friend_to_delete)
+            original_user.save()
 
     @database_sync_to_async
     def get_friends_infos_request(self, user):
