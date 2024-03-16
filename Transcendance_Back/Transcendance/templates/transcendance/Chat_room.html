@@ -4,199 +4,202 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat en temps réel</title>
-    <div id="currentUser" style="display: none;">{{ user.username }}</div>
-    <script>
-        // Connexion WebSocket avec le serveur
-        var socket = new WebSocket('wss://localhost/ws/chat/');
-        var socket2 = new WebSocket('wss://localhost/ws/system/');
+{% if user.is_authenticated %}
+        <script>
+            // Connexion WebSocket avec le serveur
+            var socket = new WebSocket('wss://localhost/ws/chat/');
+            var socket2 = new WebSocket('wss://localhost/ws/system/');
 
-        // Écoute des événements de la connexion WebSocket
-        socket.onopen = function(event) {
-            console.log('Connexion au chat établie');
-        
-            socket2.onopen = function(event) {
-                console.log('Connexion au system établie');
-                send_get_friends_infos(currentUser);
+            // Écoute des événements de la connexion WebSocket
+            socket.onopen = function(event) {
+                console.log('Connexion au chat établie');
+            
+                socket2.onopen = function(event) {
+                    console.log('Connexion au system établie');
+                    send_get_friends_infos(currentUser);
+                };
             };
-        };
 
-        socket.onclose = function(event) {
-            console.log('Connexion au chat fermée');
-        };
+            socket.onclose = function(event) {
+                console.log('Connexion au chat fermée');
+            };
 
-        socket2.onclose = function(event) {
-            console.log('Connexion au system fermée');
-        };
-    </script>
-</head>
-<body>
-    <h1>Chat en temps réel</h1>
+            socket2.onclose = function(event) {
+                console.log('Connexion au system fermée');
+            };
+        </script>
+    </head>
+    <body>
+        <h1>Chat en temps réel</h1>
 
-    <div id="chat-messages">
-        {% if message %}
-            {% for msg in message %}
-                <div>
-                    <p class="user_timestamp_button">
-                        <span class="msg_user">{{ msg.user }}</span> | {{ msg.timestamp }}
-                        <span id="database_check_add_friend_button-{{forloop.counter}}"</span>
-                    </p>
-                    <p>{{msg.content}}</p>
-                </div>
-            {% endfor %}
-        {% else %}
-            <div id="no-messages">Aucun message pour le moment</div>
-        {% endif %}
-    </div>
+        <div id="chat-messages">
+            {% if message %}
+                {% for msg in message %}
+                    <div>
+                        <p class="user_timestamp_button">
+                            <span class="msg_user">{{ msg.user }}</span> | {{ msg.timestamp }}
+                            <span id="database_check_add_friend_button-{{forloop.counter}}"</span>
+                        </p>
+                        <p>{{msg.content}}</p>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div id="no-messages">Aucun message pour le moment</div>
+            {% endif %}
+        </div>
 
-    <form id="chat-form" method="post">
-        {% csrf_token %}
-        <input type="text" id="message-input" placeholder="Entrez votre message... 🔱" autocomplete="off">
-        <button type="submit">Envoyer ✅</button>
-    </form>
+        <form id="chat-form" method="post">
+            {% csrf_token %}
+            <input type="text" id="message-input" placeholder="Entrez votre message... 🔱" autocomplete="off">
+            <button type="submit">Envoyer ✅</button>
+        </form>
 
-    <script>
-        //--------------------------------------------------------------------------------
-        //                              GLOBAL VARIABLES
-        //--------------------------------------------------------------------------------
-        var friends = [];
-        var currentUser = document.getElementById('currentUser').textContent;
+        <script>
+            //--------------------------------------------------------------------------------
+            //                              GLOBAL VARIABLES
+            //--------------------------------------------------------------------------------
+            var friends = [];
+            var currentUser = "{{ user.username }}";
 
-        //--------------------------------------------------------------------------------
-        //                                  FUNCTIONS
-        //--------------------------------------------------------------------------------
+            //--------------------------------------------------------------------------------
+            //                                  FUNCTIONS
+            //--------------------------------------------------------------------------------
 
-        function send_get_friends_infos(currentUser)
-        {
-            var message = {
-                'command': 'get_friends_infos',
-                'user_to_add': currentUser
-            }
-
-            var messageJson = JSON.stringify(message);
-            socket2.send(messageJson);
-            console.log("Demande d'infos sur les amis envoyée");
-        }
-
-        function send_add_friend_request(currentUser, user_to_add)
-        {
-            var message = {
-                'command': 'add_friend',
-                'original_user': currentUser,
-                'user_to_add' : user_to_add,
-            }
-
-            var messageJson = JSON.stringify(message);
-            socket2.send(messageJson);
-            console.log("Demande d'ajout d'ami envoyée");
-        }
-
-        //--------------------------------------------------------------------------------
-        //                                  ELSE
-        //--------------------------------------------------------------------------------
-
-        // Écoute de l'événement de soumission du formulaire
-        document.querySelector('#chat-form').addEventListener('submit', function(event) {
-            // Empêche le comportement par défaut du formulaire (rechargement de la page)
-            event.preventDefault();
-
-            // Récupère le contenu du champ de texte
-            var messageInput = document.querySelector('#message-input');
-            var messageContent = messageInput.value;
-
-            // Envoie le message au serveur via WebSocket
-            socket.send(JSON.stringify({
-                'type': 'send_message',
-                'message': messageContent
-            }));
-
-            // Efface le champ de texte après l'envoi du message
-            messageInput.value = '';
-        });
-
-        // Fonction pour afficher les messages reçus
-        function displayMessage(messageData) {
-
-            var messageElement = document.createElement('div');
-            var userTimestampElement = document.createElement('p');
-            var messageContentElement = document.createElement('p');
-            var addFriendButton = document.createElement('button');
-            var container = document.createElement('div');
-            
-            container.style.display = 'flex'
-            
-
-            userTimestampElement.textContent = messageData.username + ' | ' + messageData.timestamp;
-            messageContentElement.textContent = messageData.message;
-
-            container.appendChild(userTimestampElement);
-            //send_get_friends_infos(currentUser);
-            if (messageData.username != currentUser && messageData.username.includes(friends) == false)
+            function send_get_friends_infos(currentUser)
             {
-                addFriendButton.textContent = 'Ajouter en ami';
-                addFriendButton.dataset.username = messageData.username;
-                addFriendButton.className = 'add_friend_button';
+                var message = {
+                    'command': 'get_friends_infos',
+                    'user_to_add': currentUser
+                }
 
-                container.appendChild(addFriendButton);
+                var messageJson = JSON.stringify(message);
+                socket2.send(messageJson);
+                console.log("Demande d'infos sur les amis envoyée");
             }
 
-            messageElement.appendChild(container);
-            messageElement.appendChild(messageContentElement);
+            function send_add_friend_request(currentUser, user_to_add)
+            {
+                var message = {
+                    'command': 'add_friend',
+                    'original_user': currentUser,
+                    'user_to_add' : user_to_add,
+                }
 
-            document.querySelector('#chat-messages').appendChild(messageElement);
+                var messageJson = JSON.stringify(message);
+                socket2.send(messageJson);
+                console.log("Demande d'ajout d'ami envoyée");
+            }
 
-            addFriendButton.addEventListener('click', function(event) {
-                var username = event.target.dataset.username;
-                send_add_friend_request(currentUser, messageData.username);
+            //--------------------------------------------------------------------------------
+            //                                  ELSE
+            //--------------------------------------------------------------------------------
+
+            // Écoute de l'événement de soumission du formulaire
+            document.querySelector('#chat-form').addEventListener('submit', function(event) {
+                // Empêche le comportement par défaut du formulaire (rechargement de la page)
+                event.preventDefault();
+
+                // Récupère le contenu du champ de texte
+                var messageInput = document.querySelector('#message-input');
+                var messageContent = messageInput.value;
+
+                // Envoie le message au serveur via WebSocket
+                socket.send(JSON.stringify({
+                    'type': 'send_message',
+                    'message': messageContent
+                }));
+
+                // Efface le champ de texte après l'envoi du message
+                messageInput.value = '';
             });
-        }
 
-        
-        // Creation de Bouton pour le moment ou l'on check la database
-        var msg_user = document.getElementsByClassName('msg_user');
-        for (var i = 0; i < msg_user.length; i++)
-        {
-            if (msg_user[i].textContent != currentUser && friends.includes(msg_user[i].textContent) == false)
-            {
-                var username = msg_user[i].textContent;
-                if (username != currentUser)
+            // Fonction pour afficher les messages reçus
+            function displayMessage(messageData) {
+
+                var messageElement = document.createElement('div');
+                var userTimestampElement = document.createElement('p');
+                var messageContentElement = document.createElement('p');
+                var addFriendButton = document.createElement('button');
+                var container = document.createElement('div');
+                
+                container.style.display = 'flex'
+                
+
+                userTimestampElement.textContent = messageData.username + ' | ' + messageData.timestamp;
+                messageContentElement.textContent = messageData.message;
+
+                container.appendChild(userTimestampElement);
+                //send_get_friends_infos(currentUser);
+                if (messageData.username != currentUser && messageData.username.includes(friends) == false)
                 {
-                    var addFriendButton = document.createElement('button');
                     addFriendButton.textContent = 'Ajouter en ami';
-                    addFriendButton.dataset.username = username;
-                    
-                    var friendButtonContainer = document.getElementById('database_check_add_friend_button-' + (i + 1));
-                    friendButtonContainer.appendChild(addFriendButton);
+                    addFriendButton.dataset.username = messageData.username;
+                    addFriendButton.className = 'add_friend_button';
 
-                    addFriendButton.addEventListener('click', function(event) {
+                    container.appendChild(addFriendButton);
+                }
+
+                messageElement.appendChild(container);
+                messageElement.appendChild(messageContentElement);
+
+                document.querySelector('#chat-messages').appendChild(messageElement);
+
+                addFriendButton.addEventListener('click', function(event) {
                     var username = event.target.dataset.username;
-                    send_add_friend_request(currentUser, username);
-                    });
+                    send_add_friend_request(currentUser, messageData.username);
+                });
+            }
+
+            
+            // Creation de Bouton pour le moment ou l'on check la database
+            var msg_user = document.getElementsByClassName('msg_user');
+            for (var i = 0; i < msg_user.length; i++)
+            {
+                if (msg_user[i].textContent != currentUser && friends.includes(msg_user[i].textContent) == false)
+                {
+                    var username = msg_user[i].textContent;
+                    if (username != currentUser)
+                    {
+                        var addFriendButton = document.createElement('button');
+                        addFriendButton.textContent = 'Ajouter en ami';
+                        addFriendButton.dataset.username = username;
+                        
+                        var friendButtonContainer = document.getElementById('database_check_add_friend_button-' + (i + 1));
+                        friendButtonContainer.appendChild(addFriendButton);
+
+                        addFriendButton.addEventListener('click', function(event) {
+                        var username = event.target.dataset.username;
+                        send_add_friend_request(currentUser, username);
+                        });
+                    }
                 }
             }
-        }
 
-        // Écoute des messages reçus via WebSocket
-        socket.onmessage = function(event) {
-            var messageData = JSON.parse(event.data);
+            // Écoute des messages reçus via WebSocket
+            socket.onmessage = function(event) {
+                var messageData = JSON.parse(event.data);
 
-            var noMessagesDiv = document.getElementById('no-messages');
-            if (noMessagesDiv) {
-                noMessagesDiv.remove();
-            }
-            displayMessage(messageData);
-        };
+                var noMessagesDiv = document.getElementById('no-messages');
+                if (noMessagesDiv) {
+                    noMessagesDiv.remove();
+                }
+                displayMessage(messageData);
+            };
 
-        socket2.onmessage = function(event)
-        {
-            var data = event.data;
-            data = JSON.parse(data);
-            
-            if (data.message.user_to_add === currentUser && data.message.command === "get_friends_infos")
+            socket2.onmessage = function(event)
             {
-                friends = data.friends;
-                console.log("infos sur les amis reçues");
-            }
-        };
-    </script>
-</body>
+                var data = event.data;
+                data = JSON.parse(data);
+                
+                if (data.message.user_to_add === currentUser && data.message.command === "get_friends_infos")
+                {
+                    friends = data.friends;
+                    console.log("infos sur les amis reçues");
+                }
+            };
+        </script>
+    </body>
+{% else %}
+    <h1>Vous devez être connecté pour accéder à cette page</h1>
+{% endif %}
 </html>

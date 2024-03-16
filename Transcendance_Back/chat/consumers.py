@@ -33,47 +33,111 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
 
     async def receive(self, text_data):  # Méthode appelée lorsqu'un message est reçu du client
         json_text = json.loads(text_data)  # Convertit le texte en JSON
-        command = json_text["command"]  # Récupère le message du JSON
+
+        command = None
         original_user = None
         user_to_add = None
+        friend_to_delete = None
+        current_user = self.scope['user']
+
+        if not current_user.is_authenticated:
+            return
+
+        if "command" in json_text:
+            command = json_text["command"]
+
         if "original_user" in json_text:
             original_user = json_text["original_user"]
             original_user = await self.get_user(original_user)
+    
         if "user_to_add" in json_text:
             user_to_add = json_text["user_to_add"]
             user_to_add = await self.get_user(user_to_add)
-        if original_user is not None and user_to_add is not None or "get" in command:
-            await self.command_handler(command, original_user, user_to_add)
+
+        if "friend_to_delete" in json_text:
+            friend_to_delete = json_text["friend_to_delete"]
+            friend_to_delete = await self.get_user(friend_to_delete)
+
+        
+
     
-    async def command_handler(self, command, original_user, user_to_add):
+        if original_user is not None and user_to_add is not None or "get" in command or friend_to_delete is not None:
+            await self.command_handler(command, original_user, user_to_add, current_user, friend_to_delete)
+    
+    async def command_handler(self, command, original_user, user_to_add, current_user, friend_to_delete):
         if command == 'add_friend':
-            add_friend = await self.add_friend_request(original_user, user_to_add)
-            if add_friend:
+            if current_user == original_user:
+                add_friend = await self.add_friend_request(original_user, user_to_add)
+                if add_friend:
+                    await self.channel_layer.group_send(
+                        self.room_group_name,
+                        {
+                            "type": "system_message",
+                            'message': {
+                                'command': "add_friend",
+                                'original_user': original_user.username,
+                                'user_to_add': user_to_add.username
+                            }
+                        }
+                    )
+                print(f'✅ add_friend : {original_user} -> {user_to_add}')
+
+        if command == 'accept_friend':
+            if current_user == user_to_add:
+                await self.accept_friend_request(original_user, user_to_add)
+                await self.channel_layer.group_send(
+                        self.room_group_name,
+                        {
+                            "type": "system_message",
+                            'message': {
+                                'command': "friend_accepted",
+                                'user_to_add': user_to_add.username,
+                                'original_user': original_user.username
+                            }
+                        }
+                    )
+
+
+        if command == 'reject_friend':
+            if current_user == user_to_add:
+                await self.reject_friend_request(original_user, user_to_add)
+                await self.channel_layer.group_send(
+                        self.room_group_name,
+                        {
+                            "type": "system_message",
+                            'message': {
+                                'command': "friend_rejected",
+                                'user_to_add': user_to_add.username,
+                                'original_user': original_user.username
+                            }
+                        }
+                    )
+            
+        if command == 'delete_friend':
+            if current_user == original_user:
+                await self.delete_friend_request(friend_to_delete, original_user)
+                await self.channel_layer.group_send(
+                        self.room_group_name,
+                        {
+                            "type": "system_message",
+                            'message': {
+                                'command': "friend_deleted",
+                                'friend_to_delete': friend_to_delete.username,
+                                'original_user': original_user.username
+                            }
+                        }
+                    )
+    
+        if command == 'get_friends_infos':
+            if current_user == user_to_add:
+                friends_infos = await self.get_friends_infos_request(user_to_add)
                 await self.channel_layer.group_send(
                     self.room_group_name,
                     {
                         "type": "system_message",
-                        'message': json.dumps({
-                            'command': command,
-                            'user_to_add': user_to_add.username,
-                            'original_user': 'None'
-                        })
+                        'message': friends_infos
                     }
                 )
-            print(f'✅ add_friend : {original_user} -> {user_to_add}')
-        if command == 'accept_friend':
-            await self.accept_friend_request(original_user, user_to_add)
-        if command == 'reject_friend':
-            await self.reject_friend_request(original_user, user_to_add)
-        if command == 'get_friends_infos':
-            friends_infos = await self.get_friends_infos_request(user_to_add)
-            await self.channel_layer.group_send(
-                self.room_group_name,
-                {
-                    "type": "system_message",
-                    'message': friends_infos
-                }
-            )
 
 #! add_friend : original_user, user_to_add
 #! accept_friend : original_user, user_to_add
@@ -89,11 +153,15 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
 
     @database_sync_to_async
     def get_user(self, username):
-        return User.objects.get(username=username)
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return None
+        return user
 
     @database_sync_to_async
     def add_friend_request(self, original_user, user_to_add):
-        if not user_to_add.friends.filter(username=original_user.username).exists():
+        if not user_to_add.friends.filter(username=original_user.username).exists() and user_to_add.friend_request.filter(username=original_user.username).exists():
             user_to_add.friend_request.append(original_user.username)
             user_to_add.save()
             return True
@@ -110,6 +178,12 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
     def reject_friend_request(self, original_user, user_to_add):
         user_to_add.friend_request.remove(original_user.username)
         user_to_add.save()
+
+
+    @database_sync_to_async
+    def delete_friend_request(self, friend_to_delete, original_user):
+        original_user.friends.remove(friend_to_delete)
+        original_user.save()
 
     @database_sync_to_async
     def get_friends_infos_request(self, user):
