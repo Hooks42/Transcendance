@@ -51,6 +51,7 @@
         <br></br>
         <div class="friends_requests"> </div>
         <div class="friends"> </div>
+        <div class="block_list"> </div>
 
                 
     {% else %}
@@ -70,6 +71,7 @@
         //--------------------------------------------------------------------------------
         var friends = [];
         var friends_requests = [];
+        var block_list = [];
         var currentUser = "{{ user.username }}";
 
         //--------------------------------------------------------------------------------
@@ -127,6 +129,34 @@
             socket.send(messageJson);
         }
 
+        // Envoie de la demande de blocage d'ami
+        function send_block_friend_request(friend_to_block, original_user)
+        {
+            var message = {
+                'command': 'block_friend',
+                'user_to_add': friend_to_block,
+                'original_user' : original_user,
+            }
+
+            var messageJson = JSON.stringify(message);
+            socket.send(messageJson);
+        }
+
+
+        // Envoie de la demande de deblocage d'ami
+        function send_unblock_friend_request(friend_to_unblock, original_user)
+        {
+            var message = {
+                'command': 'unblock_friend',
+                'user_to_add': friend_to_unblock,
+                'original_user' : original_user,
+            }
+
+            var messageJson = JSON.stringify(message);
+            socket.send(messageJson);
+        }
+
+
         //modification de la page si jamais l'ami a ete accepte ou refuse
         function clear_friend_request(original_user)
         {
@@ -146,6 +176,11 @@
         {
             var friendDiv = document.getElementById(friend_to_delete);
             friendDiv.remove();
+
+            var friendsRequestsDiv = document.getElementsByClassName('friends')[0];
+
+            if (friendsRequestsDiv.childElementCount === 1)
+                friendsRequestsDiv.firstElementChild.remove();
         }
 
         // Affichage des demandes d'amis quand on va sur la page
@@ -167,6 +202,9 @@
         // Affichage des amis
         function display_friends_div(original_user)
         {
+            if (block_list.includes(original_user))
+                return;
+
             var friendsDiv = document.getElementsByClassName('friends')[0];
             if (friendsDiv.childElementCount === 0)
             {
@@ -188,10 +226,20 @@
             friendDeleteButton.textContent = 'Supprimer';
             friendDiv.appendChild(friendDeleteButton);
 
+            var friendBlockButton = document.createElement('button');
+            friendBlockButton.textContent = 'Bloquer';
+            friendDiv.appendChild(friendBlockButton);
+
             friendDeleteButton.addEventListener('click', function(event)
             {
                 var friend_to_delete = event.target.parentElement.firstChild.textContent;
                 send_delete_friend_request(friend_to_delete, currentUser);
+            });
+
+            friendBlockButton.addEventListener('click', function(event)
+            {
+                var friend_to_block = event.target.parentElement.firstChild.textContent;
+                //SEND BLOCK FRIEND REQUEST
             });
 
         }
@@ -199,6 +247,9 @@
         // Affichage des demandes d'amis
         function display_friend_request_div(original_user)
         {
+            if (block_list.includes(original_user))
+                return;
+
             var friendsRequestsDiv = document.getElementsByClassName('friends_requests')[0];
             if (friendsRequestsDiv.childElementCount === 0)
             {
@@ -254,12 +305,45 @@
         }
 
 
-        //--------------------------------------------------------------------------------
-        //                           Affichage des requetes d'amis
-        //--------------------------------------------------------------------------------
-        
-        
+        // Affichage des personnes bloquee quand on va sur la page
 
+        function display_block_list()
+        {
+            if (block_list.length > 0)
+                for (var i = 0; i < block_list.length; i++)
+                    display_block_list_div(block_list[i]);
+        }
+
+        // Affichage des personnes bloquee
+        function display_block_list_div(original_user)
+        {
+            var blockListDiv = document.getElementsByClassName('block_list')[0];
+            if (blockListDiv.childElementCount === 0)
+            {
+                var blockListTitle = document.createElement('h2');
+                blockListTitle.textContent = 'Liste des personnes bloquées';
+                blockListDiv.appendChild(blockListTitle);
+            }
+
+            var blockDiv = document.createElement('div');
+            blockDiv.id = original_user;
+            blockDiv.style.display = 'flex';
+            blockListDiv.appendChild(blockDiv);
+
+            var blockP = document.createElement('p');
+            blockP.textContent = original_user;
+            blockDiv.appendChild(blockP);
+
+            var blockUnblockButton = document.createElement('button');
+            blockUnblockButton.textContent = 'Débloquer';
+            blockDiv.appendChild(blockUnblockButton);
+
+            blockUnblockButton.addEventListener('click', function(event)
+            {
+                var original_user = event.target.parentElement.firstChild.textContent;
+                //SEND UNBLOCK FRIEND REQUEST
+            });
+        }
         
 
         //--------------------------------------------------------------------------------
@@ -282,10 +366,12 @@
             {
                 friends = data.message.friends;
                 friends_requests = data.message.friend_request;
+                block_list = data.message.block_list;
                 console.log('Information sur les amis recues');
                 display_friends_requests();
                 console.log('friends -->' + friends);
                 console.log('friends_requests -->' + friends_requests);
+                console.log('block_list -->' + block_list);
                 display_friends();
             }
 

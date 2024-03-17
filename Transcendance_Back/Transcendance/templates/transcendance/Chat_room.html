@@ -90,6 +90,126 @@
                 console.log("Demande d'ajout d'ami envoyée");
             }
 
+            function display_data_base_check_add_friend_button()
+            {
+                var msg_user = document.getElementsByClassName('msg_user');
+
+                for (var i = 0; i < msg_user.length; i++)
+                {
+                    if (msg_user[i].textContent != currentUser && !(friends.includes(msg_user[i].textContent)))
+                    {
+                        var username = msg_user[i].textContent;
+                        if (username != currentUser)
+                        {
+                            var addFriendButton = document.createElement('button');
+                            addFriendButton.textContent = 'Ajouter en ami';
+                            addFriendButton.dataset.username = username;
+                            
+                            var friendButtonContainer = document.getElementById('database_check_add_friend_button-' + (i + 1));
+                            friendButtonContainer.appendChild(addFriendButton);
+
+                            addFriendButton.addEventListener('click', function(event) {
+                            var username = event.target.dataset.username;
+                            send_add_friend_request(currentUser, username);
+                            });
+                        }
+                    }
+                }
+            }
+
+
+            // fonction pour clear les boutons ajouter en ami
+            function clear_add_friend_button(user_to_add)
+            {
+                var addFriendButton = document.querySelectorAll('button[data-username]');
+
+                for (var i = 0; i < addFriendButton.length; i++)
+                    if (addFriendButton[i].dataset.username === user_to_add)
+                        addFriendButton[i].remove();
+            }
+
+            function add_button_if_unfriend(original_user)
+            {
+                var msg_user = document.getElementsByClassName('msg_user');
+                console.log('🔥' + msg_user.length)
+
+                for (var i = 0; i < msg_user.length; i++)
+                {
+                    if (msg_user[i].textContent === original_user)
+                    {
+                        var addFriendButton = document.createElement('button');
+                        addFriendButton.textContent = 'Ajouter en ami';
+                        addFriendButton.dataset.username = original_user;
+                        
+                        var friendButtonContainer = document.getElementById('database_check_add_friend_button-' + (i + 1));
+                        friendButtonContainer.appendChild(addFriendButton);
+
+                        addFriendButton.addEventListener('click', function(event) {
+                        var username = event.target.dataset.username;
+                        send_add_friend_request(currentUser, username);
+                        });
+                    }
+                }
+                
+                var userElements = document.querySelectorAll('[id*="' + original_user + '"]');
+
+                for (var i = 0; i < userElements.length; i++)
+                {
+                    var addFriendButton = document.createElement('button');
+                    addFriendButton.textContent = 'Ajouter en ami';
+                    addFriendButton.dataset.username = original_user;
+                    
+                    userElements[i].appendChild(addFriendButton);
+
+                    addFriendButton.addEventListener('click', function(event) {
+                        var username = event.target.dataset.username;
+                        send_add_friend_request(currentUser, username);
+                    });
+                }
+    
+            }
+
+
+            // Fonction pour afficher les messages reçus
+            function displayMessage(messageData)
+            {
+                var messageElement = document.createElement('div');
+                var userTimestampElement = document.createElement('p');
+                var messageContentElement = document.createElement('p');
+                var addFriendButton = document.createElement('button');
+                var container = document.createElement('div');
+
+                container.style.display = 'flex'
+                container.id = messageData.username;
+
+
+                userTimestampElement.textContent = messageData.username + ' | ' + messageData.timestamp;
+                messageContentElement.textContent = messageData.message;
+
+                container.appendChild(userTimestampElement);
+
+                if (messageData.username != currentUser && friends.includes(messageData.textContent) == false)
+                {
+                    addFriendButton.textContent = 'Ajouter en ami';
+                    addFriendButton.dataset.username = messageData.username;
+                    addFriendButton.className = 'add_friend_button';
+
+                    container.appendChild(addFriendButton);
+                }
+
+                messageElement.appendChild(container);
+                messageElement.appendChild(messageContentElement);
+
+                document.querySelector('#chat-messages').appendChild(messageElement);
+
+                addFriendButton.addEventListener('click', function(event) {
+                    var username = event.target.dataset.username;
+                    send_add_friend_request(currentUser, messageData.username);
+                });
+            }
+
+
+
             //--------------------------------------------------------------------------------
             //                                  ELSE
             //--------------------------------------------------------------------------------
@@ -112,68 +232,7 @@
                 // Efface le champ de texte après l'envoi du message
                 messageInput.value = '';
             });
-
-            // Fonction pour afficher les messages reçus
-            function displayMessage(messageData) {
-
-                var messageElement = document.createElement('div');
-                var userTimestampElement = document.createElement('p');
-                var messageContentElement = document.createElement('p');
-                var addFriendButton = document.createElement('button');
-                var container = document.createElement('div');
-                
-                container.style.display = 'flex'
-                
-
-                userTimestampElement.textContent = messageData.username + ' | ' + messageData.timestamp;
-                messageContentElement.textContent = messageData.message;
-
-                container.appendChild(userTimestampElement);
-                //send_get_friends_infos(currentUser);
-                if (messageData.username != currentUser && messageData.username.includes(friends) == false)
-                {
-                    addFriendButton.textContent = 'Ajouter en ami';
-                    addFriendButton.dataset.username = messageData.username;
-                    addFriendButton.className = 'add_friend_button';
-
-                    container.appendChild(addFriendButton);
-                }
-
-                messageElement.appendChild(container);
-                messageElement.appendChild(messageContentElement);
-
-                document.querySelector('#chat-messages').appendChild(messageElement);
-
-                addFriendButton.addEventListener('click', function(event) {
-                    var username = event.target.dataset.username;
-                    send_add_friend_request(currentUser, messageData.username);
-                });
-            }
-
             
-            // Creation de Bouton pour le moment ou l'on check la database
-            var msg_user = document.getElementsByClassName('msg_user');
-            for (var i = 0; i < msg_user.length; i++)
-            {
-                if (msg_user[i].textContent != currentUser && friends.includes(msg_user[i].textContent) == false)
-                {
-                    var username = msg_user[i].textContent;
-                    if (username != currentUser)
-                    {
-                        var addFriendButton = document.createElement('button');
-                        addFriendButton.textContent = 'Ajouter en ami';
-                        addFriendButton.dataset.username = username;
-                        
-                        var friendButtonContainer = document.getElementById('database_check_add_friend_button-' + (i + 1));
-                        friendButtonContainer.appendChild(addFriendButton);
-
-                        addFriendButton.addEventListener('click', function(event) {
-                        var username = event.target.dataset.username;
-                        send_add_friend_request(currentUser, username);
-                        });
-                    }
-                }
-            }
 
             // Écoute des messages reçus via WebSocket
             socket.onmessage = function(event) {
@@ -190,11 +249,23 @@
             {
                 var data = event.data;
                 data = JSON.parse(data);
-                
+                console.log(data);
+
                 if (data.message.user_to_add === currentUser && data.message.command === "get_friends_infos")
                 {
-                    friends = data.friends;
+                    friends = data.message.friends;
                     console.log("infos sur les amis reçues");
+                    display_data_base_check_add_friend_button();
+                }
+
+                if (data.message.command == 'friend_accepted' && data.message.original_user === currentUser)
+                {
+                    clear_add_friend_button(data.message.user_to_add);
+                }
+
+                if (data.message.command == 'friend_deleted' && data.message.friend_to_delete === currentUser)
+                {
+                    add_button_if_unfriend(data.message.original_user);
                 }
             };
         </script>

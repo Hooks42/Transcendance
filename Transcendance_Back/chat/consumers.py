@@ -66,7 +66,7 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
     
     async def command_handler(self, command, original_user, user_to_add, current_user, friend_to_delete):
         if command == 'add_friend':
-            if current_user == original_user:
+            if current_user == original_user and user_to_add not in current_user.block_list:
                 add_friend = await self.add_friend_request(original_user, user_to_add)
                 if add_friend:
                     await self.channel_layer.group_send(
@@ -83,7 +83,7 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
                 print(f'✅ add_friend : {original_user} -> {user_to_add}')
 
         if command == 'accept_friend':
-            if current_user == user_to_add:
+            if current_user == user_to_add and not original_user in current_user.block_list:
                 await self.accept_friend_request(original_user, user_to_add)
                 await self.channel_layer.group_send(
                         self.room_group_name,
@@ -99,7 +99,7 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
 
 
         if command == 'reject_friend':
-            if current_user == user_to_add:
+            if current_user == user_to_add and not original_user in current_user.block_list:
                 await self.reject_friend_request(original_user, user_to_add)
                 await self.channel_layer.group_send(
                         self.room_group_name,
@@ -114,7 +114,7 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
                     )
             
         if command == 'delete_friend':
-            if current_user == original_user:
+            if current_user == original_user and not friend_to_delete in current_user.block_list:
                 await self.delete_friend_request(friend_to_delete, original_user)
                 await self.channel_layer.group_send(
                         self.room_group_name,
@@ -123,6 +123,36 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
                             'message': {
                                 'command': "friend_deleted",
                                 'friend_to_delete': friend_to_delete.username,
+                                'original_user': original_user.username
+                            }
+                        }
+                    )
+        
+        if command == 'block_friend':
+            if current_user == original_user:
+                await self.block_friend_request(original_user, user_to_add)
+                await self.channel_layer.group_send(
+                        self.room_group_name,
+                        {
+                            "type": "system_message",
+                            'message': {
+                                'command': "friend_blocked",
+                                'user_to_add': user_to_add.username,
+                                'original_user': original_user.username
+                            }
+                        }
+                    )
+                
+        if command == 'unblock_friend':
+            if current_user == original_user:
+                await self.unblock_friend_request(original_user, user_to_add)
+                await self.channel_layer.group_send(
+                        self.room_group_name,
+                        {
+                            "type": "system_message",
+                            'message': {
+                                'command': "friend_unblocked",
+                                'user_to_add': user_to_add.username,
                                 'original_user': original_user.username
                             }
                         }
@@ -190,6 +220,27 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
             original_user.friends.remove(friend_to_delete)
             original_user.save()
 
+    
+    @database_sync_to_async
+    def block_friend_request(self, original_user, user_to_add):
+        if user_to_add.username in original_user.friend_request:
+            original_user.friend_request.remove(original_user.username)
+        
+        if original_user.friends.filter(username=user_to_add.username).exists():
+            original_user.friends.remove(user_to_add)
+
+        if user_to_add.username not in original_user.block_list:
+            original_user.block_list.append(user_to_add.username)
+        
+        original_user.save()
+
+    @database_sync_to_async
+    def unblock_friend_request(self, original_user, user_to_add):
+        if user_to_add.username in original_user.block_list:
+            original_user.block_list.remove(user_to_add.username)
+            original_user.save()
+
+
     @database_sync_to_async
     def get_friends_infos_request(self, user):
         data = {
@@ -197,7 +248,8 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
             'user_to_add': user.username,
             'original_user': 'None',
             'friends': [friend.username for friend in user.friends.all()],
-            'friend_request': list(user.friend_request)
+            'friend_request': list(user.friend_request),
+            'block_list': list(user.block_list)
         }
         return data
 
