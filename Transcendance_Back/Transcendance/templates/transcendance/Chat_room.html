@@ -37,8 +37,11 @@
                 {% for msg in message %}
                     <div>
                         <p class="user_timestamp_button">
-                            <span class="msg_user">{{ msg.user }}</span> | {{ msg.timestamp }}
-                            <span id="database_check_add_friend_button-{{forloop.counter}}"</span>
+                            <span class="msg_user">
+                                {{ msg.user }}</span> | {{ msg.timestamp }}
+                                <span id="database_check_add_friend_button-{{forloop.counter}}"></span>
+                                <span id="database_check_block_button-{{forloop.counter}}"></span>
+                            </span>
                         </p>
                         <p>{{msg.content}}</p>
                     </div>
@@ -96,23 +99,28 @@
 
                 for (var i = 0; i < msg_user.length; i++)
                 {
-                    if (msg_user[i].textContent != currentUser && !(friends.includes(msg_user[i].textContent)))
+                    if (msg_user[i].textContent.trim() != currentUser && !(friends.includes(msg_user[i].textContent.trim())))
                     {
-                        var username = msg_user[i].textContent;
-                        if (username != currentUser)
-                        {
-                            var addFriendButton = document.createElement('button');
-                            addFriendButton.textContent = 'Ajouter en ami';
-                            addFriendButton.dataset.username = username;
-                            
-                            var friendButtonContainer = document.getElementById('database_check_add_friend_button-' + (i + 1));
-                            friendButtonContainer.appendChild(addFriendButton);
+                        console.log(msg_user[i].textContent + ' --> ' + currentUser + ' --> ' + friends.includes(msg_user[i].textContent));
+                        var username = msg_user[i].textContent.trim();
+                        var addFriendButton = document.createElement('button');
+                        addFriendButton.textContent = 'Ajouter en ami';
+                        addFriendButton.dataset.username = username;
+                        
+                        var friendButtonContainer = document.getElementById('database_check_add_friend_button-' + (i + 1));
+                        friendButtonContainer.appendChild(addFriendButton);
 
-                            addFriendButton.addEventListener('click', function(event) {
-                            var username = event.target.dataset.username;
-                            send_add_friend_request(currentUser, username);
-                            });
-                        }
+                        var blockFriendButton = document.createElement('button');
+                        blockFriendButton.textContent = 'Bloquer';
+                        blockFriendButton.dataset.username = username;
+
+                        var blockButtonContainer = document.getElementById('database_check_block_button-' + (i + 1));
+                        blockButtonContainer.appendChild(blockFriendButton);
+
+                        addFriendButton.addEventListener('click', function(event) {
+                        var username = event.target.dataset.username;
+                        send_add_friend_request(currentUser.trim(), username.trim());
+                        });
                     }
                 }
             }
@@ -124,18 +132,17 @@
                 var addFriendButton = document.querySelectorAll('button[data-username]');
 
                 for (var i = 0; i < addFriendButton.length; i++)
-                    if (addFriendButton[i].dataset.username === user_to_add)
+                    if (addFriendButton[i].dataset.username.trim() === user_to_add)
                         addFriendButton[i].remove();
             }
 
             function add_button_if_unfriend(original_user)
             {
                 var msg_user = document.getElementsByClassName('msg_user');
-                console.log('🔥' + msg_user.length)
 
                 for (var i = 0; i < msg_user.length; i++)
                 {
-                    if (msg_user[i].textContent === original_user)
+                    if (msg_user[i].textContent.trim() === original_user)
                     {
                         var addFriendButton = document.createElement('button');
                         addFriendButton.textContent = 'Ajouter en ami';
@@ -144,9 +151,21 @@
                         var friendButtonContainer = document.getElementById('database_check_add_friend_button-' + (i + 1));
                         friendButtonContainer.appendChild(addFriendButton);
 
+                        var blockFriendButton = document.createElement('button');
+                        blockFriendButton.textContent = 'Bloquer';
+                        blockFriendButton.dataset.username = original_user;
+
+                        var blockButtonContainer = document.getElementById('database_check_block_button-' + (i + 1));
+                        blockButtonContainer.appendChild(blockFriendButton);
+
                         addFriendButton.addEventListener('click', function(event) {
                         var username = event.target.dataset.username;
                         send_add_friend_request(currentUser, username);
+                        });
+
+                        blockFriendButton.addEventListener('click', function(event) {
+                            var username = event.target.dataset.username;
+                            //send_block_friend_request(currentUser, username);
                         });
                     }
                 }
@@ -158,12 +177,22 @@
                     var addFriendButton = document.createElement('button');
                     addFriendButton.textContent = 'Ajouter en ami';
                     addFriendButton.dataset.username = original_user;
+
+                    var blockFriendButton = document.createElement('button');
+                    blockFriendButton.textContent = 'Bloquer';
+                    blockFriendButton.dataset.username = original_user;
                     
                     userElements[i].appendChild(addFriendButton);
+                    userElements[i].appendChild(blockFriendButton);
 
                     addFriendButton.addEventListener('click', function(event) {
                         var username = event.target.dataset.username;
                         send_add_friend_request(currentUser, username);
+                    });
+
+                    blockFriendButton.addEventListener('click', function(event) {
+                        var username = event.target.dataset.username;
+                        //send_block_friend_request(currentUser, username);
                     });
                 }
     
@@ -177,24 +206,30 @@
                 var userTimestampElement = document.createElement('p');
                 var messageContentElement = document.createElement('p');
                 var addFriendButton = document.createElement('button');
+                var blockFriendButton = document.createElement('button');
                 var container = document.createElement('div');
 
                 container.style.display = 'flex'
-                container.id = messageData.username;
+                container.id = messageData.username.trim();
 
 
-                userTimestampElement.textContent = messageData.username + ' | ' + messageData.timestamp;
-                messageContentElement.textContent = messageData.message;
+                userTimestampElement.textContent = messageData.username.trim() + ' | ' + messageData.timestamp.trim();
+                messageContentElement.textContent = messageData.message.trim();
 
                 container.appendChild(userTimestampElement);
 
                 if (messageData.username != currentUser && friends.includes(messageData.textContent) == false)
                 {
                     addFriendButton.textContent = 'Ajouter en ami';
-                    addFriendButton.dataset.username = messageData.username;
+                    addFriendButton.dataset.username = messageData.username.trim();
                     addFriendButton.className = 'add_friend_button';
 
+                    blockFriendButton.textContent = 'Bloquer';
+                    blockFriendButton.dataset.username = messageData.username.trim();
+                    blockFriendButton.className = 'block_friend_button';
+
                     container.appendChild(addFriendButton);
+                    container.appendChild(blockFriendButton);
                 }
 
                 messageElement.appendChild(container);
@@ -266,6 +301,12 @@
                 if (data.message.command == 'friend_deleted' && data.message.friend_to_delete === currentUser)
                 {
                     add_button_if_unfriend(data.message.original_user);
+                }
+
+                if (data.message.command == 'friend_blocked' && data.message.user_to_add === currentUser && data.message.already_friend === true)
+                {
+                    add_button_if_unfriend(data.message.original_user);
+                    console.log('friend blocked');
                 }
             };
         </script>

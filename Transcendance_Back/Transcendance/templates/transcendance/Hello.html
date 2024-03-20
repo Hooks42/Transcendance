@@ -130,12 +130,13 @@
         }
 
         // Envoie de la demande de blocage d'ami
-        function send_block_friend_request(friend_to_block, original_user)
+        function send_block_friend_request(friend_to_block, original_user, already_friend)
         {
             var message = {
                 'command': 'block_friend',
                 'user_to_add': friend_to_block,
                 'original_user' : original_user,
+                'already_friend': already_friend
             }
 
             var messageJson = JSON.stringify(message);
@@ -157,193 +158,225 @@
         }
 
 
-        //modification de la page si jamais l'ami a ete accepte ou refuse
-        function clear_friend_request(original_user)
-        {
-    
-            var friendRequestDiv = document.getElementById(original_user);
-            console.log('le nom de la div a supprimer est -->' + friendRequestDiv.id);
-            friendRequestDiv.remove();
+//!----------------------------------------------------------------------------------------------------------------------------
+//!                         modification de la page si jamais l'ami a ete accepte ou refuse
+//!----------------------------------------------------------------------------------------------------------------------------
 
-            var friendsRequestsDiv = document.getElementsByClassName('friends_requests')[0];
+function clear_friend_request(original_user)
+{
 
-            if (friendsRequestsDiv.childElementCount === 1)
-                friendsRequestsDiv.firstElementChild.remove();
-        }
+    var friendRequestDiv = document.getElementById(original_user);
+    if (friendRequestDiv != null)
+        friendRequestDiv.remove();
 
-        //modification de la page si jamais l'ami a ete supprime
-        function clear_friend(friend_to_delete)
-        {
-            var friendDiv = document.getElementById(friend_to_delete);
-            friendDiv.remove();
+    var friendsRequestsDiv = document.getElementsByClassName('friends_requests')[0];
 
-            var friendsRequestsDiv = document.getElementsByClassName('friends')[0];
-
-            if (friendsRequestsDiv.childElementCount === 1)
-                friendsRequestsDiv.firstElementChild.remove();
-        }
-
-        // Affichage des demandes d'amis quand on va sur la page
-        function display_friends_requests()
-        {
-            if (friends_requests.length > 0)
-                for (var i = 0; i < friends_requests.length; i++)
-                    display_friend_request_div(friends_requests[i]);
-        }
-
-        // Affichage des amis
-        function display_friends()
-        {
-            if (friends.length > 0)
-                for (var i = 0; i < friends.length; i++)
-                    display_friends_div(friends[i]);
-        }
-
-        // Affichage des amis
-        function display_friends_div(original_user)
-        {
-            if (block_list.includes(original_user))
-                return;
-
-            var friendsDiv = document.getElementsByClassName('friends')[0];
-            if (friendsDiv.childElementCount === 0)
-            {
-                var friendsTitle = document.createElement('h2');
-                friendsTitle.textContent = 'Liste d\'amis';
-                friendsDiv.appendChild(friendsTitle);
-            }
-
-            var friendDiv = document.createElement('div');
-            friendDiv.id = original_user;
-            friendDiv.style.display = 'flex';
-            friendsDiv.appendChild(friendDiv);
-
-            var friendP = document.createElement('p');
-            friendP.textContent = original_user;
-            friendDiv.appendChild(friendP);
-
-            var friendDeleteButton = document.createElement('button');
-            friendDeleteButton.textContent = 'Supprimer';
-            friendDiv.appendChild(friendDeleteButton);
-
-            var friendBlockButton = document.createElement('button');
-            friendBlockButton.textContent = 'Bloquer';
-            friendDiv.appendChild(friendBlockButton);
-
-            friendDeleteButton.addEventListener('click', function(event)
-            {
-                var friend_to_delete = event.target.parentElement.firstChild.textContent;
-                send_delete_friend_request(friend_to_delete, currentUser);
-            });
-
-            friendBlockButton.addEventListener('click', function(event)
-            {
-                var friend_to_block = event.target.parentElement.firstChild.textContent;
-                //SEND BLOCK FRIEND REQUEST
-            });
-
-        }
-
-        // Affichage des demandes d'amis
-        function display_friend_request_div(original_user)
-        {
-            if (block_list.includes(original_user))
-                return;
-
-            var friendsRequestsDiv = document.getElementsByClassName('friends_requests')[0];
-            if (friendsRequestsDiv.childElementCount === 0)
-            {
-                var friendsRequestTitle = document.createElement('h2');
-                friendsRequestTitle.textContent = 'Demandes d\'amis';
-                friendsRequestsDiv.appendChild(friendsRequestTitle);
-            }
-
-            var child = friendsRequestsDiv.querySelector('#' + original_user);
-            if (child && child.id === original_user)
-                return;
-
-            var friendRequestDiv = document.createElement('div');
-            friendRequestDiv.id = original_user;
-            friendRequestDiv.style.display = 'flex';
-            friendsRequestsDiv.appendChild(friendRequestDiv);
-
-            var friendRequestP = document.createElement('p');
-            friendRequestP.textContent = original_user;
-            friendRequestDiv.appendChild(friendRequestP);
-
-            var friendRequestAcceptButton = document.createElement('button');
-            friendRequestAcceptButton.textContent = 'Accepter';
-            friendRequestDiv.appendChild(friendRequestAcceptButton);
-
-            var friendRequestDeclineButton = document.createElement('button');
-            friendRequestDeclineButton.textContent = 'Refuser';
-            friendRequestDiv.appendChild(friendRequestDeclineButton);
-
-            var friendRequestBlockedButton = document.createElement('button');
-            friendRequestBlockedButton.textContent = 'Bloquer';
-            friendRequestDiv.appendChild(friendRequestBlockedButton);
-
-            friendRequestAcceptButton.addEventListener('click', function(event)
-            {
-                var original_user = event.target.parentElement.firstChild.textContent;
-                send_accept_friend_request(original_user, currentUser);
-            });
-
-            friendRequestDeclineButton.addEventListener('click', function(event)
-            {
-                var original_user = event.target.parentElement.firstChild.textContent;
-                send_reject_friend_request(original_user, currentUser);
-            });
-
-            friendRequestBlockedButton.addEventListener('click', function(event)
-            {
-                var original_user = event.target.parentElement.firstChild.textContent;
-                //SEND BLOCK FRIEND REQUEST
-            });
-            console.log('Le nom de la div est -->' + friendRequestDiv.id)
-
-        }
+    if (friendsRequestsDiv.childElementCount === 1)
+        friendsRequestsDiv.firstElementChild.remove();
+}
 
 
-        // Affichage des personnes bloquee quand on va sur la page
+//!----------------------------------------------------------------------------------------------------------------------------
+//!                                modification de la page si jamais l'ami a ete supprimé
+//!----------------------------------------------------------------------------------------------------------------------------
 
-        function display_block_list()
-        {
-            if (block_list.length > 0)
-                for (var i = 0; i < block_list.length; i++)
-                    display_block_list_div(block_list[i]);
-        }
+function clear_friend(friend_to_delete)
+{
+    var friendDiv = document.getElementById(friend_to_delete);
+    friendDiv.remove();
 
-        // Affichage des personnes bloquee
-        function display_block_list_div(original_user)
-        {
-            var blockListDiv = document.getElementsByClassName('block_list')[0];
-            if (blockListDiv.childElementCount === 0)
-            {
-                var blockListTitle = document.createElement('h2');
-                blockListTitle.textContent = 'Liste des personnes bloquées';
-                blockListDiv.appendChild(blockListTitle);
-            }
+    var friendsRequestsDiv = document.getElementsByClassName('friends')[0];
 
-            var blockDiv = document.createElement('div');
-            blockDiv.id = original_user;
-            blockDiv.style.display = 'flex';
-            blockListDiv.appendChild(blockDiv);
+    if (friendsRequestsDiv.childElementCount === 1)
+        friendsRequestsDiv.firstElementChild.remove();
+}
 
-            var blockP = document.createElement('p');
-            blockP.textContent = original_user;
-            blockDiv.appendChild(blockP);
+//!----------------------------------------------------------------------------------------------------------------------------
+//!                                modification de la page si jamais l'ami a ete debloque
+//!----------------------------------------------------------------------------------------------------------------------------
 
-            var blockUnblockButton = document.createElement('button');
-            blockUnblockButton.textContent = 'Débloquer';
-            blockDiv.appendChild(blockUnblockButton);
+function clear_block_list(friend_to_unblock)
+{
+    var blockDiv = document.getElementById(friend_to_unblock);
+    blockDiv.remove();
 
-            blockUnblockButton.addEventListener('click', function(event)
-            {
-                var original_user = event.target.parentElement.firstChild.textContent;
-                //SEND UNBLOCK FRIEND REQUEST
-            });
-        }
+    var blockListDiv = document.getElementsByClassName('block_list')[0];
+
+    if (blockListDiv.childElementCount === 1)
+        blockListDiv.firstElementChild.remove();
+}
+
+//!----------------------------------------------------------------------------------------------------------------------------
+//!                               Affichage de la liste d'amis au moment de la connexion a la page
+//!----------------------------------------------------------------------------------------------------------------------------
+
+function display_friends_requests()
+{
+    if (friends_requests.length > 0)
+        for (var i = 0; i < friends_requests.length; i++)
+            display_friend_request_div(friends_requests[i]);
+}
+
+//!----------------------------------------------------------------------------------------------------------------------------
+//!                               Affichage de la liste d'amis au moment de la connexion a la page
+//!----------------------------------------------------------------------------------------------------------------------------
+
+function display_friends()
+{
+    if (friends.length > 0)
+        for (var i = 0; i < friends.length; i++)
+            display_friends_div(friends[i]);
+}
+
+//!----------------------------------------------------------------------------------------------------------------------------
+//!                               Affichage de la liste des personnes bloquee au moment de la connexion a la page
+//!----------------------------------------------------------------------------------------------------------------------------
+
+function display_block_list()
+{
+    if (block_list.length > 0)
+        for (var i = 0; i < block_list.length; i++)
+            display_block_list_div(block_list[i]);
+}
+
+//!----------------------------------------------------------------------------------------------------------------------------
+//!                               Creation des divs pour la l'affichage de la liste d'amis
+//!----------------------------------------------------------------------------------------------------------------------------
+
+function display_friends_div(original_user)
+{
+    if (block_list.includes(original_user))
+        return;
+
+    var friendsDiv = document.getElementsByClassName('friends')[0];
+    if (friendsDiv.childElementCount === 0)
+    {
+        var friendsTitle = document.createElement('h2');
+        friendsTitle.textContent = 'Liste d\'amis';
+        friendsDiv.appendChild(friendsTitle);
+    }
+
+    var friendDiv = document.createElement('div');
+    friendDiv.id = original_user;
+    friendDiv.style.display = 'flex';
+    friendsDiv.appendChild(friendDiv);
+
+    var friendP = document.createElement('p');
+    friendP.textContent = original_user;
+    friendDiv.appendChild(friendP);
+
+    var friendDeleteButton = document.createElement('button');
+    friendDeleteButton.textContent = 'Supprimer';
+    friendDiv.appendChild(friendDeleteButton);
+
+    var friendBlockButton = document.createElement('button');
+    friendBlockButton.textContent = 'Bloquer';
+    friendDiv.appendChild(friendBlockButton);
+
+    friendDeleteButton.addEventListener('click', function(event)
+    {
+        var friend_to_delete = event.target.parentElement.firstChild.textContent;
+        send_delete_friend_request(friend_to_delete, currentUser);
+    });
+
+    friendBlockButton.addEventListener('click', function(event)
+    {
+        var user_to_block = event.target.parentElement.firstChild.textContent;
+        send_block_friend_request(user_to_block, currentUser, true);
+    });
+
+}
+
+//!----------------------------------------------------------------------------------------------------------------------------
+//!                               Creation des divs pour la l'affichage des demandes d'amis
+//!----------------------------------------------------------------------------------------------------------------------------
+
+function display_friend_request_div(original_user)
+{
+    if (block_list.includes(original_user))
+        return;
+
+    var friendsRequestsDiv = document.getElementsByClassName('friends_requests')[0];
+    if (friendsRequestsDiv.childElementCount === 0)
+    {
+        var friendsRequestTitle = document.createElement('h2');
+        friendsRequestTitle.textContent = 'Demandes d\'amis';
+        friendsRequestsDiv.appendChild(friendsRequestTitle);
+    }
+
+    var friendRequestDiv = document.createElement('div');
+    friendRequestDiv.id = original_user;
+    friendRequestDiv.style.display = 'flex';
+    friendsRequestsDiv.appendChild(friendRequestDiv);
+
+    var friendRequestP = document.createElement('p');
+    friendRequestP.textContent = original_user;
+    friendRequestDiv.appendChild(friendRequestP);
+
+    var friendRequestAcceptButton = document.createElement('button');
+    friendRequestAcceptButton.textContent = 'Accepter';
+    friendRequestDiv.appendChild(friendRequestAcceptButton);
+
+    var friendRequestDeclineButton = document.createElement('button');
+    friendRequestDeclineButton.textContent = 'Refuser';
+    friendRequestDiv.appendChild(friendRequestDeclineButton);
+
+    var friendRequestBlockedButton = document.createElement('button');
+    friendRequestBlockedButton.textContent = 'Bloquer';
+    friendRequestDiv.appendChild(friendRequestBlockedButton);
+
+    friendRequestAcceptButton.addEventListener('click', function(event)
+    {
+        var original_user = event.target.parentElement.firstChild.textContent;
+        send_accept_friend_request(original_user, currentUser);
+    });
+
+    friendRequestDeclineButton.addEventListener('click', function(event)
+    {
+        var original_user = event.target.parentElement.firstChild.textContent;
+        send_reject_friend_request(original_user, currentUser);
+    });
+
+    friendRequestBlockedButton.addEventListener('click', function(event)
+    {
+        var user_to_block = event.target.parentElement.firstChild.textContent;
+        send_block_friend_request(user_to_block, currentUser, false);
+    });
+}
+
+//!----------------------------------------------------------------------------------------------------------------------------
+//!                               Creation des divs pour la l'affichage de la liste des personnes bloquee
+//!----------------------------------------------------------------------------------------------------------------------------
+
+function display_block_list_div(original_user)
+{
+    var blockListDiv = document.getElementsByClassName('block_list')[0];
+    if (blockListDiv.childElementCount === 0)
+    {
+        var blockListTitle = document.createElement('h2');
+        blockListTitle.textContent = 'Liste des personnes bloquées';
+        blockListDiv.appendChild(blockListTitle);
+    }
+
+    var blockDiv = document.createElement('div');
+    blockDiv.id = original_user;
+    blockDiv.style.display = 'flex';
+    blockListDiv.appendChild(blockDiv);
+
+    var blockP = document.createElement('p');
+    blockP.textContent = original_user;
+    blockDiv.appendChild(blockP);
+
+    var blockUnblockButton = document.createElement('button');
+    blockUnblockButton.textContent = 'Débloquer';
+    blockDiv.appendChild(blockUnblockButton);
+
+    blockUnblockButton.addEventListener('click', function(event)
+    {
+        var user_to_unblock = event.target.parentElement.firstChild.textContent;
+        send_unblock_friend_request(user_to_unblock, currentUser);
+    });
+}
         
 
         //--------------------------------------------------------------------------------
@@ -368,11 +401,12 @@
                 friends_requests = data.message.friend_request;
                 block_list = data.message.block_list;
                 console.log('Information sur les amis recues');
-                display_friends_requests();
                 console.log('friends -->' + friends);
                 console.log('friends_requests -->' + friends_requests);
                 console.log('block_list -->' + block_list);
+                display_friends_requests();
                 display_friends();
+                display_block_list();
             }
 
             if (data.message.command == 'friend_accepted' && data.message.user_to_add == currentUser)
@@ -402,6 +436,22 @@
                 original_user = data.message.original_user;
                 console.log('Requete d\'ami recue');
                 display_friend_request_div(original_user);
+            }
+
+            if (data.message.command == 'friend_blocked' && data.message.original_user == currentUser)
+            {
+                friend_to_block = data.message.user_to_add;
+                console.log('Ami bloque');
+                clear_friend(friend_to_block);
+                clear_friend_request(friend_to_block);
+                display_block_list_div(friend_to_block);
+            }
+
+            if (data.message.command == 'friend_unblocked' && data.message.original_user == currentUser)
+            {
+                friend_to_unblock = data.message.user_to_add;
+                console.log('Ami debloque');
+                clear_block_list(friend_to_unblock);
             }
         }
     </script>
