@@ -63,7 +63,6 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
         if "already_friend" in json_text:
             already_friend = json_text["already_friend"]
 
-        
 
     
         if original_user is not None and user_to_add is not None or "get" in command or friend_to_delete is not None or already_friend is not None:
