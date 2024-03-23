@@ -1,8 +1,9 @@
 import json  # Importe le module json pour manipuler les données JSON
 from channels.db import database_sync_to_async  # Importe l'utilitaire pour exécuter du code synchrone dans un contexte asynchrone
 from channels.generic.websocket import AsyncWebsocketConsumer  # Importe la classe de base pour les consommateurs WebSocket asynchrones
-from Transcendance.models import Message, User  # Importe le modèle Message de votre application
+from Transcendance.models import Message, User, Conversation  # Importe le modèle Message de votre application
 from datetime import datetime
+from django.core.exceptions import ObjectDoesNotExist
 
 #! ATTENTION A L'HORODATAGE CE N'EST PAS LE BON FUSEAU HORAIRE
 
@@ -287,8 +288,8 @@ class ChatConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de c
         user = self.scope['user']  # Récupère l'utilisateur de la portée
         username = user.username if user.is_authenticated else "Anonyme"  # Récupère le nom d'utilisateur de l'utilisateur ou "Anonyme" si l'utilisateur n'est pas authentifié
 
-        new_message = Message(user=user, content=message)  # Crée un nouveau message
-        await self.save_message(new_message)  # Sauvegarde le message dans la base de données
+        
+        await self.save_message(user, message)  # Sauvegarde le message dans la base de données
 
         timestamp = datetime.now()  # Récupère le timestamp actuel
         formatted_timestamp = timestamp.strftime('%b. %d, %Y, %I:%M %p')  # Format the timestamp
@@ -310,5 +311,11 @@ class ChatConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de c
         await self.send(text_data=json.dumps({"message": message, "username" : username, "timestamp" : timestamp}))  # Envoie le message au client
 
     @database_sync_to_async
-    def save_message(self, message):  # Méthode pour sauvegarder un message dans la base de données
-        message.save()  # Sauvegarde le message
+    def save_message(self, user, message):  # Méthode pour sauvegarder un message dans la base de données
+        try:
+            conversation = Conversation.objects.get(conversation='General')  # Récupère la conversation générale
+        except Conversation.DoesNotExist:
+            print("❌ General conversation not found ❌")
+            return
+        new_message = Message(conversation=conversation, user=user, content=message)  # Crée un nouveau message
+        new_message.save()  # Sauvegarde le message

@@ -173,7 +173,7 @@
                 var addFriendButton = document.querySelectorAll('button[data-username]');
 
                 for (var i = 0; i < addFriendButton.length; i++)
-                    if (addFriendButton[i].dataset.username.trim() === user_to_add)
+                    if (addFriendButton[i].dataset.username.trim().split(' | ')[0] === user_to_add)
                         addFriendButton[i].remove();
             }
 
@@ -183,7 +183,7 @@
 
                 for (var i = 0; i < msg_user.length; i++)
                 {
-                    if (msg_user[i].textContent.trim() === original_user)
+                    if (msg_user[i].textContent.trim().split(' | ')[0] === original_user)
                     {
                         var addFriendButton = document.createElement('button');
                         addFriendButton.textContent = 'Ajouter en ami';

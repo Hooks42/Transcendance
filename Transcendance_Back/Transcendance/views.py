@@ -6,7 +6,7 @@ from django import forms
 from django.contrib import messages
 from django.contrib.auth import login, logout, update_session_auth_hash, authenticate
 from django.contrib.auth.hashers import make_password
-from .models import Message, User
+from .models import Message, User, Conversation
 from dotenv import load_dotenv
 from django.http import HttpResponseRedirect
 from urllib.parse import urlencode
@@ -62,7 +62,14 @@ def Logout(request):
     return redirect('hello')
 
 def ChatView(request):
-    message_backup = Message.objects.all()
+    if Conversation.objects.all().count() == 0:
+        conversation = Conversation(conversation="General")
+        conversation.save()
+    try:
+        conversation = Conversation.objects.get(conversation="General")
+        message_backup = conversation.messages.all().order_by('-timestamp')
+    except Conversation.DoesNotExist:
+        message_backup = None
     return render(request, "Chat_room.html", {'message': message_backup})
 
 def redirect_to_provider(request):

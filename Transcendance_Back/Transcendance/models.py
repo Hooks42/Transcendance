@@ -24,8 +24,14 @@ from django.conf import settings
 #!----------------------------------------------------------------------------------------------------------------------------------------------------
 '''
 
+class Conversation(models.Model):
+    conversation = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.conversation;
 
 class Message(models.Model):
+    conversation = models.ForeignKey(Conversation, related_name='messages', on_delete=models.CASCADE, default=None)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     content = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
