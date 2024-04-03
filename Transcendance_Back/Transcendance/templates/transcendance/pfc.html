@@ -107,9 +107,9 @@
 //----------------------------------------------------------------------------------------------------------
         function clear_buttons()
         {
-            var pierre = document.getElementById('pierre');
-            var feuille = document.getElementById('feuille');
-            var ciseaux = document.getElementById('ciseaux');
+            var pierre = document.getElementById('rock');
+            var feuille = document.getElementById('paper');
+            var ciseaux = document.getElementById('scissors');
 
             pierre.remove();
             feuille.remove();
@@ -123,22 +123,22 @@
         function create_buttons()
         {
             var pierre = document.createElement('button');
-            pierre.id = 'pierre';
+            pierre.id = 'rock';
             pierre.textContent = 'Pierre';
             document.body.appendChild(pierre);
 
             var feuille = document.createElement('button');
-            feuille.id = 'feuille';
+            feuille.id = 'paper';
             feuille.textContent = 'Feuille';
             document.body.appendChild(feuille);
 
             var ciseaux = document.createElement('button');
-            ciseaux.id = 'ciseaux';
+            ciseaux.id = 'scissors';
             ciseaux.textContent = 'Ciseaux';
             document.body.appendChild(ciseaux);
 
 
-            var timeleft = 6;
+            var timeleft = 15;
             document.getElementById('time').textContent = timeleft;
 
             var countdownID = setInterval(function() {
@@ -159,9 +159,9 @@
                 clear_buttons();
             };
 
-            document.getElementById('pierre').addEventListener('click', buttonClicked);
-            document.getElementById('feuille').addEventListener('click', buttonClicked);
-            document.getElementById('ciseaux').addEventListener('click', buttonClicked);
+            document.getElementById('rock').addEventListener('click', buttonClicked);
+            document.getElementById('paper').addEventListener('click', buttonClicked);
+            document.getElementById('scissors').addEventListener('click', buttonClicked);
         }
 
 
@@ -171,7 +171,6 @@
 
         function update_page(data)
         {
-            console.log(data.message)
             document.getElementById('score1').textContent = data.message.player1_score;
             document.getElementById('score2').textContent = data.message.player2_score;
             document.getElementById('penalties1').textContent = data.message.player1_penalties;

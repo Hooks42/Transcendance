@@ -281,6 +281,17 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
                     }
                 )
 
+        if command == 'get_user_infos':
+            user_infos = await self.get_user_infos_request(original_user)
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    "type": "system_message",
+                    'message': user_infos
+                }
+            )
+
+
 
 #! add_friend : original_user, user_to_add
 #! accept_friend : original_user, user_to_add
@@ -365,6 +376,34 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
             'block_list': list(user.block_list)
         }
         return data
+
+
+    @database_sync_to_async
+    def get_user_infos_request(self, user):
+        try:
+            user_stats = GameStats.objects.get(user=user)
+            data = {
+                'command': 'user_infos_sent',
+                'total_pong_win': user_stats.total_pong_win,
+                'total_pong_los': user_stats.total_pong_los,
+                'total_pong_win_tie': user_stats.total_pong_win_tie,
+                'total_pong_los_tie': user_stats.total_pong_los_tie,
+                'total_scissors': user_stats.total_scissors,
+                'total_paper': user_stats.total_paper,
+                'total_rock': user_stats.total_rock,
+                'total_spr_win': user_stats.total_spr_win,
+                'total_spr_los': user_stats.total_spr_los,
+                'total_spr_win_tie': user_stats.total_spr_win_tie,
+                'total_spr_los_tie': user_stats.total_spr_los_tie,
+                'username' : user.username
+            }
+        except GameStats.DoesNotExist:
+            data = {
+                'command': 'user_not_found',
+            }
+        return data
+        
+
 
 class ChatConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de consommateur WebSocket
     async def connect(self):  # Méthode appelée lorsqu'un client se connecte
@@ -505,8 +544,13 @@ class PFCConsumer(AsyncWebsocketConsumer): # Définit une nouvelle classe de con
             await self.add_action(player, action)
             if await self.attribute_point():
                 updated_game = await self.get_updated_game()
+                print(f"💬 SCORE --> {updated_game.player1_score} - {updated_game.player2_score}")
+                print(f"💬 PENALTIES --> {updated_game.player1_penalties} - {updated_game.player2_penalties}")
+                print(f"💬 ROUND --> {updated_game.round_count}")
+                print('\n')
                 winner = await self.check_if_game_is_finished()
                 if winner is not None:
+                    await self.update_user_pfc_stats(winner)
                     await self.channel_layer.group_send(
                         self.room_group_name,
                         {
@@ -532,7 +576,7 @@ class PFCConsumer(AsyncWebsocketConsumer): # Définit une nouvelle classe de con
                             }
                         }
                     )
-                    
+
             
         if command == "generate_game_id":
             await self.generate_game_id()
@@ -673,3 +717,53 @@ class PFCConsumer(AsyncWebsocketConsumer): # Définit une nouvelle classe de con
                 game_history.delete()
         except GameHistory.DoesNotExist:
             return
+        
+    @database_sync_to_async
+    def update_user_pfc_stats(self, winner):
+        game = GameHistory.objects.get(game_id=self.game_id)
+
+        if winner == self.player1:
+            winner = User.objects.get(username=winner)
+            #! get or create renvoie 2 valeur, le premier est l'objet et le deuxième est un booléen qui indique si l'objet a été créé ou non
+            #! Je fais , _ pour ne pas stocker le booléen car je n'en ai pas besoin
+            winner_stats, _ = GameStats.objects.get_or_create(user=winner)
+            winner_stats.total_spr_win += 1
+            winner_stats.total_spr_win_tie += game.player1_score
+            winner_stats.total_spr_los_tie += game.player2_score
+            winner_stats.total_rock += game.player1_moves.count("rock")
+            winner_stats.total_paper += game.player1_moves.count("paper")
+            winner_stats.total_scissors += game.player1_moves.count("scissors")
+            winner_stats.save()
+
+            loser = User.objects.get(username=self.player2)
+            loser_stats, _ = GameStats.objects.get_or_create(user=loser)
+            loser_stats.total_rock += game.player2_moves.count("rock")
+            loser_stats.total_paper += game.player2_moves.count("paper")
+            loser_stats.total_scissors += game.player2_moves.count("scissors")
+            loser_stats.total_spr_los += 1
+            loser_stats.total_spr_win_tie += game.player2_score
+            loser_stats.total_spr_los_tie += game.player1_score
+            loser_stats.save()
+
+        else:
+            winner = User.objects.get(username=winner)
+            winner_stats, _ = GameStats.objects.get_or_create(user=winner)
+            winner_stats.total_spr_win += 1
+            winner_stats.total_spr_win_tie += game.player2_score
+            winner_stats.total_spr_los_tie += game.player1_score
+            winner_stats.total_rock += game.player2_moves.count("rock")
+            winner_stats.total_paper += game.player2_moves.count("paper")
+            winner_stats.total_scissors += game.player2_moves.count("scissors")
+            winner_stats.save()
+
+            loser = User.objects.get(username=self.player1)
+            loser_stats, _ = GameStats.objects.get_or_create(user=loser)
+            loser_stats.total_rock += game.player1_moves.count("rock")
+            loser_stats.total_paper += game.player1_moves.count("paper")
+            loser_stats.total_scissors += game.player1_moves.count("scissors")
+            loser_stats.total_spr_los += 1
+            loser_stats.total_spr_win_tie += game.player1_score
+            loser_stats.total_spr_los_tie += game.player2_score
+            loser_stats.save()
+
+            

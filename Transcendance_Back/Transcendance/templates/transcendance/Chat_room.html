@@ -46,6 +46,7 @@
                                 {{ msg.user }} | {{ msg.timestamp }}</span>
                                 <span id="database_check_add_friend_button-{{forloop.counter}}"></span>
                                 <span id="database_check_block_button-{{forloop.counter}}"></span>
+                                <span id="database_check_get_user_infos_button-{{forloop.counter}}">
                             </span>
                         </p>
                         <p>{{msg.content}}</p>
@@ -152,6 +153,13 @@
                         var blockButtonContainer = document.getElementById('database_check_block_button-' + (i + 1));
                         blockButtonContainer.appendChild(blockFriendButton);
 
+                        var get_user_infos_button = document.createElement('button');
+                        get_user_infos_button.textContent = 'voir les infos';
+                        get_user_infos_button.dataset.username = username;
+
+                        var get_user_infos_button_container = document.getElementById('database_check_get_user_infos_button-' + (i + 1));
+                        get_user_infos_button_container.appendChild(get_user_infos_button);
+
                         addFriendButton.addEventListener('click', function(event) {
                         var username = event.target.dataset.username.split(' | ')[0];
                         send_add_friend_request(currentUser, username);
@@ -160,6 +168,11 @@
                         blockFriendButton.addEventListener('click', function(event) {
                         var username = event.target.dataset.username.split(' | ')[0];
                         send_block_friend_request(username, currentUser, false);
+                        });
+
+                        get_user_infos_button.addEventListener('click', function(event) {
+                            var username = event.target.dataset.username.split(' | ')[0];
+                            window.location.href = 'https://localhost/user_info/' + username + '/';
                         });
                     }
                     is_current_user = false;
@@ -250,6 +263,7 @@
                     var messageContentElement = document.createElement('p');
                     var addFriendButton = document.createElement('button');
                     var blockFriendButton = document.createElement('button');
+                    var get_user_infos_button = document.createElement('button');
                     var container = document.createElement('div');
 
                     messageElement.className = messageData.username.trim();
@@ -272,8 +286,15 @@
                         blockFriendButton.dataset.username = messageData.username.trim();
                         blockFriendButton.className = 'block_friend_button';
 
+                        get_user_infos_button.textContent = 'voir les infos';
+                        get_user_infos_button.dataset.username = messageData.username.trim();
+                        get_user_infos_button.className = 'get_user_infos_button';
+
+
+
                         container.appendChild(addFriendButton);
                         container.appendChild(blockFriendButton);
+                        container.appendChild(get_user_infos_button);
                     }
 
                     messageElement.appendChild(container);
@@ -289,6 +310,11 @@
                     blockFriendButton.addEventListener('click', function(event) {
                         var username = event.target.dataset.username;
                         send_block_friend_request(username, currentUser, false);
+                    });
+
+                    get_user_infos_button.addEventListener('click', function(event) {
+                        var username = event.target.dataset.username;
+                        window.location.href = 'https://localhost/user_info/' + username + '/';
                     });
                 }
             }

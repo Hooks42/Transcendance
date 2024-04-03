@@ -70,9 +70,6 @@ class GameStats(models.Model):
     total_spr_los = models.IntegerField(default=0)
     total_spr_win_tie = models.IntegerField(default=0)
     total_spr_los_tie = models.IntegerField(default=0)
-
-    def __str__(self):
-        return f'{self.user.username} - {self.game}'
     
 
 class GameHistory(models.Model):

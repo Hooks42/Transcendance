@@ -161,3 +161,7 @@ def PFC_view(request, room_name):
     if request.user.username not in users:
         return redirect('hello')
     return render(request, 'PFC.html')
+
+def UserInfo(request, username):
+    user = get_object_or_404(User, username=username)
+    return render(request, 'User_info.html')

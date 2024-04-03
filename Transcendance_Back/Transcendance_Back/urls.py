@@ -16,7 +16,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, re_path
-from Transcendance.views import Hello, AccountCreation, AccountLogin, LoginPage, FailedLogin,Logout, ChatView, redirect_to_provider, callback_view, AccountUpdate, PrivateChatView, PFC_view
+from Transcendance.views import Hello, AccountCreation, AccountLogin, LoginPage, FailedLogin, Logout
+from Transcendance.views import ChatView, redirect_to_provider, callback_view, AccountUpdate
+from Transcendance.views import PrivateChatView, PFC_view, UserInfo
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -34,6 +36,7 @@ urlpatterns = [
     path('update-account/', AccountUpdate, name='update-account'),
     re_path(r'^private_chat/(?P<room_name>[a-zA-Z0-9@.+_-]+_[a-zA-Z0-9@.+_-]+)/$', PrivateChatView, name='private-chat-room'),
     re_path(r'^pfc/(?P<room_name>[a-zA-Z0-9@.+_-]+_[a-zA-Z0-9@.+_-]+)/$', PFC_view, name='pfc'),
+    re_path(r'^user_info/(?P<username>[a-zA-Z0-9@.+_-]+)/$', UserInfo, name='user-info'),
     
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

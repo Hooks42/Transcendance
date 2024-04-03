@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Infos</title>
+</head>
+{% if user.is_authenticated %}
+    <script>
+        var current_user = "{{ user.username }}";
+
+        var socket = new WebSocket('wss://localhost/ws/system/');
+
+        socket.onopen = function(e) {
+            console.log('Connexion au serveur reussie');
+            send_get_user_infos();
+        };
+    </script>
+{% else %}
+    <h1>Vous devez etre connecte pour voir cette page</h1>
+{% endif %}
+<body>
+    <h1 id="title"></h1>
+    <div id="infos"></div>
+
+
+
+    <script>
+
+// ----------------------------------------------------------------------------------------------------------
+//                                          Envoie des messages au serveur
+// ----------------------------------------------------------------------------------------------------------
+
+        function send_get_user_infos()
+        {
+            var message = {
+                command : 'get_user_infos',
+                original_user : window.location.pathname.split('/')[2],
+                user_to_add : 'none'
+            };
+            socket.send(JSON.stringify(message));
+        }
+
+
+// ----------------------------------------------------------------------------------------------------------
+//                                          Affichage des differentes infos de l'utilisateur
+// ----------------------------------------------------------------------------------------------------------
+
+        function display_user_infos(data)
+        {
+            console.log(data);
+            var title = document.getElementById('title');
+            title.innerHTML = "Information sur le profil de " + data.message.username;
+
+            var infos = document.getElementById('infos');
+            var total_pong_win = document.createElement('p');
+            total_pong_win.innerHTML = 'Nombre de parties de pong gagnées: ' + data.message.total_pong_win;
+            infos.appendChild(total_pong_win);
+
+            var total_pong_lost = document.createElement('p');
+            total_pong_lost.innerHTML = 'Nombre de parties de pong perdues: ' + data.message.total_pong_los;
+            infos.appendChild(total_pong_lost);
+
+            var total_pong_win_tie = document.createElement('p');
+            total_pong_win_tie.innerHTML = 'Nombre de point gagnés sur pong: ' + data.message.total_pong_win_tie;
+            infos.appendChild(total_pong_win_tie);
+
+            var total_pong_los_tie = document.createElement('p');
+            total_pong_los_tie.innerHTML = 'Nombre de point perdus sur pong: ' + data.message.total_pong_los_tie;
+            infos.appendChild(total_pong_los_tie);
+            infos.appendChild(document.createElement('br'));
+
+
+
+            var total_scissors = document.createElement('p');
+            total_scissors.innerHTML = 'Nombre de ciseaux joués: ' + data.message.total_scissors;
+            infos.appendChild(total_scissors);
+
+            var total_paper = document.createElement('p');
+            total_paper.innerHTML = 'Nombre de feuilles jouées: ' + data.message.total_paper;
+            infos.appendChild(total_paper);
+
+            var total_rock = document.createElement('p');
+            total_rock.innerHTML = 'Nombre de pierres jouées: ' + data.message.total_rock;
+            infos.appendChild(total_rock);
+
+            var total_spr_win = document.createElement('p');
+            total_spr_win.innerHTML = 'Nombre de parties de pierre-feuille-ciseaux gagnées: ' + data.message.total_spr_win;
+            infos.appendChild(total_spr_win);
+
+            var total_spr_lost = document.createElement('p');
+            total_spr_lost.innerHTML = 'Nombre de parties de pierre-feuille-ciseaux perdues: ' + data.message.total_spr_los;
+            infos.appendChild(total_spr_lost);
+
+            var total_spr_win_tie = document.createElement('p');
+            total_spr_win_tie.innerHTML = 'Nombre de points gagnés sur pierre-feuille-ciseaux: ' + data.message.total_spr_win_tie;
+            infos.appendChild(total_spr_win_tie);
+
+            var total_spr_lost_tie = document.createElement('p');
+            total_spr_lost_tie.innerHTML = 'Nombre de points perdus sur pierre-feuille-ciseaux: ' + data.message.total_spr_los_tie;
+            infos.appendChild(total_spr_lost_tie);
+        }
+
+
+// ----------------------------------------------------------------------------------------------------------
+//                                          Reception des messages du serveur
+// ----------------------------------------------------------------------------------------------------------
+
+        socket.onmessage = function(event) {
+            var data = JSON.parse(event.data);
+            console.log(data.message.command);
+
+            if (data.message.command == 'user_infos_sent')
+            {
+                display_user_infos(data);
+            }
+
+            if (data.message.command == 'user_not_found')
+            {
+                var title = document.getElementById('title');
+                title.innerHTML = "Cet Utilisateur n'a encore joué a aucun jeux reviens plus tard !";
+            }
+        };
+    </script>
+</body>
+</html>

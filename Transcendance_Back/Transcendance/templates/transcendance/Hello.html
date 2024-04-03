@@ -321,6 +321,10 @@ function display_friends_div(original_user)
     play_pfc_button.textContent = 'Jouer a Pierre Feuille Ciseaux';
     friendDiv.appendChild(play_pfc_button);
 
+    var get_user_infos_button = document.createElement('button');
+    get_user_infos_button.textContent = 'Voir les infos';
+    friendDiv.appendChild(get_user_infos_button);
+
 
     friendDeleteButton.addEventListener('click', function(event)
     {
@@ -344,6 +348,13 @@ function display_friends_div(original_user)
     {
         var friend_to_play = event.target.parentElement.firstChild.textContent;
         send_pfc_request(friend_to_play, currentUser);
+    });
+
+    get_user_infos_button.addEventListener('click', function(event)
+    {
+        var friend_to_get_infos = event.target.parentElement.firstChild.textContent;
+        console.log('friend_to_get_infos -->' + friend_to_get_infos);
+        window.location.href = 'https://localhost/user_info/' + friend_to_get_infos + "/";
     });
 
 
