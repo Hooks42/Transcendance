@@ -52,6 +52,7 @@
         <div class="friends_requests"> </div>
         <div class="friends"> </div>
         <div class="block_list"> </div>
+        <div class="pfc"> </div>
 
                 
     {% else %}
@@ -151,6 +152,45 @@
                 'command': 'unblock_friend',
                 'user_to_add': friend_to_unblock,
                 'original_user' : original_user,
+            }
+
+            var messageJson = JSON.stringify(message);
+            socket.send(messageJson);
+        }
+
+        // Envoie de la demande de demande de jeux pour PFC
+        function send_pfc_request(friend_to_play, original_user)
+        {
+            var message = {
+                'command': 'pfc_request',
+                'user_to_add': friend_to_play,
+                'original_user' : original_user,
+            }
+
+            var messageJson = JSON.stringify(message);
+            socket.send(messageJson);
+        }
+
+        // Envoie de l'acceptation de partie de PFC
+        function send_accept_pfc_request(original_user, user_to_add)
+        {
+            var message = {
+                'command': 'pfc_accepted',
+                'original_user': original_user,
+                'user_to_add' : user_to_add,
+            }
+
+            var messageJson = JSON.stringify(message);
+            socket.send(messageJson);
+        }
+
+        // Envoie du refus de partie de PFC
+        function send_reject_pfc_request(original_user, user_to_add)
+        {
+            var message = {
+                'command': 'pfc_rejected',
+                'original_user': original_user,
+                'user_to_add' : user_to_add,
             }
 
             var messageJson = JSON.stringify(message);
@@ -273,6 +313,15 @@ function display_friends_div(original_user)
     friendBlockButton.textContent = 'Bloquer';
     friendDiv.appendChild(friendBlockButton);
 
+    var friendChatButton = document.createElement('button');
+    friendChatButton.textContent = 'Chat prive';
+    friendDiv.appendChild(friendChatButton);
+
+    var play_pfc_button = document.createElement('button');
+    play_pfc_button.textContent = 'Jouer a Pierre Feuille Ciseaux';
+    friendDiv.appendChild(play_pfc_button);
+
+
     friendDeleteButton.addEventListener('click', function(event)
     {
         var friend_to_delete = event.target.parentElement.firstChild.textContent;
@@ -284,6 +333,19 @@ function display_friends_div(original_user)
         var user_to_block = event.target.parentElement.firstChild.textContent;
         send_block_friend_request(user_to_block, currentUser, true);
     });
+
+    friendChatButton.addEventListener('click', function(event)
+    {
+        var friend_to_chat = event.target.parentElement.firstChild.textContent;
+        window.location.href = 'https://localhost/private_chat/' + currentUser + '_' + friend_to_chat + "/";
+    });
+
+    play_pfc_button.addEventListener('click', function(event)
+    {
+        var friend_to_play = event.target.parentElement.firstChild.textContent;
+        send_pfc_request(friend_to_play, currentUser);
+    });
+
 
 }
 
@@ -377,7 +439,56 @@ function display_block_list_div(original_user)
         send_unblock_friend_request(user_to_unblock, currentUser);
     });
 }
-        
+
+//!----------------------------------------------------------------------------------------------------------------------------
+//!                               Creation des divs pour l'affichage des demandes de jeux PFC
+//!----------------------------------------------------------------------------------------------------------------------------
+function display_pfc_request_div(original_user)
+{
+    var pfcDiv = document.getElementsByClassName('pfc')[0];
+    if (pfcDiv.childElementCount === 0)
+    {
+        var pfcTitle = document.createElement('h2');
+        pfcTitle.textContent = 'Demandes de jeux Pierre Feuille Ciseaux';
+        pfcDiv.appendChild(pfcTitle);
+    }
+
+    var pfcRequestDiv = document.createElement('div');
+    pfcRequestDiv.id = original_user;
+    pfcRequestDiv.style.display = 'flex';
+    pfcDiv.appendChild(pfcRequestDiv);
+
+    var pfcRequestP = document.createElement('p');
+    pfcRequestP.textContent = original_user;
+    pfcRequestDiv.appendChild(pfcRequestP);
+
+    var pfcRequestAcceptButton = document.createElement('button');
+    pfcRequestAcceptButton.textContent = 'Accepter';
+    pfcRequestAcceptButton.id = 'accept_pfc';
+    pfcRequestDiv.appendChild(pfcRequestAcceptButton);
+
+    var pfcRequestDeclineButton = document.createElement('button');
+    pfcRequestDeclineButton.textContent = 'Refuser';
+    pfcRequestDeclineButton.id = 'reject_pfc';
+    pfcRequestDiv.appendChild(pfcRequestDeclineButton);
+
+    pfcRequestAcceptButton.addEventListener('click', function(event)
+    {
+        var original_user = event.target.parentElement.firstChild.textContent;
+        send_accept_pfc_request(original_user, currentUser);
+    });
+
+    pfcRequestDeclineButton.addEventListener('click', function(event)
+    {
+        var original_user = event.target.parentElement.firstChild.textContent;
+        send_reject_pfc_request(original_user, currentUser);
+    });
+
+    var timer = document.createElement('span');
+    timer.textContent = '(20 seconds)';
+    timer.id = 'timer';
+    pfcRequestDiv.appendChild(timer);
+}
 
         //--------------------------------------------------------------------------------
         //                           Gestion des messages system
@@ -452,6 +563,42 @@ function display_block_list_div(original_user)
                 friend_to_unblock = data.message.user_to_add;
                 console.log('Ami debloque');
                 clear_block_list(friend_to_unblock);
+            }
+
+            if (data.message.command == 'pfc_asked' && data.message.user_to_add == currentUser)
+            {
+                original_user = data.message.original_user;
+                console.log('Demande de jeu PFC recue');
+                display_pfc_request_div(original_user);
+
+                var countdown = 20;
+                var countdownDisplay = document.getElementById('timer');
+
+                var countdownInterval = setInterval(function()
+                {
+                    countdown--;
+                    countdownDisplay.textContent = '(' + countdown + ' seconds)';
+
+                    if (countdown <= 0)
+                    {
+                        clearInterval(countdownInterval);
+                        send_reject_pfc_request(original_user, currentUser);
+                    }
+                }, 1000);
+            }
+
+            if (data.message.command == 'pfc_accepted' && (data.message.user_to_add == currentUser || data.message.original_user == currentUser))
+            {
+                var users = [data.message.original_user, data.message.user_to_add];
+                users.sort();
+                var user_string = users.join('_');
+
+                window.location.href = 'https://localhost/pfc/' + user_string + "/";
+            }
+
+            if (data.message.command == 'pfc_rejected' && (data.message.user_to_add == currentUser || data.message.original_user == currentUser))
+            {
+                location.reload();
             }
         }
     </script>

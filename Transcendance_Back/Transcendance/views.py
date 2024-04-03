@@ -37,9 +37,6 @@ def AccountLogin(request):
         if form.is_valid():
             email = form.cleaned_data.get('email')
             if form.Login(request):
-                user = get_object_or_404(User, email=email)
-                user.is_online = True
-                user.save()
                 return redirect('hello')
     else:
         form = AccountLoginForm()
@@ -56,8 +53,6 @@ def FailedLogin(request):
 
 def Logout(request):
     user = request.user
-    user.is_online = False
-    user.save()
     logout(request)
     return redirect('hello')
 
@@ -67,10 +62,32 @@ def ChatView(request):
         conversation.save()
     try:
         conversation = Conversation.objects.get(conversation="General")
-        message_backup = conversation.messages.all().order_by('-timestamp')
+        message_backup = conversation.messages.all().order_by('timestamp')
     except Conversation.DoesNotExist:
         message_backup = None
     return render(request, "Chat_room.html", {'message': message_backup})
+
+def PrivateChatView(request, room_name):
+    Sortroom_name = room_name.split('_')
+    Sortroom_name.sort()
+    room_name = "_".join(Sortroom_name)
+    if Conversation.objects.filter(conversation=room_name).count() == 0:
+        conversation = Conversation(conversation=room_name)
+        conversation.save()
+    try:
+        conversation = Conversation.objects.get(conversation=room_name)
+        message_backup = conversation.messages.all().order_by('timestamp')
+    except Conversation.DoesNotExist:
+        message_backup = None
+
+    usernames = room_name.split('_')
+    if request.user.username not in usernames:
+        return redirect('hello')
+    return render(request, "Private_chatroom.html", {'message': message_backup})
+
+
+
+    return render(request, "Private_chat_room.html", {'message': message_backup, 'usernames': usernames})
 
 def redirect_to_provider(request):
     load_dotenv()
@@ -138,3 +155,9 @@ def AccountUpdate(request):
                 'email': ""
             }, instance=user)
     return render(request, 'Update_account.html', {'form': form})
+
+def PFC_view(request, room_name):
+    users = room_name.split('_')
+    if request.user.username not in users:
+        return redirect('hello')
+    return render(request, 'PFC.html')

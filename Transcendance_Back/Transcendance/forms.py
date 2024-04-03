@@ -184,7 +184,7 @@ class RegularAccountUpdateForm(forms.ModelForm):
                 from PIL import Image
                 Image.open(avatar)
             except Exception:
-                self.add_error("Le fichier uploadé n'est pas une image valide. ❌")
+                self.add_error('avatar', "Le fichier uploadé n'est pas une image valide. ❌")
         return avatar
 
     def clean(self):
@@ -311,17 +311,17 @@ class Auth42AccountUpdateForm(forms.ModelForm):
     def clean_avatar(self):
         avatar = self.cleaned_data.get('avatar')
         print(f"✅avatar: {str(avatar)}")
-        try:
-            from PIL import Image
-            Image.open(avatar)
-        except Exception:
-            self.add_error("Le fichier uploadé n'est pas une image valide. ❌")
-   
-        if self.user.avatar:
+        if avatar != self.user.avatar:
+            try:
+                from PIL import Image
+                Image.open(avatar)
+            except Exception:
+                self.add_error('avatar', "Le fichier uploadé n'est pas une image valide. ❌")
+    
             self.user.avatar.delete()
-        unique_id = uuid.uuid4()
-        avatar.name = f"{unique_id}.jpg"
-        print(f"🔥avatar: {str(avatar)}")
+            unique_id = uuid.uuid4()
+            avatar.name = f"{unique_id}.jpg"
+            print(f"🔥avatar: {str(avatar)}")
         return avatar
     
     

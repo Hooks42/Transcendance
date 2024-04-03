@@ -15,10 +15,11 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
-from Transcendance.views import Hello, AccountCreation, AccountLogin, LoginPage, FailedLogin,Logout, ChatView, redirect_to_provider, callback_view, AccountUpdate
+from django.urls import path, re_path
+from Transcendance.views import Hello, AccountCreation, AccountLogin, LoginPage, FailedLogin,Logout, ChatView, redirect_to_provider, callback_view, AccountUpdate, PrivateChatView, PFC_view
 from django.conf import settings
 from django.conf.urls.static import static
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('hello/', Hello, name='hello'),
@@ -31,6 +32,8 @@ urlpatterns = [
     path('oauth/', redirect_to_provider, name='redirect-to-provider'),
     path('callback/', callback_view, name='callback-view'),
     path('update-account/', AccountUpdate, name='update-account'),
-
+    re_path(r'^private_chat/(?P<room_name>[a-zA-Z0-9@.+_-]+_[a-zA-Z0-9@.+_-]+)/$', PrivateChatView, name='private-chat-room'),
+    re_path(r'^pfc/(?P<room_name>[a-zA-Z0-9@.+_-]+_[a-zA-Z0-9@.+_-]+)/$', PFC_view, name='pfc'),
+    
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
