@@ -91,6 +91,16 @@ class GameHistory(models.Model):
             models.Q(player1=player1, player2=player2) | models.Q(player1=player2, player2=player1)
             #! Q() permet de faire des requêtes complexes avec des opérateurs logiques (AND, OR, NOT) avec des requêtes sql
         )
+    
+    @classmethod
+    def get_games_for_user(cls, user):
+        return cls.objects.filter(models.Q(player1=user) | models.Q(player2=user)).order_by('-timestamp')
+    
+    def get_player1_username(self):
+        return self.player1.username
+    
+    def get_player2_username(self):
+        return self.player2_username
         
 
 

@@ -8,6 +8,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 import uuid
 from django.forms.widgets import FileInput
+import re
 
 
 class AccountCreationForm(forms.ModelForm):
@@ -26,6 +27,8 @@ class AccountCreationForm(forms.ModelForm):
             self.add_error('username', "Ce nom d'utilisateur existe déjà. ❌")
         if len(username) < 4:
             self.add_error('username', "Le nom d'utilisateur doit contenir 4 caracteres minimum ❌")
+        if not re.match(r'^[a-zA-Z0-9.@+-]+$' , username):
+            self.add_error('username', 'Le nom d\'utilisateur ne doit contenir que des lettres, des chiffres et @/./+/- ❌')
         return username
     
     def clean_password(self):
@@ -127,6 +130,9 @@ class RegularAccountUpdateForm(forms.ModelForm):
         
         if len(username) < 4:
             self.add_error('username', "Le nom d'utilisateur doit contenir 4 caracteres minimum ❌")
+
+        if not re.match(r'^[a-zA-Z0-9.@+-]+$' , username):
+            self.add_error('username', 'Le nom d\'utilisateur ne doit contenir que des lettres, des chiffres et @/./+/- ❌')
 
         return username
     
@@ -254,7 +260,6 @@ class RegularAccountUpdateForm(forms.ModelForm):
             user.save(update_fields=update_field)
         return user
     
-
 class Auth42AccountUpdateForm(forms.ModelForm):
     username = forms.CharField(required=False, widget=forms.TextInput(attrs={'autocomplete': 'off'}))
     first_name = forms.CharField(required=False, widget=forms.TextInput(attrs={'autocomplete': 'off'}))
@@ -288,6 +293,9 @@ class Auth42AccountUpdateForm(forms.ModelForm):
         
         if len(username) < 4:
             self.add_error('username', "Le nom d'utilisateur doit contenir 4 caracteres minimum ❌")
+
+        if not re.match(r'^[a-zA-Z0-9.@+-]+$' , username):
+            self.add_error('username', 'Le nom d\'utilisateur ne doit contenir que des lettres, des chiffres et @/./+/- ❌')
 
         return username
     

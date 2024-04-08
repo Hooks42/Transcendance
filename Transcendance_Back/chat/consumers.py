@@ -4,6 +4,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer  # Importe la clas
 from Transcendance.models import Message, User, Conversation, GameHistory, GameStats, PFC_Game_ID  # Importe le modèle Message de votre application
 from datetime import datetime
 from django.core.exceptions import ObjectDoesNotExist
+from Transcendance.serializers import GameHistorySerializer
 import random
 
 #! ATTENTION A L'HORODATAGE CE N'EST PAS LE BON FUSEAU HORAIRE
@@ -291,7 +292,15 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
                 }
             )
 
-
+        if command == 'get_user_history':
+            history = await self.get_user_history_request(original_user)
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    "type": "system_message",
+                    'message': history
+                }
+            )
 
 #! add_friend : original_user, user_to_add
 #! accept_friend : original_user, user_to_add
@@ -403,6 +412,20 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
             }
         return data
         
+    @database_sync_to_async
+    def get_user_history_request(self, user):
+        try:
+            game_history = GameHistory.get_games_for_user(user)
+            serializer = GameHistorySerializer(game_history, many=True)
+            data = {
+                'command': 'user_history_sent',
+                'game_history': serializer.data
+            }
+        except GameHistory.DoesNotExist:
+            data = {
+                'command': 'user_history_not_found',
+            }
+        return data
 
 
 class ChatConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de consommateur WebSocket

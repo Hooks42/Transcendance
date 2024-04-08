@@ -49,6 +49,8 @@
         <br></br>
         <a href="{% url 'update-account' %}" class="btn btn-primary">Modifier mon compte ♻️</a>
         <br></br>
+        <a id="user_infos"></a>
+        <br></br>
         <div class="friends_requests"> </div>
         <div class="friends"> </div>
         <div class="block_list"> </div>
@@ -500,6 +502,14 @@ function display_pfc_request_div(original_user)
     timer.id = 'timer';
     pfcRequestDiv.appendChild(timer);
 }
+
+//!---------------------------------------------------------------------------------------------------------------------------- 
+//!                           Creation du href avec le nom de l'utilisateur pour voir ses informations
+//!----------------------------------------------------------------------------------------------------------------------------
+
+        href = document.getElementById('user_infos');
+        href.href = 'https://localhost/user_info/' + currentUser + '/';
+        href.textContent = 'Voir mes informations 📝';
 
         //--------------------------------------------------------------------------------
         //                           Gestion des messages system
