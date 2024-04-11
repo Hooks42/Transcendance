@@ -18,6 +18,7 @@
             console.log('Connexion au system établie');
             console.log('currentUser -->' + currentUser);
             send_get_friends_infos(currentUser);
+            send_get_actual_games(currentUser);
             console.log('Demande d\'infos sur les amis envoyée');
         };
 
@@ -80,6 +81,18 @@
         //--------------------------------------------------------------------------------
         //                                  FUNCTIONS
         //--------------------------------------------------------------------------------
+
+        // Demande d'information sur les games en cours
+        function send_get_actual_games()
+        {
+            var message = {
+                'command': 'get_actual_games',
+                'original_user': currentUser
+            }
+
+            var messageJson = JSON.stringify(message);
+            socket.send(messageJson);
+        }
 
         // Demande d'informations sur les amis
         function send_get_friends_infos(currentUser)
@@ -620,6 +633,15 @@ function display_pfc_request_div(original_user)
             if (data.message.command == 'pfc_rejected' && (data.message.user_to_add == currentUser || data.message.original_user == currentUser))
             {
                 location.reload();
+            }
+
+            if (data.message.command == 'game_found' && data.message.original_user == currentUser)
+            {
+                var users = [data.message.original_user, data.message.user_to_add];
+                users.sort();
+                var user_string = users.join('_');
+
+                window.location.href = 'https://localhost/pfc/' + user_string + "/";
             }
         }
     </script>

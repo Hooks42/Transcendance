@@ -27,10 +27,7 @@
 
             socket.onopen = function(e) {
                 console.log('Connexion a la room ' + room_name + ' reussie');
-                if(current_user == player1)
-                {
-                    send_generate_game_id(player1);
-                }
+                send_generate_game_id(current_user);
             };
 
             socket.onclose = function(e) {
@@ -40,16 +37,26 @@
     {% endif %}
 </head>
 <body>
-    <h1>Bienvenue dans votre Partie de Pierre Feuille ciseaux</h1>
-    <p>Score joueur 1 : <span id="score1">0</span></p>
-    <p>Score joueur 2 : <span id="score2">0</span></p>
-    <p>Penalites joueur 1 : <span id="penalties1">0</span> <span>/3</span></p>
-    <p>Penalites joueur 2 : <span id="penalties2">0</span> <span>/3</span></p>
-    <p>Temps : <span id="time">0</span></p>
-    <p>Manche : <span id="round">0</span></p>
+    <div id="body">
+        <h1>Bienvenue dans votre Partie de Pierre Feuille ciseaux</h1>
+        <p>Score joueur 1 : <span id="score1">0</span></p>
+        <p>Score joueur 2 : <span id="score2">0</span></p>
+        <p>Penalites joueur 1 : <span id="penalties1">0</span> <span>/3</span></p>
+        <p>Penalites joueur 2 : <span id="penalties2">0</span> <span>/3</span></p>
+        <p>Temps : <span id="time">0</span></p>
+        <p>Manche : <span id="round">0</span></p>
+    </div>
+    <div id="afk"></div>
 
 
     <script>
+
+//----------------------------------------------------------------------------------------------------------
+//                                          Variables
+//----------------------------------------------------------------------------------------------------------
+
+        var game_timer_id;
+        var afk_timer_id;
 
 //----------------------------------------------------------------------------------------------------------
 //                                          Envoie des messages au serveur
@@ -101,7 +108,23 @@
             socket.send(JSON.stringify(message));
         }
 
+        function send_clear_round(user_to_update)
+        {
+            var message = {
+                'command': 'clear_round',
+                'player': user_to_update,
+            };
+            socket.send(JSON.stringify(message));
+        }
 
+        function send_stop_game()
+        {
+            var message = {
+                'command': 'stop_game',
+                'player': current_user
+            };
+            socket.send(JSON.stringify(message));
+        }
 //----------------------------------------------------------------------------------------------------------
 //                            Fonction pour clear les boutons quand on clique dessus
 //----------------------------------------------------------------------------------------------------------
@@ -111,9 +134,12 @@
             var feuille = document.getElementById('paper');
             var ciseaux = document.getElementById('scissors');
 
-            pierre.remove();
-            feuille.remove();
-            ciseaux.remove();
+            if (pierre && feuille && ciseaux)
+            {
+                pierre.remove();
+                feuille.remove();
+                ciseaux.remove();
+            }
         }
 
 //----------------------------------------------------------------------------------------------------------
@@ -122,39 +148,40 @@
 
         function create_buttons()
         {
+            let body_div = document.getElementById('body');
             var pierre = document.createElement('button');
             pierre.id = 'rock';
             pierre.textContent = 'Pierre';
-            document.body.appendChild(pierre);
+            body_div.appendChild(pierre);
 
             var feuille = document.createElement('button');
             feuille.id = 'paper';
             feuille.textContent = 'Feuille';
-            document.body.appendChild(feuille);
+            body_div.appendChild(feuille);
 
             var ciseaux = document.createElement('button');
             ciseaux.id = 'scissors';
             ciseaux.textContent = 'Ciseaux';
-            document.body.appendChild(ciseaux);
+            body_div.appendChild(ciseaux);
 
 
             var timeleft = 15;
             document.getElementById('time').textContent = timeleft;
 
-            var countdownID = setInterval(function() {
+            game_timer_id = setInterval(function() {
                 timeleft--;
                 document.getElementById('time').textContent = timeleft;
 
                 if (timeleft <= 0)
                 {
-                    clearInterval(countdownID);
+                    clearInterval(game_timer_id);
                     clear_buttons();
                     send_have_played('timeout', current_user);
                 }
             }, 1000);
 
             var buttonClicked = function() {
-                clearInterval(countdownID);
+                clearInterval(game_timer_id);
                 send_have_played(this.id, current_user);
                 clear_buttons();
             };
@@ -201,6 +228,42 @@
             });
         }
 
+
+//----------------------------------------------------------------------------------------------------------
+//                                    Fonction pour afficher si quelqu'un se deconnecte
+//----------------------------------------------------------------------------------------------------------
+
+        function display_disconnection(disconnected_player)
+        {
+            let timer = document.getElementById('time').textContent;
+
+            clearInterval(game_timer_id);
+
+            let body_div = document.getElementById('body');
+            body_div.style.display = 'none';
+            clear_buttons();
+
+            let afk_div = document.getElementById('afk');
+            let disconnect_info = document.createElement('h1');
+            let time_info = document.createElement('span');
+            time_info.id = 'time_info';
+            disconnect_info.textContent = disconnect_info.textContent = disconnected_player + ' s\'est déconnecté\n fin de la partie dans : '
+            afk_div.appendChild(disconnect_info);
+            afk_div.appendChild(time_info);
+
+            let time_left = 30;
+            afk_timer_id = setInterval(function() {
+                time_left--;
+                document.getElementById('time_info').textContent = time_left;
+
+                if (time_left <= 0)
+                {
+                    clearInterval(afk_timer_id);
+                    send_stop_game();
+                }
+            }, 1000); 
+        }
+
 //----------------------------------------------------------------------------------------------------------
 //                                    Reception des messages du serveur
 //----------------------------------------------------------------------------------------------------------
@@ -227,10 +290,35 @@
                 update_page(data);
             }
 
-            if (data.message.command == 'game_finished' || data.message.command == 'game_aborted')
+            if (data.message.command == 'game_finished')
             {
                 display_winner(data);
                 socket.close();
+            }
+
+            if (data.message.command == 'opponent_disconnected')
+            {
+                display_disconnection(data.message.disconnected_player);
+            }
+
+            if (data.message.command == 'game_restored' && data.message.user_to_update == current_user)
+            {
+                send_clear_round(data.message.user_to_update, current_user);
+            }
+            
+            if (data.message.command == 'game_restored' && data.message.user_to_update != current_user)
+            {
+                clearInterval(afk_timer_id);
+                let body_div = document.getElementById('body');
+                let afk_div = document.getElementById('afk');
+                body_div.style.display = 'block';
+                afk_div.innerHTML = '';
+            }
+
+            if (data.message.command == 'game_stopped')
+            {
+                socket.close();
+                window.location.href = 'https://localhost/hello/';
             }
         }
 

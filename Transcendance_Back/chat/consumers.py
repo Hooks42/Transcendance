@@ -302,6 +302,23 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
                 }
             )
 
+        if command == 'get_actual_games':
+            if current_user == original_user:
+                opponent = await self.get_actual_games_request(original_user)
+                if opponent is not None:
+                    await self.channel_layer.group_send(
+                        self.room_group_name,
+                        {
+                            "type": "system_message",
+                            'message': {
+                                'command': 'game_found',
+                                'original_user': original_user.username,
+                                'user_to_add': opponent
+                            }
+                        }
+                    )
+
+
 #! add_friend : original_user, user_to_add
 #! accept_friend : original_user, user_to_add
 #! reject_friend : original_user, user_to_add
@@ -427,6 +444,26 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
             }
         return data
 
+    @database_sync_to_async
+    def get_actual_games_request(self, user):
+        player = None
+        opponent = None
+        try:
+            player = PFC_Game_ID.objects.get(player1=user)
+        except PFC_Game_ID.DoesNotExist:
+            try:
+                player = PFC_Game_ID.objects.get(player2=user)
+            except PFC_Game_ID.DoesNotExist:
+                return opponent
+        
+        if player.player1.username == user.username:
+            opponent = player.player2.username
+        else:
+            opponent = player.player1.username
+        return opponent
+        
+
+
 
 class ChatConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de consommateur WebSocket
     async def connect(self):  # Méthode appelée lorsqu'un client se connecte
@@ -489,8 +526,6 @@ class ChatConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de c
 
 class PFCConsumer(AsyncWebsocketConsumer): # Définit une nouvelle classe de consommateur WebSocket
 
-    
-
     async def connect(self):  # Méthode appelée lorsqu'un client se connecte
         self.room_name = self.scope['url_route']['kwargs']['room_name']  # Récupère le nom de la salle à partir des paramètres de l'URL
         self.room_group_name = f'pfc_{self.room_name}'  # Utilise le nom de la salle comme nom du groupe
@@ -498,6 +533,8 @@ class PFCConsumer(AsyncWebsocketConsumer): # Définit une nouvelle classe de con
             self.room_group_name, self.channel_name
         )
         await self.accept()  # Accepte la connexion WebSocket
+        self.current_user = self.scope['user']
+        await self.set_game_status(self.current_user, True)
         self.players = self.room_name.split('_')
         self.player1 = self.players[0]
         self.player2 = self.players[1]
@@ -506,25 +543,44 @@ class PFCConsumer(AsyncWebsocketConsumer): # Définit une nouvelle classe de con
 
     async def disconnect(self, code):  # Méthode appelée lorsqu'un client se déconnecte
         current_user = self.scope['user']
-        winner = None
+        await self.set_game_status(current_user, False)
+
+        user = None
         if current_user.username == self.player1:
-            winner = self.player2
+            user = self.player2
         else:
-            winner = self.player1
+            user = self.player1
+
         await self.clean_db()
+
         await self.channel_layer.group_discard(  # Retire le canal du client du groupe
             self.room_group_name, self.channel_name
         )
-        await self.channel_layer.group_send(
-            self.room_group_name,
-            {
-                "type": "PFC_message",
-                'message': {
-                    'command': "game_aborted",
-                    'winner': winner
+
+        await self.add_penality_request(current_user)
+        winner = await self.check_if_game_is_finished()
+        if winner is None:
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    "type": "PFC_message",
+                    'message': {
+                        'command': "opponent_disconnected",
+                        'disconnected_player': user
+                    }
                 }
-            }
-        )
+            )
+        else:
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    "type": "PFC_message",
+                    'message': {
+                        'command': "game_finished",
+                        'winner': winner
+                    }
+                }
+            )
 
 
     async def receive(self, text_data):  # Méthode appelée lorsqu'un message est reçu du client
@@ -599,19 +655,42 @@ class PFCConsumer(AsyncWebsocketConsumer): # Définit une nouvelle classe de con
                             }
                         }
                     )
-
             
         if command == "generate_game_id":
-            await self.generate_game_id()
-            await self.channel_layer.group_send(
-                self.room_group_name,
-                {
-                    "type": "PFC_message",
-                    'message': {
-                        'command': "game_id_generated",
+            is_game_in_progress = await self.check_if_game_is_in_progress()
+
+            if (is_game_in_progress is None and player == self.player1):
+                await self.generate_game_id()
+                await self.channel_layer.group_send(
+                    self.room_group_name,
+                    {
+                        "type": "PFC_message",
+                        'message': {
+                            'command': "game_id_generated",
+                        }
                     }
-                }
-            )
+                )
+
+            elif is_game_in_progress is not None and player == self.current_user.username:
+                print(f"🔥 Game already in progress 🔥")
+                self.game_id = is_game_in_progress
+                updated_game = await self.get_updated_game()
+                await self.channel_layer.group_send(
+                    self.room_group_name,
+                    {
+                        "type": "PFC_message",
+                        'message': {
+                            'command': "game_restored",
+                            'player1_score': updated_game.player1_score,
+                            'player2_score': updated_game.player2_score,
+                            'round_count': updated_game.round_count,
+                            'player1_penalties': updated_game.player1_penalties,
+                            'player2_penalties': updated_game.player2_penalties,
+                            'user_to_update' : player
+                        }
+                    }
+                )
+
         
         if command == "get_game_id":
             await self.get_game_id()
@@ -625,6 +704,36 @@ class PFCConsumer(AsyncWebsocketConsumer): # Définit une nouvelle classe de con
                 }
             )
 
+
+        if command == "clear_round":
+            await self.clear_round_request(player)
+            updated_data = await self.get_updated_game()
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    "type": "PFC_message",
+                    'message': {
+                        'command': "round_finished",
+                        'player1_score': updated_data.player1_score,
+                        'player2_score': updated_data.player2_score,
+                        'round_count': updated_data.round_count,
+                        'player1_penalties': updated_data.player1_penalties,
+                        'player2_penalties': updated_data.player2_penalties
+                    }
+                }
+            )
+
+        if command == "stop_game":
+            await self.stop_game_request()
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    "type": "PFC_message",
+                    'message': {
+                        'command': "game_stopped",
+                    }
+                }
+            )
 
     async def PFC_message(self, event):
         # Extract the message from the event
@@ -642,14 +751,18 @@ class PFCConsumer(AsyncWebsocketConsumer): # Définit une nouvelle classe de con
         game_id = PFC_Game_ID()
         game_id.game_id = game_id_generated
         game_id.room_id = self.room_name
+        game_id.player1 = User.objects.get(username=self.player1)
+        game_id.player2 = User.objects.get(username=self.player2)
         self.game_id = game_id_generated
         game_id.save()
+        print(f"🔱 PFC_Game_ID() saved")
         
         game_history = GameHistory()
         game_history.game_id = game_id_generated
         game_history.player1 = User.objects.get(username=self.player1)
         game_history.player2 = User.objects.get(username=self.player2)
         game_history.save()
+        print(f"🔱 GameHistory() saved")
 
     
     @database_sync_to_async
@@ -728,18 +841,28 @@ class PFCConsumer(AsyncWebsocketConsumer): # Définit une nouvelle classe de con
 
     @database_sync_to_async
     def clean_db(self):
-        try:
-            game = PFC_Game_ID.objects.get(game_id=self.game_id)
-            game.delete()
-        except PFC_Game_ID.DoesNotExist:
-            return
 
-        try:
-            game_history = GameHistory.objects.get(game_id=self.game_id)
-            if (game_history.player1_score != 7 and game_history.player2_score != 7) and (game_history.player1_penalties != 3 and game_history.player2_penalties != 3) or (game_history.player1_penalties == 3 and game_history.player2_penalties == 3):
-                game_history.delete()
-        except GameHistory.DoesNotExist:
-            return
+        opponent = None
+        if self.player1 == self.current_user.username:
+            opponent = User.objects.get(username=self.player2)
+        if self.player2 == self.current_user.username:
+            opponent = User.objects.get(username=self.player1)
+        
+        if opponent.is_in_PFC == False:
+            try:
+                game = PFC_Game_ID.objects.get(game_id=self.game_id)
+                game.delete()
+
+            except PFC_Game_ID.DoesNotExist:
+                return
+
+            try:
+                game_history = GameHistory.objects.get(game_id=self.game_id)
+                if (game_history.player1_score != 7 and game_history.player2_score != 7) and (game_history.player1_penalties != 3 and game_history.player2_penalties != 3):
+                    game_history.delete()
+
+            except GameHistory.DoesNotExist:
+                return
         
     @database_sync_to_async
     def update_user_pfc_stats(self, winner):
@@ -789,4 +912,81 @@ class PFCConsumer(AsyncWebsocketConsumer): # Définit une nouvelle classe de con
             loser_stats.total_spr_los_tie += game.player2_score
             loser_stats.save()
 
+    @database_sync_to_async
+    def set_game_status(self, current_user, status):
+        current_user.is_in_PFC = status
+        current_user.save()
+
+    @database_sync_to_async
+    def check_if_game_is_in_progress(self):
+        try:
+            game = PFC_Game_ID.objects.get(room_id=self.room_name)
+        except PFC_Game_ID.DoesNotExist:
+            return None
+        return game.game_id
+
+    @database_sync_to_async
+    def clear_round_request(self, player):
+        game = GameHistory.objects.get(game_id=self.game_id)
+        
+        if player == self.player1:
+            if len(game.player1_moves) > len(game.player2_moves):
+                game.player1_moves.pop()
+                game.player1_moves.append("timeout")
+                game.player2_moves.append("Opp-AFK")
+        else:
+            if len(game.player2_moves) > len(game.player1_moves):
+                game.player2_moves.pop()
+                game.player2_moves.append("timeout")
+                game.player1_moves.append("Opp-AFK")
+
+
+        if player == self.player1:
+            if len(game.player1_moves) < len(game.player2_moves):
+                game.player2_moves.pop()
+                game.player2_moves.append("Opp-AFK")
+                game.player1_moves.append("timeout")
+        else:
+            if len(game.player2_moves) < len(game.player1_moves):
+                game.player1_moves.pop()
+                game.player1_moves.append("Opp-AFK")
+                game.player2_moves.append("timeout")
+
+        if player == self.player1:
+            if len(game.player1_moves) == len(game.player2_moves):
+                game.player1_moves.append("timeout")
+                game.player2_moves.append("Opp-AFK")
+        else:
+            if len(game.player2_moves) == len(game.player1_moves):
+                game.player2_moves.append("timeout")
+                game.player1_moves.append("Opp-AFK")
             
+
+        game.round_count += 1
+        game.save()
+
+    @database_sync_to_async
+    def stop_game_request(self):
+        game = PFC_Game_ID.objects.get(game_id=self.game_id)
+        game.delete()
+
+        game_history = GameHistory.objects.get(game_id=self.game_id)
+        game_history.delete()
+
+        player1 = User.objects.get(username=self.player1)
+        player2 = User.objects.get(username=self.player2)
+
+        player1.is_in_PFC = False
+        player2.is_in_PFC = False               
+
+    @database_sync_to_async
+    def add_penality_request(self, current_user):
+        game = GameHistory.objects.get(game_id=self.game_id)
+
+        if current_user.username == game.player1.username:
+            if game.player2_penalties < 3 and game.player1_penalties < 3:
+                game.player1_penalties += 1
+        else:
+            if game.player1_penalties < 3 and game.player2_penalties < 3:
+                game.player2_penalties += 1
+        game.save()

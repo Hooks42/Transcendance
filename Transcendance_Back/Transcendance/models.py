@@ -45,6 +45,8 @@ class User(AbstractUser):
     avatar = models.ImageField(upload_to='avatars/', default='avatars/default_avatar.jpg', null=True, blank=True)
 
     is_online = models.BooleanField(default=False)
+    is_in_PFC = models.BooleanField(default=False)
+    is_in_pong = models.BooleanField(default=False)
 
     friends = models.ManyToManyField('self', blank=True)
     friend_request = ArrayField(models.CharField(max_length=200), blank=True, default=list)
@@ -107,3 +109,6 @@ class GameHistory(models.Model):
 class PFC_Game_ID(models.Model):
     game_id = models.BigIntegerField(default=0)
     room_id = models.CharField(max_length=200, default='')
+    player1 = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='player1_PFC')
+    player2 = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='player2_PFC')
+
