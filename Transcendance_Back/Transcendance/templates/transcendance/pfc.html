@@ -149,6 +149,11 @@
         function create_buttons()
         {
             let body_div = document.getElementById('body');
+            let pierre_div = document.getElementById('rock');
+            let feuille_div = document.getElementById('paper');
+            let ciseaux_div = document.getElementById('scissors');
+            if (pierre_div && feuille_div && ciseaux_div)
+                return;
             var pierre = document.createElement('button');
             pierre.id = 'rock';
             pierre.textContent = 'Pierre';
