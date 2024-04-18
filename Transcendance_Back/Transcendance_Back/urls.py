@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, re_path
-from Transcendance.views import Hello, AccountCreation, AccountLogin, LoginPage, FailedLogin, Logout
+from Transcendance.views import Hello, AccountLogin, LoginPage, FailedLogin, Logout
 from Transcendance.views import ChatView, redirect_to_provider, callback_view, AccountUpdate
 from Transcendance.views import PrivateChatView, PFC_view, UserInfo
 from django.conf import settings
@@ -25,7 +25,6 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('hello/', Hello, name='hello'),
-    path('signin/', AccountCreation, name='signin'),
     path('login/', AccountLogin, name='login'),
     path('login-page/', LoginPage, name='login-page'),
     path('failed-login/', FailedLogin, name='failed-login'),

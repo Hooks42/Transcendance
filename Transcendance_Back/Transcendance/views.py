@@ -8,28 +8,16 @@ from django.contrib.auth import login, logout, update_session_auth_hash, authent
 from django.contrib.auth.hashers import make_password
 from .models import Message, User, Conversation
 from dotenv import load_dotenv
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse, HttpResponse
 from urllib.parse import urlencode
 from django.urls import reverse
 from django.http import HttpResponse
 from Transcendance.management.OAuth20.get_info_from_42 import register_user 
 from django.shortcuts import get_object_or_404
+from django.template.loader import render_to_string
+import json
 
 
-
-def AccountCreation(request):
-    if request.method == 'POST':
-        form = AccountCreationForm(request.POST)
-        if form.is_valid():
-            try:
-                form.Create_User(request)
-                return redirect('hello')
-            except forms.ValidationError as e:
-                error = e
-                return render(request, "Account_creation.html", {"form" : form})
-    else:
-        form = AccountCreationForm()
-    return render(request, "Account_creation.html", {"form" : form})
 
 def AccountLogin(request):
     if request.method == 'POST':
@@ -43,7 +31,16 @@ def AccountLogin(request):
     return render(request, "Account_login.html", {"form" : form})
 
 def Hello(request):
-    return render(request, 'Hello.html')
+    if request.method == 'POST':
+        signin_form = AccountCreationForm(request.POST)
+        if signin_form.is_valid():
+            signin_form.Create_User(request)
+            return JsonResponse({'signin_status': 'success'})
+        else:
+            return JsonResponse({'signin_status': 'fail', 'errors': signin_form.errors})
+    else:
+        signin_form = AccountCreationForm()
+    return render(request, 'main.html', {'signin_form': signin_form})
 
 def LoginPage(request):
     return render(request, 'Login_page.html')

@@ -1,0 +1,197 @@
+.btn-arrow {
+    width: 100%;
+    border: none;
+    text-align: left;
+
+    & .bi-arrow-left-short {
+        padding-bottom: 8px;
+    }
+}
+
+.btn-arrow__title {
+    font-family: "8bitoperator_jve";
+    font-size: 21px;
+    margin-left: 16px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.btn-nav {
+    width: 50%;
+    border: none;
+    font-family: "8bitoperator_jve";
+    font-size: 21px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-left: 4px;
+    padding-right: 4px;
+
+    &:focus {
+        color: #C96F26;
+    }
+}
+
+.chat {
+    height: 1px;
+    /* needed for the overflow to trigger */
+    min-width: 200px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    flex-flow: column nowrap;
+    overflow: hidden;
+    border-bottom: 8px;
+    border-right: 8px;
+    border-left: 8px;
+    border-top: none;
+    border-style: solid;
+    border-color: #e5e5e5;
+    position: relative;
+}
+
+.inbox {
+    width: 100%;
+    min-height: 100px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    overflow-y: scroll;
+    scrollbar-color: rgba(201, 111, 38, 0.4) #121212;
+    scrollbar-width: thin;
+}
+
+.sender {
+    height: 56px;
+    width: 100%;
+    position: relative;
+}
+
+.sender__img {
+    border-radius: 50%;
+    height: 36px;
+    width: 36px;
+    top: 12px;
+    left: 16px;
+    position: absolute;
+}
+
+.sender__name {
+    margin: 0px;
+    overflow: hidden;
+    white-space: nowrap;
+    top: 8px;
+    left: 64px;
+    position: absolute;
+}
+
+.message {
+    flex: none;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.message__timestamp {
+    font-size: 12px;
+    overflow: hidden;
+    white-space: nowrap;
+    top: 32px;
+    left: 64px;
+    position: absolute;
+}
+
+.message__text {
+    padding: 8px;
+    margin: 0;
+    white-space: wrap;
+}
+
+.inbox__textarea {
+    height: 140px;
+    width: 100%;
+    border-top: solid rgba(255, 255, 255, 0.50);
+    flex: none;
+    display: flex;
+    align-items: flex-end;
+    flex-direction: column;
+    position: relative;
+}
+
+
+.chat__list {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    white-space: nowrap;
+    scrollbar-color: rgba(201, 111, 38, 0.4) #121212;
+    scrollbar-width: thin;
+}
+
+.btn-heart-list {
+    width: 100%;
+    height: 64px;
+    font-family: "Comic Neue";
+    flex: none;
+    border: none;
+    white-space: nowrap;
+    overflow: hidden;
+    position: relative;
+
+    &:hover {
+        &>svg {
+            fill: red;
+        }
+    }
+
+    & .bi-heart-fill {
+        left: 8px;
+        top: 50%;
+        transform: translate(0, -50%);
+        position: absolute;
+    }
+
+    &>span.list__title {
+        font-size: 23px;
+        top: 50%;
+        left: 32px;
+        transform: translate(0, -50%);
+        margin: 0 0 4px 0;
+        position: absolute;
+    }
+
+    &>span.list__info {
+        font-size: 12px;
+        top: 70%;
+        left: 34px;
+        /* max-width: 380px; */
+        /* text-overflow: ellipsis; */
+        position: absolute;
+    }
+}
+
+textarea {
+    font-family: "Comic Neue";
+    font-size: 16px;
+    height: 80px;
+    width: 100%;
+    color: #e5e5e5;
+    padding: 12px 8px;
+    border-bottom: thin solid rgba(255, 255, 255, 0.20);
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    border-radius: 0%;
+    background-color: transparent;
+    resize: none;
+    outline: none;
+    scrollbar-color: rgba(201, 111, 38, 0.4) #121212;
+    scrollbar-width: thin;
+
+    &:focus {
+        color: #e5e5e5;
+    }
+}

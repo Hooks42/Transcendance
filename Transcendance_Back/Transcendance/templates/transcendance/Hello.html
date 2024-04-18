@@ -59,7 +59,16 @@
 
                 
     {% else %}
-        <a href="{% url 'signin' %}" class="btn btn-primary">S'inscrire 🔥</a>
+    <div id="signin_div">
+        <details>
+            <summary>s'inscrire 🔥</summary>
+            <form method="post" id="signin_form">
+                {% csrf_token %}
+                {{ signin_form.as_p }}
+                <button type="submit">S'inscrire 👊</button>
+            </form>
+        </details>
+    </div>
         <br></br>
         <a href="{% url 'login' %}" class="btn btn-primary">Se connecter ✅</a>
         <br></br>
@@ -535,6 +544,7 @@ function display_pfc_request_div(original_user)
             console.log('✅ COMMAND:' + data.message.command);
             console.log('✅ USER_TO_ADD' + data.message.user_to_add);
             console.log('✅ ORIGINAL_USER' + data.message.original_user);
+
             if (data.message.command == undefined || data.message.user_to_add == undefined)
             {
                 console.log(data);
@@ -645,5 +655,43 @@ function display_pfc_request_div(original_user)
             }
         }
     </script>
+    {% else %}
+        <script>
+            document.getElementById('signin_form').addEventListener('submit', function(event) {
+                event.preventDefault();
+                fetch ('https://localhost/hello/', {
+                    method: 'POST',
+                    body: new FormData(document.getElementById('signin_form')),
+                    headers: {
+                        'Accept': 'application/json',
+                    }
+                })
+                
+                .then(response => response.json())
+
+                .then(data => {
+                    if (data.signin_status == 'error')
+                    {
+                        var errorDiv = document.createElement('div');
+                        errorDiv.textContent = data.error;
+                        document.getElementById('signin_div').appendChild(errorDiv);
+                    }
+
+                    if (data.signin_status == 'success')
+                    {
+                        var signin_div = document.getElementById('signin_div');
+                        signin_div.remove();
+                    }
+
+                    if (data.signin_status == 'invalid')
+                    {
+                        var errorDiv = document.createElement('div');
+                        errorDiv.textContent = "data.errors";
+                        document.getElementById('signin_div').appendChild(errorDiv);
+                    }
+                });
+            });
+        </script>
+    
 {% endif %}
 </html>
