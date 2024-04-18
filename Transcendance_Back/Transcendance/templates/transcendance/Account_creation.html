@@ -11,7 +11,7 @@
     <p>Ici, vous pouvez créer votre compte 🔥...</p>
     <form method="post">
         {% csrf_token %}
-        {{ form.as_p }}
+        {{ signup_form.as_p }}
         <button type="submit">S'inscrire 👊</button>
     </form>
     {% if error %}

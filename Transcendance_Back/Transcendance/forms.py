@@ -12,10 +12,10 @@ import re
 
 
 class AccountCreationForm(forms.ModelForm):
-    username = forms.CharField(required=True, widget=forms.TextInput(attrs={'autocomplete': 'off'}))
-    password = forms.CharField(widget=forms.PasswordInput, required=True)
-    confirm_password = forms.CharField(widget=forms.PasswordInput, required=True)
-    email = forms.EmailField(required=True, widget=forms.EmailInput(attrs={'autocomplete': 'off'}))
+    username = forms.CharField(label=False, widget=forms.TextInput(attrs={'class': 'modal__input', 'placeholder': 'Username', 'autocomplete': 'off'}))
+    password = forms.CharField(label=False, widget=forms.PasswordInput(attrs={'class': 'modal__input', 'placeholder': 'Password', 'autocomplete': 'off'}))
+    confirm_password = forms.CharField(label=False, widget=forms.PasswordInput(attrs={'class': 'modal__input', 'placeholder': 'Confirm Password', 'autocomplete': 'off'}))
+    email = forms.EmailField(label=False, widget=forms.EmailInput(attrs={'class': 'modal__input', 'placeholder': 'Email', 'autocomplete': 'off'}))
 
     class Meta:
         model = User
