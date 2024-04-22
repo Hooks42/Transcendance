@@ -1,33 +1,40 @@
 const svgns = "http://www.w3.org/2000/svg";
 
-function create_svg(classes) {
+function create_svg(classes)
+{
     const svg = document.createElementNS(svgns, 'svg');
-    classes.forEach(element => {
-       svg.classList.add(element); 
+    classes.forEach(element =>
+    {
+        svg.classList.add(element);
     });
     svg.setAttribute('xmlns', svgns);
     svg.setAttribute('viewBox', '0 0 16 16');
     return (svg);
 }
-function create_btn(classes, text){
+
+function create_btn(classes, text)
+{
 
     const button = document.createElement('button');
-    classes.forEach(element => {
-       button.classList.add(element); 
+    classes.forEach(element =>
+    {
+        button.classList.add(element);
     });
     button.setAttribute('type', 'button');
     button.appendChild(document.createTextNode(text));
     return (button);
 }
 
-function create_dropdown_menu() {
+function create_dropdown_menu()
+{
     const dropdown_menu = document.createElement('ul');
     dropdown_menu.classList.add('dropdown-menu', 'dropdown-menu-end');
     dropdown_menu.setAttribute('aria-labelledby', 'navbarDropdownMenuLink');
     return (dropdown_menu);
 }
 
-function create_nav_link(id) {
+function create_nav_link(id)
+{
     const nav_link = document.createElement('a');
     nav_link.classList.add('nav-link', 'dropdown-toggle', 'caret-off');
     nav_link.setAttribute('href', '#');
@@ -38,7 +45,8 @@ function create_nav_link(id) {
     return (nav_link);
 }
 
-function create_svg_three_dots() {
+function create_svg_three_dots()
+{
     const three_dots_svg = create_svg(['bi', 'bi-three-dots-vertical']);
 
     const path = document.createElementNS(svgns, 'path');
@@ -48,7 +56,8 @@ function create_svg_three_dots() {
     return (three_dots_svg);
 }
 
-function create_svg_heart() {
+function create_svg_heart()
+{
     const heart_svg = create_svg(['bi', 'bi-heart-fill']);
 
     const path = document.createElementNS(svgns, 'path');
@@ -58,7 +67,8 @@ function create_svg_heart() {
     return (heart_svg);
 }
 
-function create_svg_person() {
+function create_svg_person()
+{
     const person_svg = create_svg(['bi', 'bi-person-fill']);
 
     const path = document.createElementNS(svgns, 'path');
@@ -67,7 +77,8 @@ function create_svg_person() {
     return (person_svg);
 }
 
-function create_svg_bell() {
+function create_svg_bell()
+{
     const bell_svg = create_svg(['bi', 'bi-bell-fill']);
 
     const path = document.createElementNS(svgns, 'path');
@@ -76,7 +87,8 @@ function create_svg_bell() {
     return (bell_svg);
 }
 
-function create_notif() {
+function create_notif()
+{
     const notif = document.createElement('div');
     notif.classList.add('notif');
 
@@ -111,13 +123,15 @@ function create_notif() {
     return (notif);
 }
 
-function create_btn_heart_sm(text) {
+function create_btn_heart_sm(text)
+{
     const button = create_btn(['btn-heart', 'btn-heart-sm'], text);
     button.prepend(create_svg_heart());
     return (button);
 }
 
-function create_svg_circle() {
+function create_svg_circle()
+{
     const circle_svg = document.createElementNS(svgns, 'svg');
     circle_svg.classList.add('bi', 'bi-circle-fill');
     circle_svg.setAttribute('xmlns', svgns);
@@ -130,52 +144,65 @@ function create_svg_circle() {
     return (circle_svg);
 }
 
-const navbar = document.querySelector('#navbar-long > div');
+function create_navbar()
+{
+    const navbar = document.querySelector('#navbar-long > div');
 
-// Création de la liste ul navbar_nav
-const navbar_nav = document.createElement('ul');
-navbar_nav.classList.add('navbar-nav');
 
-// Premier élément li de navbar_nav
-const nav_item1 = document.createElement('li');
-nav_item1.classList.add('nav-item', 'dropdown');
-const nav_item2 = document.createElement('li');
-nav_item2.classList.add('nav-item', 'dropdown');
+    // Création de la liste ul navbar_nav
+    const navbar_nav = document.createElement('ul');
+    navbar_nav.classList.add('navbar-nav');
 
-// bell anchor
-const bell_a = create_nav_link("navbar_notif_menu");
-bell_a.appendChild(create_svg_bell());
+    // Premier élément li de navbar_nav
+    const nav_item1 = document.createElement('li');
+    nav_item1.classList.add('nav-item', 'dropdown');
+    const nav_item2 = document.createElement('li');
+    nav_item2.classList.add('nav-item', 'dropdown');
 
-const bell_menu = create_dropdown_menu();
-bell_menu.classList.add("dropdown-menu--lg");
-const bell_menu_li1 = document.createElement('li');
-bell_menu_li1.appendChild(create_notif());
-const bell_menu_li2 = bell_menu_li1.cloneNode(true);
+    // bell anchor
+    const bell_a = create_nav_link("navbar_notif_menu");
+    bell_a.appendChild(create_svg_bell());
 
-// person anchor
-const person_a = create_nav_link("navbar_account_menu");
-person_a.appendChild(create_svg_person());
+    const bell_menu = create_dropdown_menu();
+    bell_menu.classList.add("dropdown-menu--lg");
+    const bell_menu_li1 = document.createElement('li');
+    bell_menu_li1.appendChild(create_notif());
+    const bell_menu_li2 = bell_menu_li1.cloneNode(true);
 
-const person_menu = create_dropdown_menu();
-const person_menu_li1 = document.createElement('li');
-const person_menu_li2 = document.createElement('li');
+    // person anchor
+    const person_a = create_nav_link("navbar_account_menu");
+    person_a.appendChild(create_svg_person());
 
-person_menu_li1.appendChild(create_btn_heart_sm(" Mon compte "));
-person_menu_li2.appendChild(create_btn_heart_sm(" Se déconnecter "));
+    const person_menu = create_dropdown_menu();
+    const person_menu_li1 = document.createElement('li');
+    const person_menu_li2 = document.createElement('li');
 
-// Construction de l'arborescence des éléments
-navbar.appendChild(navbar_nav);
-navbar_nav.appendChild(nav_item1);
-navbar_nav.appendChild(nav_item2);
+    person_menu_li1.appendChild(create_btn_heart_sm(" Mon compte "));
+    person_menu_li2.appendChild(create_btn_heart_sm(" Se déconnecter "));
 
-nav_item1.appendChild(bell_a);
-nav_item1.appendChild(bell_menu);
+    // Construction de l'arborescence des éléments
 
-nav_item2.appendChild(person_a);
-nav_item2.appendChild(person_menu);
+    navbar_nav.appendChild(nav_item1);
+    navbar_nav.appendChild(nav_item2);
 
-bell_menu.appendChild(bell_menu_li1);
-bell_menu.appendChild(bell_menu_li2);
+    nav_item1.appendChild(bell_a);
+    nav_item1.appendChild(bell_menu);
 
-person_menu.appendChild(person_menu_li1);
-person_menu.appendChild(person_menu_li2);
+    nav_item2.appendChild(person_a);
+    nav_item2.appendChild(person_menu);
+
+    bell_menu.appendChild(bell_menu_li1);
+    bell_menu.appendChild(bell_menu_li2);
+
+    person_menu.appendChild(person_menu_li1);
+    person_menu.appendChild(person_menu_li2);
+
+    return (navbar_nav);
+}
+
+function load_navbar()
+{
+    const navbar = document.querySelector('#navbar-long > div');
+    const navbar_nav = create_navbar();
+    navbar.appendChild(navbar_nav);
+}

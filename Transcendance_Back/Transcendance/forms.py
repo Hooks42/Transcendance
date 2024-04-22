@@ -12,10 +12,10 @@ import re
 
 
 class AccountCreationForm(forms.ModelForm):
-    username = forms.CharField(label=False, widget=forms.TextInput(attrs={'class': 'modal__input', 'placeholder': 'Username', 'autocomplete': 'off'}))
-    password = forms.CharField(label=False, widget=forms.PasswordInput(attrs={'class': 'modal__input', 'placeholder': 'Password', 'autocomplete': 'off'}))
-    confirm_password = forms.CharField(label=False, widget=forms.PasswordInput(attrs={'class': 'modal__input', 'placeholder': 'Confirm Password', 'autocomplete': 'off'}))
-    email = forms.EmailField(label=False, widget=forms.EmailInput(attrs={'class': 'modal__input', 'placeholder': 'Email', 'autocomplete': 'off'}))
+    username = forms.CharField(label=False, widget=forms.TextInput(attrs={'class': 'modal__input', 'id': "signup-username", 'placeholder': 'Username', 'autocomplete': 'off'}))
+    password = forms.CharField(label=False, widget=forms.PasswordInput(attrs={'class': 'modal__input', 'id': "signup-password", 'placeholder': 'Password', 'autocomplete': 'off'}))
+    confirm_password = forms.CharField(label=False, widget=forms.PasswordInput(attrs={'class': 'modal__input', 'id': "signup-confirm-password", 'placeholder': 'Confirm Password', 'autocomplete': 'off'}))
+    email = forms.EmailField(label=False, widget=forms.EmailInput(attrs={'class': 'modal__input', 'id': "signup-email", 'placeholder': 'Email', 'autocomplete': 'off'}))
 
     class Meta:
         model = User
@@ -66,8 +66,8 @@ class AccountCreationForm(forms.ModelForm):
         return user
 
 class AccountLoginForm(forms.Form):
-    email = forms.EmailField(required=True, widget=forms.EmailInput(attrs={'autocomplete': 'off'}))
-    password = forms.CharField(widget=forms.PasswordInput, required=True)
+    email = forms.EmailField(label=False, widget=forms.EmailInput(attrs={'class': 'modal__input', 'id': 'signin-email', 'placeholder': 'Email', 'autocomplete': 'off'}))
+    password = forms.CharField(label=False, widget=forms.PasswordInput(attrs={'class': 'modal__input', 'id': "signin-password", 'placeholder': 'Password', 'autocomplete': 'off'}))
 
     class Meta:
         model = User
