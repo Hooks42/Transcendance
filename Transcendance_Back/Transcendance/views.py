@@ -31,16 +31,39 @@ def AccountLogin(request):
     return render(request, "Account_login.html", {"form" : form})
 
 def Hello(request):
+    signup_form = AccountCreationForm()
+    signin_form = AccountLoginForm()
+    
     if request.method == 'POST':
-        signin_form = AccountCreationForm(request.POST)
-        if signin_form.is_valid():
-            signin_form.Create_User(request)
-            return JsonResponse({'signin_status': 'success'})
-        else:
-            return JsonResponse({'signin_status': 'fail', 'errors': signin_form.errors})
-    else:
-        signin_form = AccountCreationForm()
-    return render(request, 'main.html', {'signin_form': signin_form})
+        form_type = request.POST.get('form_type')
+        print(f"🔱 form_type --> {form_type}")
+        
+        if form_type == 'signup':
+            signup_form = AccountCreationForm(request.POST)
+        
+            if signup_form.is_valid():
+                signup_form.Create_User(request)
+                print(f"✅ signup returned JsonResponse")
+                return JsonResponse({'signup_status': 'success'})
+            else:
+                print(f"✅ signup returned JsonResponse")
+                return JsonResponse({'signup_status': 'fail', 'errors': signup_form.errors})
+        
+        elif form_type == 'signin':
+            signin_form = AccountLoginForm(request.POST)
+            if signin_form.is_valid():
+                email = signin_form.cleaned_data.get('email')
+                if signin_form.Login(request):
+                    print(f"✅ signin returned JsonResponse")
+                    return JsonResponse({'signin_status': 'success'})
+                else:
+                    print(f"✅ signin returned JsonResponse")
+                    return JsonResponse({'signin_status': 'fail', 'errors': signin_form.errors})
+            else:
+                print(f"✅ signin returned JsonResponse")
+                return JsonResponse({'signin_status': 'fail', 'errors': signin_form.errors})
+    print(f"✅ servor returned HTPP_RESPONSE")
+    return render(request, 'main.html', {'signup_form': signup_form, 'signin_form': signin_form})
 
 def LoginPage(request):
     return render(request, 'Login_page.html')
