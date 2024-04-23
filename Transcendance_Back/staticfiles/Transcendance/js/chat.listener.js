@@ -1,80 +1,82 @@
-function chat_listener()
+const btn_nav = document.querySelectorAll('button.btn-nav');
+// const arrow_tab = document.querySelector("button.btn-arrow");
+
+const discussions = document.querySelectorAll('#disc_pane > button.btn-heart-list');
+const users = document.querySelectorAll('#user_pane > button.btn-heart-list');
+
+// const action_pane = document.querySelectorAll("#action_pane");
+// const chatroom = document.getElementById("chatroom-tab");
+// const chat_list = document.querySelectorAll("div.chat__list");
+let current_pane = document.querySelector('.tab-pane.active.show');
+
+function get_active_pane()
 {
-    const btn_nav = document.querySelectorAll('button.btn-nav');
-    // const arrow_tab = document.querySelector("button.btn-arrow");
-
-    const discussions = document.querySelectorAll('#disc_pane > button.btn-heart-list');
-    const users = document.querySelectorAll('#user_pane > button.btn-heart-list');
-
-    // const action_pane = document.querySelectorAll("#action_pane");
-    // const chatroom = document.getElementById("chatroom-tab");
-    // const chat_list = document.querySelectorAll("div.chat__list");
-    let current_pane = document.querySelector('.tab-pane.active.show');
-
-    function get_active_pane()
-    {
-        return (document.querySelector('.tab-pane.active.show'));
-    }
+    return (document.querySelector('.tab-pane.active.show'));
+}
 
 
-    // listener for navbar buttons
-    btn_nav.forEach(triggerEl =>
-    {
-        const tabTrigger = new bootstrap.Tab(triggerEl);
+// listener for navbar buttons
+btn_nav.forEach(triggerEl =>
+{
+    const tabTrigger = new bootstrap.Tab(triggerEl);
 
-        triggerEl.addEventListener('click', event =>
-        {
-            event.preventDefault();
-            tabTrigger.show();
-        })
-    })
-
-    arrow_tab.addEventListener("click", event =>
+    triggerEl.addEventListener('click', event =>
     {
         event.preventDefault();
-        arrow_tab.classList.add("hide");
-        chatroom.style.display = "none";
-        action_pane.style.display = "none";
+        tabTrigger.show();
+    })
+})
+
+arrow_tab.addEventListener("click", event =>
+{
+    event.preventDefault();
+    arrow_tab.classList.toggle("hide");
+    chatroom.style.display = "none";
+    action_pane.style.display = "none";
+    btn_nav.forEach(triggerE =>
+    {
+        triggerE.classList.toggle("hide");
+    })
+
+    // current_pane.classList.add("active", "show");
+    current_pane.classList.toggle("active");
+    current_pane.classList.toggle("show");
+})
+
+// listener for list items
+discussions.forEach(element =>
+{
+    element.addEventListener('click', event =>
+    {
+        event.preventDefault();
         btn_nav.forEach(triggerE =>
         {
-            triggerE.classList.remove("hide");
+            triggerE.classList.toggle("hide");
         })
+        current_pane = get_active_pane();
+        current_pane.classList.toggle("active");
+        current_pane.classList.toggle("show");
+        arrow_tab.classList.toggle("hide");
 
-        current_pane.classList.add("active", "show");
+        chatroom.style.display = "flex";
     })
+})
 
-    // listener for list items
-    discussions.forEach(element =>
+users.forEach(element =>
+{
+    element.addEventListener('click', event =>
     {
-        element.addEventListener('click', event =>
+        event.preventDefault();
+        btn_nav.forEach(triggerE =>
         {
-            event.preventDefault();
-            btn_nav.forEach(triggerE =>
-            {
-                triggerE.classList.add("hide");
-            })
-            current_pane = get_active_pane();
-            current_pane.classList.remove("active", "show");
-            arrow_tab.classList.remove("hide");
-
-            chatroom.style.display = "flex";
+            triggerE.classList.toggle("hide");
         })
-    })
+        current_pane = get_active_pane();
+        // current_pane.classList.remove("active", "show");
+        current_pane.classList.toggle("active");
+        current_pane.classList.toggle("show");
+        arrow_tab.classList.toggle("hide");
 
-    users.forEach(element =>
-    {
-        element.addEventListener('click', event =>
-        {
-            event.preventDefault();
-            btn_nav.forEach(triggerE =>
-            {
-                triggerE.classList.add("hide");
-            })
-            current_pane = get_active_pane();
-            current_pane.classList.remove("active", "show");
-            arrow_tab.classList.remove("hide");
-
-            action_pane.style.display = "flex";
-        })
+        action_pane.style.display = "flex";
     })
-}
+})
