@@ -1,6 +1,6 @@
 const lorem = "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Non quas nemo eum, earum sunt, nobis similique quisquam eveniet pariatur commodi modi";
 // const chat = document.getElementById("the-chat");
-
+let chat = 0;
 function create_nav_tab(text)
 {
     const button = create_btn(['btn-nav'], text);
@@ -76,6 +76,19 @@ function create_btn_heart_list(title_text, info_text)
     return (button);
 }
 
+function create_btn_img(img_class, img_path) {
+
+    const btn_img = document.createElement('button');
+    btn_img.setAttribute('type', 'button');
+    btn_img.classList.add('btn-img');
+
+    const img = document.createElement('img');
+    img.classList.add(img_class);
+    img.setAttribute('src', img_path);
+
+    btn_img.appendChild(img);
+    return (btn_img);
+}
 function create_msg(name_text, time_text)
 {
     const msg = document.createElement('div');

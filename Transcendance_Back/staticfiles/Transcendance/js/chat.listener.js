@@ -1,5 +1,8 @@
+if (chat)
+{
+
 const btn_nav = document.querySelectorAll('button.btn-nav');
-// const arrow_tab = document.querySelector("button.btn-arrow");
+const arrow_tab = document.querySelector("button.btn-arrow");
 
 const discussions = document.querySelectorAll('#disc_pane > button.btn-heart-list');
 const users = document.querySelectorAll('#user_pane > button.btn-heart-list');
@@ -7,7 +10,7 @@ const users = document.querySelectorAll('#user_pane > button.btn-heart-list');
 // const action_pane = document.querySelectorAll("#action_pane");
 // const chatroom = document.getElementById("chatroom-tab");
 // const chat_list = document.querySelectorAll("div.chat__list");
-let current_pane = document.querySelector('.tab-pane.active.show');
+let current_pane; // = document.querySelector('.tab-pane.active.show');
 
 function get_active_pane()
 {
@@ -80,3 +83,4 @@ users.forEach(element =>
         action_pane.style.display = "flex";
     })
 })
+}

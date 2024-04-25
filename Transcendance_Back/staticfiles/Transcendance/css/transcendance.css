@@ -1,6 +1,7 @@
 /* @import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"); */
 
-@font-face {
+@font-face
+{
   font-family: "CryptOfTomorrow";
   src:
     local('CryptOfTomorrow'),
@@ -9,7 +10,8 @@
   font-style: normal;
 }
 
-@font-face {
+@font-face
+{
   font-family: "mars";
   src:
     local('Mars Needs Cunnilingus'),
@@ -18,7 +20,8 @@
   font-style: normal;
 }
 
-@font-face {
+@font-face
+{
   font-family: "8bitoperator_jve";
   src:
     local('8bitoperator_jve'),
@@ -27,7 +30,8 @@
   font-style: normal;
 }
 
-@font-face {
+@font-face
+{
   font-family: "Comic Neue";
   src:
     local('Comic Neue'),
@@ -42,19 +46,22 @@
 }
 
 /* __________________ ICONS __________________*/
-.bi {
+.bi
+{
   fill: #e5e5e5;
   background-color: transparent;
   height: 24px;
   width: 24px;
 }
 
-.bi-bell-fill {
+.bi-bell-fill
+{
   height: 20px;
   width: 20px;
 }
 
-.bi-heart-fill {
+.bi-heart-fill
+{
   height: 16px;
   width: 16px;
   margin-bottom: 4px;
@@ -62,66 +69,94 @@
   fill: transparent;
 }
 
-.bi-arrow-left-short {
+.bi-arrow-left-short
+{
   height: 32px;
   width: 32px;
   /* margin-left: 8px; */
 }
 
-.bi-three-dots-vertical {
+.bi-three-dots-vertical
+{
   height: 16px;
   width: 16px;
 }
 
-.bi-circle-fill {
+.bi-circle-fill
+{
   height: 8px;
   width: 8px;
   fill: rgba(201, 111, 38, 1);
 }
 
+.icon_sword
+{
+  height: 22px;
+  width: 22px;
+}
+
 /* __________________ GLOBAL __________________*/
 
-* {
+*
+{
   background-color: transparent;
   color: #e5e5e5;
   /* margin: 0;
   padding: 0; */
 }
 
-body {
+button
+{
+  background: none;
+  color: inherit;
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  outline: inherit;
+}
+
+body
+{
   background-color: #121212;
 }
 
 /* typescale 1.333 */
 
-h1 {
+h1
+{
   font-family: "CryptOfTomorrow";
   font-size: 90px;
 }
 
-h2 {
+h2
+{
   font-family: "8bitoperator_jve";
   font-size: 51px;
 }
 
-h3 {
+h3
+{
   margin-top: 8px;
   font-family: "8bitoperator_jve";
   font-size: 21px;
 }
 
-h4 {
+h4
+{
   font-family: "Comic Neue";
   font-size: 12px;
 }
 
-p {
+p
+{
   font-family: "Comic Neue";
   font-size: 16px;
 }
 
 
-.get_username {
+.get_username
+{
   font-weight: bold;
   margin-left: 8px;
 }
@@ -137,7 +172,8 @@ p {
   flex-direction: column;
 } */
 
-.wrapper-btn-connexionpage {
+.wrapper-btn-connexionpage
+{
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -147,55 +183,146 @@ p {
 
 /* __________________ BUTTONS __________________*/
 
-.wrapper-btn-connexionpage>.btn-orange {
+.wrapper-btn-connexionpage>.btn-orange
+{
   height: 80px;
   width: 380px;
   margin: 8px;
-
 }
 
-.btn-orange {
+.btn-orange
+{
   height: fit-content;
   width: fit-content;
-  color: #C96F26;
   border: solid #C96F26;
+  color: #C96F26;
   /* font-family: "8bitoperator_jve"; */
   font-family: "mars";
   font-size: 28px;
-  padding: 4px 8px 4px 8px;
+  padding: 0px 8px;
   white-space: nowrap;
+  position: relative;
 
-  &:active:focus {
-    color: rgba(194, 183, 0, 0.8);
-    border-color: rgba(194, 183, 0, 0.8);
+  >svg
+  {
+    height: 30px;
+    width: auto;
+    padding-bottom: 4px;
+    left: 6px;
+    top: 50%;
+    transform: translate(0, -50%);
+    position: absolute;
   }
 
-  &:hover {
+  >svg.top
+  {
+    fill: #C96F26;
+  }
+
+  >svg.bottom
+  {
+    fill: transparent;
+  }
+
+  >span.btn-orange__text
+  {
+    color: #C96F26;
+  }
+
+  &:active:focus,
+  &:active
+  {
+    color: rgba(194, 183, 0, 0.8);
+    border-color: rgba(194, 183, 0, 0.8);
+
+    >svg.top
+    {
+      fill: transparent;
+    }
+
+    >svg.bottom
+    {
+      fill: red;
+    }
+
+    >span.btn-orange__text
+    {
+      color: rgba(194, 183, 0, 0.8);
+    }
+  }
+
+  &:hover
+  {
     color: rgb(194, 183, 0);
     border-color: rgb(194, 183, 0);
+
+    >svg.bottom
+    {
+      fill: red;
+    }
+
+    >svg.top
+    {
+      fill: transparent;
+    }
+
+    >span.btn-orange__text
+    {
+
+      color: rgb(194, 183, 0);
+    }
   }
 
-  &:active {
-    color: rgba(194, 183, 0, 0.8);
-    border-color: rgba(194, 183, 0, 0.8);
-  }
 }
 
-.btn-orange--sm {
+.btn-orange__text
+{
+  font-family: "mars";
+  font-size: 40px;
+  padding-left: 30px;
+}
+
+
+.btn-orange--sm
+{
   margin-right: 8px;
   margin-bottom: 8px;
   font-size: 16px;
 
 }
 
+.btn-where
+{
+  border: 1px solid #e5e5e5;
+  padding: 2px 4px;
+  /* background-color: rgba(229, 229, 229, 0.1); */
+  /* background-color: #CC5343; */
+  /* background-color: #38334A; */
+  /* background-color: #140B3A; */
+  background-color: #1E1158;
+  color: #e5e5e5;
 
-.btn-img {
+  &:hover
+  {
+
+    background-color: rgba(201, 111, 38, 0.2);
+  }
+
+  /* box-shadow: 2px 2px 2px #e5e5e5; */
+}
+
+.btn-img
+{
+  border-radius: 50%;
   border: none;
+  height: fit-content;
+  width: fit-content;
   text-decoration: none;
 }
 
 
-.btn-heart {
+.btn-heart
+{
   /* padding: 8px 4px 8px 4px; */
   width: fit-content;
   border: none;
@@ -209,12 +336,15 @@ p {
   overflow: hidden;
   text-overflow: ellipsis;
 
-  & .bi-heart-fill {
+  & .bi-heart-fill
+  {
     left: 5%;
   }
 
-  &:hover {
-    &>svg {
+  &:hover
+  {
+    &>svg
+    {
       fill: red;
       /* stroke : red; */
     }
@@ -222,29 +352,34 @@ p {
 
 }
 
-.btn-heart-sm {
+.btn-heart-sm
+{
   font-size: 12px;
   margin: 0px 4px 0px 4px;
   height: 32px;
 
-  & .bi-heart-fill {
+  & .bi-heart-fill
+  {
     width: 12px;
     height: auto;
   }
 }
 
-.btn-heart-md {
+.btn-heart-md
+{
   font-size: 16px;
   margin: 0px 4px 0px 4px;
   height: 32px;
 
-  & .bi-heart-fill {
+  & .bi-heart-fill
+  {
     width: 14px;
     height: auto;
   }
 }
 
-.btn-heart__title {
+.btn-heart__title
+{
   position: absolute;
   left: 24px;
   top: 50%;
@@ -252,7 +387,8 @@ p {
 }
 
 /* __________________ MODALS __________________*/
-.modal-content {
+.modal-content
+{
   background-color: #121212;
   color: #e5e5e5;
   border: solid #e5e5e5;
@@ -260,17 +396,21 @@ p {
   border-radius: 0%;
 }
 
-.modal-body {
-    height: 100%;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center; /* align horizontal */
-    align-items: center; /* align vertical */
+.modal-body
+{
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* align horizontal */
+  align-items: center;
+  /* align vertical */
 
 }
 
-.modal-header {
+.modal-header
+{
   border: none;
   height: fit-content;
   padding-top: 32px;
@@ -280,12 +420,14 @@ p {
   position: relative;
 }
 
-.modal-footer {
+.modal-footer
+{
   justify-content: center;
   border: none;
 }
 
-.modal-title {
+.modal-title
+{
   height: fit-content;
   font-size: 28px;
   font-family: "8bitoperator_jve";
@@ -294,7 +436,8 @@ p {
   position: absolute;
 }
 
-.modal__input {
+.modal__input
+{
   width: 53%;
   margin: 16px;
 

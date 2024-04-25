@@ -10,8 +10,11 @@
     font-size: 28px;
     color: #e5e5e5;
 
-    &:hover {
+    &:focus:active, &:hover{
         color: red;
+    }
+    &:visited {
+        color: #e5e5e5;
     }
 }
 

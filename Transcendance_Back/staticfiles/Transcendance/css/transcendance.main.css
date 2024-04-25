@@ -14,9 +14,8 @@
   height: 160px;
   width: 160px;
 }
+.profile__edit>.btn-img {
 
-.profile__pic
-{
   grid-row-start: 1;
   grid-row-end: 3;
   place-self: center;
@@ -56,7 +55,7 @@
   margin-top: 32px;
 }
 
-.collapsible
+.btn-collapsible
 {
   padding: 16px;
   width: 100%;
@@ -75,12 +74,12 @@
   overflow: hidden;
 }
 
-.collapsible>svg.bi-plus
+.btn-collapsible>svg.bi-plus
 {
   display: block;
 }
 
-.collapsible>svg.bi-dash
+.btn-collapsible>svg.bi-dash
 {
   display: none;
 }
@@ -94,8 +93,7 @@
 
   &:hover
   {
-
-    background-color: rgba(194, 183, 0, 0.8);
+    background-color: rgba(194, 183, 0, 0.1);
   }
 }
 
@@ -105,4 +103,11 @@
   height: fit-content;
   width: fit-content;
   grid-column: 2;
+}
+
+.wrapper_btn-game {
+  /* display: grid;
+  grid-template-columns: 1fr 1fr; */
+  display: flex;
+  column-gap: 32px;
 }
