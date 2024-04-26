@@ -1,6 +1,5 @@
 const lorem = "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Non quas nemo eum, earum sunt, nobis similique quisquam eveniet pariatur commodi modi";
 // const chat = document.getElementById("the-chat");
-let chat = 0;
 function create_nav_tab(text)
 {
     const button = create_btn(['btn-nav'], text);
@@ -27,30 +26,8 @@ function create_btn_arrow(text)
 }
 
 // NAV-----------------------------------------------------
-function create_tabnav()
-{
-    console.log("create_tabnav");
-    const disc_tab = create_nav_tab(" DISCUSSIONS ");
-    disc_tab.setAttribute('aria-selected', 'true');
-    disc_tab.classList.add('active');
-    disc_tab.setAttribute('data-bs-target', '#disc_pane');
-    disc_tab.setAttribute('aria-controls', 'disc_pane');
 
-    const user_tab = create_nav_tab(" UTILISATEURS ");
-    user_tab.setAttribute('data-bs-target', '#user_pane');
-    user_tab.setAttribute('aria-controls', 'user_pane');
 
-    const arrow_tab = create_btn_arrow(" WHO WHAT ")
-    return {disc_tab, user_tab, arrow_tab};
-}
-function load_tabnav()
-{
-    const nav_tab = document.getElementById('nav-tab');
-
-    const { disc_tab, user_tab, arrow_tab } = create_tabnav();
-
-    nav_tab.append(disc_tab, user_tab, arrow_tab);
-}
 // TAB CONTENT-----------------------------------------------------
 function create_tab_pane()
 {
@@ -64,7 +41,7 @@ function create_tab_pane()
 
 function create_btn_heart_list(title_text, info_text)
 {
-    const button = create_btn(['btn-heart-list'], "");
+    const button = create_btn(['btn_list', 'btn-heart-list'], "");
     const title = document.createElement('span');
     title.classList.add('list__title');
     title.appendChild(document.createTextNode(title_text));
@@ -76,7 +53,8 @@ function create_btn_heart_list(title_text, info_text)
     return (button);
 }
 
-function create_btn_img(img_class, img_path) {
+function create_btn_img(img_class, img_path)
+{
 
     const btn_img = document.createElement('button');
     btn_img.setAttribute('type', 'button');
@@ -126,35 +104,65 @@ function create_msg_text()
     return (p);
 }
 
+function create_user_in_pane(username, userstatus)
+{
+    const button = create_btn(['btn_list', 'btn_user_list'], "");
 
-// DISCUSSIONS PANE ------------------------------------------
+
+    const btn_img = create_btn_img(['sender__img'], "./assets/user.jpg");
+
+    const title = document.createElement('span');
+    title.classList.add('user__name');
+    title.appendChild(document.createTextNode(username));
+
+    const info = document.createElement('span');
+    info.classList.add('user__status');
+    info.appendChild(document.createTextNode(userstatus));
+
+    const btns = create_btn_set1();
+    button.append(btn_img, title, info, btns);
+    return (button);
+}
+
+///////////////////////////////////////////////////////////////////////////
+///////////////////////// CREATION FUNCTIONS //////////////////////////////////
+///////////////////////////////////////////////////////////////////////////
+
 function create_tabcontent()
 {
+    // DISC PANE------------------------------------------
     const disc_pane = create_tab_pane();
-    disc_pane.classList.add('chat__list', 'show', 'active');
     disc_pane.setAttribute('id', 'disc_pane');
+    disc_pane.classList.add( 'show', 'active');
+    const buf_pane1 = document.createElement('div');
+    buf_pane1.classList.add('chat__list');
 
     // loopable
     const disc_one = create_btn_heart_list("Une discussion", lorem);
 
+    disc_pane.appendChild(buf_pane1);
+    buf_pane1.append(disc_one);
+
     // USERS PANE------------------------------------------
 
     const user_pane = create_tab_pane();
-    user_pane.classList.add('chat__list');
     user_pane.setAttribute('id', 'user_pane');
-
-    disc_pane.append(disc_one);
+    const buf_pane2 = document.createElement('div');
+    buf_pane2.classList.add('chat__list');
 
     // loopable
-    const user_one = create_btn_heart_list("Un joueur", "Son statut");
+    // const user_one = create_btn_heart_list("Un joueur", "Son statut");
+    const user_one = create_user_in_pane("Un joueurrrrrrrrrrrrrrrrrrrrrrrr", "Son status");
+    const user_two = create_user_in_pane("Un joueur", "Son status");
 
-    user_pane.append(user_one);
+    user_pane.appendChild(buf_pane2);
+    buf_pane2.append(user_one, user_two);
 
     // CHATROOM PANE-------------------------------------------
 
     const chatroom = create_tab_pane();
-    chatroom.classList.add('chatroom');
     chatroom.setAttribute('id', 'chatroom-tab')
+    chatroom.classList.add('chatroom');
 
     const inbox = document.createElement('div');
     inbox.classList.add('inbox');
@@ -185,8 +193,8 @@ function create_tabcontent()
 
     // ACTIONS PANE------------------------------------------
     const action_pane = create_tab_pane();
-    action_pane.classList.add('chat__list');
     action_pane.setAttribute('id', 'action_pane');
+    action_pane.classList.add('chat__list');
 
     const btn_add_friend = create_btn_heart_list(" Ajouter comme ami ", "");
     const btn_see_profile = create_btn_heart_list(" Voir son profil ", "");
@@ -194,8 +202,36 @@ function create_tabcontent()
 
     action_pane.append(btn_add_friend, btn_see_profile, btn_block);
 
-    return {disc_pane, user_pane, chatroom, action_pane};
+    return { disc_pane, user_pane, chatroom, action_pane };
     // Arborescence
+}
+function create_tabnav()
+{
+    console.log("create_tabnav");
+    const disc_tab = create_nav_tab(" DISCUSSIONS ");
+    disc_tab.setAttribute('aria-selected', 'true');
+    disc_tab.classList.add('active');
+    disc_tab.setAttribute('data-bs-target', '#disc_pane');
+    disc_tab.setAttribute('aria-controls', 'disc_pane');
+
+    const user_tab = create_nav_tab(" UTILISATEURS ");
+    user_tab.setAttribute('data-bs-target', '#user_pane');
+    user_tab.setAttribute('aria-controls', 'user_pane');
+
+    const arrow_tab = create_btn_arrow(" WHO WHAT ")
+    return { disc_tab, user_tab, arrow_tab };
+}
+///////////////////////////////////////////////////////////////////////////
+///////////////////////// LOAD FUNCTIONS //////////////////////////////////
+///////////////////////////////////////////////////////////////////////////
+
+function load_tabnav()
+{
+    const nav_tab = document.getElementById('nav-tab');
+
+    const { disc_tab, user_tab, arrow_tab } = create_tabnav();
+
+    nav_tab.append(disc_tab, user_tab, arrow_tab);
 }
 function load_tabcontent()
 {
@@ -203,3 +239,23 @@ function load_tabcontent()
     const { disc_pane, user_pane, chatroom, action_pane } = create_tabcontent();
     tab_content.append(disc_pane, user_pane, chatroom, action_pane);
 }
+
+function load_chat()
+{
+    load_tabnav();
+    load_tabcontent();
+    is_chat_loaded = 1;
+}
+
+///////////////////////////////////////////////////////////////////////////
+///////////////////////// GLOBAL VARIABLES //////////////////////////////////
+///////////////////////////////////////////////////////////////////////////
+let btn_nav = 0;
+let arrow_tab = 0;
+
+let discussions = 0;
+let users = 0;
+let action_pane = 0;
+let chatroom = 0;
+
+let is_chat_loaded = 0;

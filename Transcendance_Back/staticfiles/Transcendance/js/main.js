@@ -152,10 +152,12 @@ function create_btn_orange_w_heart_sword(game_name)
     btn.append(svg_heart, svg_sword, span);
     return (btn);
 }
-function create_btn_set (){
+function create_btn_set1()
+{
     const btns = document.createElement('div');
+    btns.classList.add('wrapper_btns');
 
-    const btn_check = create_btn(['btn-where'], "");
+    const btn_check = create_btn(['btn-set1'], "");
     const svg_check = create_svg(['bi', 'bi-check']);
     const path_check = document.createElementNS(svgns, 'path');
     path_check.setAttribute('fill-rule', 'evenodd');
@@ -163,33 +165,80 @@ function create_btn_set (){
     svg_check.appendChild(path_check);
     btn_check.appendChild(svg_check);
 
-    const btn_x = create_btn(['btn-where'], "");
+    const btn_x = create_btn(['btn-set1'], "");
     const svg_x = create_svg(['bi', 'bi-x']);
     const path_x = document.createElementNS(svgns, 'path');
     path_x.setAttribute('fill-rule', 'evenodd');
-										path_x.setAttribute('d', "M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708");
+    path_x.setAttribute('d', "M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708");
     svg_x.appendChild(path_x);
     btn_x.appendChild(svg_x);
 
-    const btn_ban = create_btn(['btn-where'], "");
+    const btn_ban = create_btn(['btn-set1'], "");
     const svg_ban = create_svg(['bi', 'bi-ban']);
     const path_ban = document.createElementNS(svgns, 'path');
     path_ban.setAttribute('fill-rule', 'evenodd');
-    path_ban.setAttribute('d',"M15 8a6.97 6.97 0 0 0-1.71-4.584l-9.874 9.875A7 7 0 0 0 15 8M2.71 12.584l9.874-9.875a7 7 0 0 0-9.874 9.874ZM16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0" );
+    path_ban.setAttribute('d', "M15 8a6.97 6.97 0 0 0-1.71-4.584l-9.874 9.875A7 7 0 0 0 15 8M2.71 12.584l9.874-9.875a7 7 0 0 0-9.874 9.874ZM16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0");
     svg_ban.appendChild(path_ban);
     btn_ban.appendChild(svg_ban);
 
-    const btn_person_plus_fill = create_btn(['btn-where'], "");
+    const btn_person_plus_fill = create_btn(['btn-set1'], "");
     const svg_person_plus_fill = create_svg(['bi', 'bi-person-plus-fill']);
-    const path_person_plus_fill = document.createElementNS(svgns, 'path');
-    path_person_plus_fill.setAttribute('fill-rule', 'evenodd');
-										path_person_plus_fill.setAttribute('d', "M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5" );
-    svg_person_plus_fill.appendChild(path_person_plus_fill);
+    const path_person1 = document.createElementNS(svgns, 'path');
+    const path_person2 = document.createElementNS(svgns, 'path');
+    path_person1.setAttribute('fill-rule', 'evenodd');
+    path_person2.setAttribute('fill-rule', 'evenodd');
+    path_person2.setAttribute('d', "M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6")
+    path_person1.setAttribute('d', "M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5");
+    svg_person_plus_fill.append(path_person2, path_person1);
     btn_person_plus_fill.appendChild(svg_person_plus_fill);
 
     btns.append(btn_check, btn_x, btn_ban, btn_person_plus_fill);
     return (btns);
 }
+function create_btn_setn(btn_class)
+{
+    const btns = document.createElement('div');
+    btns.classList.add('wrapper');
+
+    const btn_check = create_btn([btn_class], "");
+    const svg_check = create_svg(['bi', 'bi-check']);
+    const path_check = document.createElementNS(svgns, 'path');
+    path_check.setAttribute('fill-rule', 'evenodd');
+    path_check.setAttribute('d', "M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425z");
+    svg_check.appendChild(path_check);
+    btn_check.appendChild(svg_check);
+
+    const btn_x = create_btn([btn_class], "");
+    const svg_x = create_svg(['bi', 'bi-x']);
+    const path_x = document.createElementNS(svgns, 'path');
+    path_x.setAttribute('fill-rule', 'evenodd');
+    path_x.setAttribute('d', "M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708");
+    svg_x.appendChild(path_x);
+    btn_x.appendChild(svg_x);
+
+    const btn_ban = create_btn([btn_class], "");
+    const svg_ban = create_svg(['bi', 'bi-ban']);
+    const path_ban = document.createElementNS(svgns, 'path');
+    path_ban.setAttribute('fill-rule', 'evenodd');
+    path_ban.setAttribute('d', "M15 8a6.97 6.97 0 0 0-1.71-4.584l-9.874 9.875A7 7 0 0 0 15 8M2.71 12.584l9.874-9.875a7 7 0 0 0-9.874 9.874ZM16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0");
+    svg_ban.appendChild(path_ban);
+    btn_ban.appendChild(svg_ban);
+
+    const btn_person_plus_fill = create_btn([btn_class], "");
+    const svg_person_plus_fill = create_svg(['bi', 'bi-person-plus-fill']);
+    const path_person1 = document.createElementNS(svgns, 'path');
+    const path_person2 = document.createElementNS(svgns, 'path');
+    path_person1.setAttribute('fill-rule', 'evenodd');
+    path_person2.setAttribute('fill-rule', 'evenodd');
+    path_person2.setAttribute('d', "M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6")
+    path_person1.setAttribute('d', "M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5");
+    svg_person_plus_fill.append(path_person2, path_person1);
+    btn_person_plus_fill.appendChild(svg_person_plus_fill);
+
+    btns.append(btn_check, btn_x, btn_ban, btn_person_plus_fill);
+    return (btns);
+}
+
 
 ////////////////////////////////////////////////////
 ////////////////////////////////////////////////////
@@ -221,8 +270,6 @@ function create_profile_once()
             const coll_history = create_profile_collapsible("HISTORIQUE", 0);
             wrapper_coll.append(coll_friend, coll_blocked, coll_history);
 
-            const btn_set = create_btn_set();
-            wrapper_profile_el.append(btn_set);
 
             wrapper_profile_el.append(wrapper_coll);
         } else
@@ -244,7 +291,7 @@ function create_btn_games_once()
         {
             has_been_called = true;
             btn_games_el = document.createElement('div');
-            btn_games_el.classList.add('wrapper_btn-game');
+            btn_games_el.classList.add('wrapper_btn_games');
 
             const btn_pong = create_btn_orange_w_heart_sword("PONG");
 
@@ -286,3 +333,23 @@ function load_profile()
         console.log("could not load the user profile because the HTML elements have not been created");
     }
 }
+
+existing_main.append(create_btn_setn("btn-set1"));
+existing_main.append(create_btn_setn("btn-set2"));
+existing_main.append(create_btn_setn("btn-set3"));
+
+function navigate_main(page)
+{
+    let container = document.getElementById('main');
+
+    fetch("./page/" + page + ".html")
+        .then(response => response.text())
+        .then(html => {
+            container.innerHTML = html;
+        })
+        .catch(error =>
+        {
+            console.error("Error fetching page: ", error);
+        })
+}
+

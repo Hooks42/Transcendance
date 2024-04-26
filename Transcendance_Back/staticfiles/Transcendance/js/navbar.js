@@ -144,65 +144,83 @@ function create_svg_circle()
     return (circle_svg);
 }
 
-function create_navbar()
+function create_navbar_once()
 {
-    const navbar = document.querySelector('#navbar-long > div');
+    let has_been_called = false;
+
+    return function ()
+    {
+        if (!has_been_called) 
+        {
+            const navbar = document.querySelector('#navbar-long > div');
 
 
-    // Création de la liste ul navbar_nav
-    const navbar_nav = document.createElement('ul');
-    navbar_nav.classList.add('navbar-nav');
+            // Création de la liste ul navbar_nav
+            const navbar_nav = document.createElement('ul');
+            navbar_nav.classList.add('navbar-nav');
 
-    // Premier élément li de navbar_nav
-    const nav_item1 = document.createElement('li');
-    nav_item1.classList.add('nav-item', 'dropdown');
-    const nav_item2 = document.createElement('li');
-    nav_item2.classList.add('nav-item', 'dropdown');
+            // Premier élément li de navbar_nav
+            const nav_item1 = document.createElement('li');
+            nav_item1.classList.add('nav-item', 'dropdown');
+            const nav_item2 = document.createElement('li');
+            nav_item2.classList.add('nav-item', 'dropdown');
 
-    // bell anchor
-    const bell_a = create_nav_link("navbar_notif_menu");
-    bell_a.appendChild(create_svg_bell());
+            // bell anchor
+            const bell_a = create_nav_link("navbar_notif_menu");
+            bell_a.appendChild(create_svg_bell());
 
-    const bell_menu = create_dropdown_menu();
-    bell_menu.classList.add("dropdown-menu--lg");
-    const bell_menu_li1 = document.createElement('li');
-    bell_menu_li1.appendChild(create_notif());
-    const bell_menu_li2 = bell_menu_li1.cloneNode(true);
+            const bell_menu = create_dropdown_menu();
+            bell_menu.classList.add("dropdown-menu--lg");
+            const bell_menu_li1 = document.createElement('li');
+            bell_menu_li1.appendChild(create_notif());
+            const bell_menu_li2 = bell_menu_li1.cloneNode(true);
 
-    // person anchor
-    const person_a = create_nav_link("navbar_account_menu");
-    person_a.appendChild(create_svg_person());
+            // person anchor
+            const person_a = create_nav_link("navbar_account_menu");
+            person_a.appendChild(create_svg_person());
 
-    const person_menu = create_dropdown_menu();
-    const person_menu_li1 = document.createElement('li');
-    const person_menu_li2 = document.createElement('li');
+            const person_menu = create_dropdown_menu();
+            const person_menu_li1 = document.createElement('li');
+            const person_menu_li2 = document.createElement('li');
 
-    person_menu_li1.appendChild(create_btn_heart_sm(" Mon compte "));
-    person_menu_li2.appendChild(create_btn_heart_sm(" Se déconnecter "));
+            person_menu_li1.appendChild(create_btn_heart_sm(" Mon compte "));
+            person_menu_li1.children[0].setAttribute("id", "btn_my_account");
+            person_menu_li2.appendChild(create_btn_heart_sm(" Se déconnecter "));
+            person_menu_li2.children[0].setAttribute("id", "btn_logout");
 
-    // Construction de l'arborescence des éléments
+            // Construction de l'arborescence des éléments
 
-    navbar_nav.appendChild(nav_item1);
-    navbar_nav.appendChild(nav_item2);
+            navbar_nav.appendChild(nav_item1);
+            navbar_nav.appendChild(nav_item2);
 
-    nav_item1.appendChild(bell_a);
-    nav_item1.appendChild(bell_menu);
+            nav_item1.appendChild(bell_a);
+            nav_item1.appendChild(bell_menu);
 
-    nav_item2.appendChild(person_a);
-    nav_item2.appendChild(person_menu);
+            nav_item2.appendChild(person_a);
+            nav_item2.appendChild(person_menu);
 
-    bell_menu.appendChild(bell_menu_li1);
-    bell_menu.appendChild(bell_menu_li2);
+            bell_menu.appendChild(bell_menu_li1);
+            bell_menu.appendChild(bell_menu_li2);
 
-    person_menu.appendChild(person_menu_li1);
-    person_menu.appendChild(person_menu_li2);
-
-    return (navbar_nav);
+            person_menu.appendChild(person_menu_li1);
+            person_menu.appendChild(person_menu_li2);
+            navbar_el = navbar_nav;
+    // return (navbar_nav);
+        }
+    }
 }
+const create_navbar = create_navbar_once();
+let is_navbar_loaded = 0;
+let navbar_el = 0;
 
+const existing_navbar = document.querySelector('#navbar-long > div');
 function load_navbar()
 {
-    const navbar = document.querySelector('#navbar-long > div');
-    const navbar_nav = create_navbar();
-    navbar.appendChild(navbar_nav);
+    // const navbar_nav = create_navbar();
+    if (navbar_el != 0)
+    {
+        is_navbar_loaded = 1;
+        existing_navbar.appendChild(navbar_el);
+    }
 }
+

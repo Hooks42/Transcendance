@@ -39,8 +39,9 @@
         color: #C96F26;
 }
 .hide {
-    display: none;
+    display: none !important; 
 }
+
 .tab-content {
     height: 1px;
     /* needed for the overflow to trigger */
@@ -76,6 +77,36 @@
     scrollbar-color: rgba(201, 111, 38, 0.4) #121212;
     scrollbar-width: thin;
 }
+
+.user__name
+{
+    font-size: 21px;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 64px;
+    position: absolute;
+    max-width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.user__status
+{
+    top: 62%;
+    left: 66px;
+    font-size: 14px;
+
+    position:absolute;
+}
+
+.wrapper_btns
+{
+    right: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    position:absolute;
+}
+/* sender is a chat user who sent a msg */
 .sender {
     height: 56px;
     width: 100%;
@@ -145,47 +176,6 @@ div.textarea {
     scrollbar-width: thin;
 }
 
-.btn-heart-list {
-    width: 100%;
-    height: 64px;
-    font-family: "Comic Neue";
-    flex: none;
-    border: none;
-    white-space: nowrap;
-    overflow: hidden;
-    position: relative;
-
-    &:hover {
-        &>svg {
-            fill: red;
-        }
-    }
-
-    & .bi-heart-fill {
-        left: 8px;
-        top: 50%;
-        transform: translate(0, -50%);
-        position: absolute;
-    }
-
-    &>span.list__title {
-        font-size: 23px;
-        top: 50%;
-        left: 32px;
-        transform: translate(0, -50%);
-        margin: 0 0 4px 0;
-        position: absolute;
-    }
-
-    &>span.list__info {
-        font-size: 12px;
-        top: 70%;
-        left: 34px;
-        /* max-width: 380px; */
-        /* text-overflow: ellipsis; */
-        position: absolute;
-    }
-}
 
 textarea {
     font-family: "Comic Neue";

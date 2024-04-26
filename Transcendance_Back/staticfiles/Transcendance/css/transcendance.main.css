@@ -105,9 +105,24 @@
   grid-column: 2;
 }
 
-.wrapper_btn-game {
-  /* display: grid;
-  grid-template-columns: 1fr 1fr; */
-  display: flex;
+.wrapper_btn_games {
+  height: 100%;
+  align-items: center;
+  justify-content: center;
   column-gap: 32px;
+  display: flex;
+}
+.wrapper_btn_connexionpage
+{
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.wrapper_btn_connexionpage>.btn-orange
+{
+  height: 80px;
+  width: 380px;
+  margin: 8px;
 }

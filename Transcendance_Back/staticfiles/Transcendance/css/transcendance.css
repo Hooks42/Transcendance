@@ -89,6 +89,18 @@
   fill: rgba(201, 111, 38, 1);
 }
 
+.bi-ban
+{
+  height: 16px;
+  width: 16px;
+  margin: 4px;
+}
+.bi-person-plus-fill
+{
+  height: 18px;
+  width: 18px;
+  margin: 3px;
+}
 .icon_sword
 {
   height: 22px;
@@ -172,23 +184,60 @@ p
   flex-direction: column;
 } */
 
-.wrapper-btn-connexionpage
-{
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
 
 /* __________________ BUTTONS __________________*/
 
-.wrapper-btn-connexionpage>.btn-orange
+.btn_list
 {
-  height: 80px;
-  width: 380px;
-  margin: 8px;
+  width: 100%;
+  height: 64px;
+  font-family: "Comic Neue";
+  flex: none;
+  border: none;
+  white-space: nowrap;
+  overflow: hidden;
+  position: relative;
 }
+
+.btn-heart-list
+{
+  &:hover
+  {
+    &>svg
+    {
+      fill: red;
+    }
+  }
+
+  & .bi-heart-fill
+  {
+    left: 8px;
+    top: 50%;
+    transform: translate(0, -50%);
+    position: absolute;
+  }
+
+  &>span.list__title
+  {
+    font-size: 23px;
+    top: 50%;
+    left: 32px;
+    transform: translate(0, -50%);
+    margin: 0 0 4px 0;
+    position: absolute;
+  }
+
+  &>span.list__info
+  {
+    font-size: 12px;
+    top: 70%;
+    left: 34px;
+    /* max-width: 380px; */
+    /* text-overflow: ellipsis; */
+    position: absolute;
+  }
+}
+
 
 .btn-orange
 {
@@ -291,31 +340,50 @@ p
 
 }
 
-.btn-set1 {
-
-  border: 1px solid #e5e5e5;
-  background-color: #1E1158;
+.btn-set3
+{
+  border: 1px solid #c93726;
+  background-color:#C93726;
   color: #e5e5e5;
+  border-radius: 25%;
+  padding: 2px;
+
+  &:hover,
+  &:hover:active
+  {
+    background-color: #AC2F21;
+  }
 }
-.btn-where
+.btn-set2
+{
+  border: 1px solid rgba(86, 47, 16, 0.5);
+  background-color: rgba(86, 47, 16, 0.5);
+  color: #e5e5e5;
+  border-radius: 20%;
+  padding: 2px;
+
+  &:hover,
+  &:hover:active
+  {
+    background-color: #3C210B;
+  }
+}
+
+.btn-set1
 {
   border: 1px solid #e5e5e5;
-  padding: 2px 4px;
-  /* background-color: rgba(229, 229, 229, 0.1); */
-  /* background-color: #CC5343; */
-  /* background-color: #38334A; */
-  /* background-color: #140B3A; */
-  background-color: #e5e5e5;
+  background-color: #562F10;
   color: #e5e5e5;
+  border-radius: 20%;
+  padding: 2px;
 
-  &:hover
+  &:hover,
+  &:hover:active
   {
-
-    background-color: rgba(201, 111, 38, 0.2);
+    background-color: #3C210B;
   }
-
-  /* box-shadow: 2px 2px 2px #e5e5e5; */
 }
+
 
 .btn-img
 {
@@ -449,4 +517,9 @@ p
 
   border: 1px solid #e5e5e5;
   padding: 16px;
+}
+.sc_modal__title
+{
+  margin: auto;
+  padding: 32px;
 }
