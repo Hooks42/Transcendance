@@ -291,6 +291,12 @@ p
 
 }
 
+.btn-set1 {
+
+  border: 1px solid #e5e5e5;
+  background-color: #1E1158;
+  color: #e5e5e5;
+}
 .btn-where
 {
   border: 1px solid #e5e5e5;
@@ -299,7 +305,7 @@ p
   /* background-color: #CC5343; */
   /* background-color: #38334A; */
   /* background-color: #140B3A; */
-  background-color: #1E1158;
+  background-color: #e5e5e5;
   color: #e5e5e5;
 
   &:hover
