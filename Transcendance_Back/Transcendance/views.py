@@ -18,18 +18,6 @@ from django.template.loader import render_to_string
 import json
 
 
-
-def AccountLogin(request):
-    if request.method == 'POST':
-        form = AccountLoginForm(request.POST)
-        if form.is_valid():
-            email = form.cleaned_data.get('email')
-            if form.Login(request):
-                return redirect('hello')
-    else:
-        form = AccountLoginForm()
-    return render(request, "Account_login.html", {"form" : form})
-
 def Hello(request):
     signup_form = AccountCreationForm()
     signin_form = AccountLoginForm()
@@ -65,12 +53,6 @@ def Hello(request):
     print(f"✅ servor returned HTPP_RESPONSE")
     return render(request, 'main.html', {'signup_form': signup_form, 'signin_form': signin_form})
 
-def LoginPage(request):
-    return render(request, 'Login_page.html')
-
-def FailedLogin(request):
-    return render(request, 'Failed_login.html')
-
 def Logout(request):
     user = request.user
     logout(request)
@@ -105,16 +87,12 @@ def PrivateChatView(request, room_name):
         return redirect('hello')
     return render(request, "Private_chatroom.html", {'message': message_backup})
 
-
-
-    return render(request, "Private_chat_room.html", {'message': message_backup, 'usernames': usernames})
-
 def redirect_to_provider(request):
     load_dotenv()
     base_url = "https://api.intra.42.fr/oauth/authorize"
     params = {
         "client_id": os.getenv("CLIENT_ID"),
-        "redirect_uri": 'https://localhost:/callback',
+        "redirect_uri": 'https://localhost/callback',
         "response_type": "code",
     }
     auth_url = f"{base_url}?{urlencode(params)}"
@@ -126,7 +104,7 @@ def callback_view(request):
     data = {
         'grant_type': 'authorization_code',
         'code': code,
-        'redirect_uri': 'https://localhost:/callback',
+        'redirect_uri': 'https://localhost/callback',
         'client_id': os.getenv("CLIENT_ID"),
         'client_secret': os.getenv("CLIENT_SECRET"),
     }

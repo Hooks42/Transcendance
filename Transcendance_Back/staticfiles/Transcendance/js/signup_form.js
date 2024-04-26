@@ -17,21 +17,15 @@ document.getElementById('signup_form').addEventListener('submit', function (even
 
             if (data.signup_status == 'success') {
                 let signup_modal = document.getElementById('signup-modal');
-                let bootstrapModal = bootstrap.Modal.getInstance(signup_modal);
-                bootstrapModal.hide();
-                signup_modal.remove();
+				let bootstrapModal = bootstrap.Modal.getInstance(signup_modal);
+				bootstrapModal.hide();
+				signup_modal.remove();
 
-                let log_div = document.getElementById('log-div');
-                log_div.remove();
-
-
-
-                create_navbar();
-                load_navbar();
-                //create_tabnav();
-                //create_tabcontent();
-                //load_tabcontent();
-                //load_tabnav();
+				let log_div = document.getElementById('log-div');
+				log_div.remove();
+				load_navbar();
+				load_tabnav();
+				load_tabcontent();
             }
 
             if (data.signup_status == 'fail') {
@@ -45,9 +39,21 @@ document.getElementById('signup_form').addEventListener('submit', function (even
                     if (errors.hasOwnProperty(key)) {
                         errors[key].forEach(function (error)
                         {
+                            console.log('key -->' + key + ' error -->' + error);
                             var errorDiv = document.createElement('div');
                             errorDiv.id = 'error-#' + id;
-                            errorDiv.textContent = error;
+                            if (key == 'username' && error == 'Ce champ est obligatoire.')
+                                errorDiv.textContent = 'Veuillez saisir un nom d\'utilisateur❌';
+                            else if (key == 'password' && error == 'Ce champ est obligatoire.')
+                                errorDiv.textContent = 'Veuillez saisir un mot de passe❌';
+                            else if (key == 'confirm_password' && error == 'Ce champ est obligatoire.')
+                                errorDiv.textContent = 'Veuillez confirmer votre mot de passe❌';
+                            else if (key == 'email' && error == 'Ce champ est obligatoire.')
+                                errorDiv.textContent = 'Veuillez saisir une addresse email❌';
+                            else if (key == 'email' && error == 'Saisissez une adresse de courriel valide.')
+                                errorDiv.textContent = 'Veuillez saisir une addresse email valide❌';
+                            else
+                                errorDiv.textContent = error;
                             document.getElementById('signup_form').appendChild(errorDiv);
                         });
                     }

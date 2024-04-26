@@ -24,7 +24,7 @@ class AccountCreationForm(forms.ModelForm):
     def clean_username(self):
         username = self.cleaned_data.get('username')
         if User.objects.filter(username=username).exists():
-            self.add_error('username', "Ce nom d'utilisateur existe déjà. ❌")
+            self.add_error('username', "Ce nom d'utilisateur existe déjà ❌")
         if len(username) < 4:
             self.add_error('username', "Le nom d'utilisateur doit contenir 4 caracteres minimum ❌")
         if not re.match(r'^[a-zA-Z0-9.@+-]+$' , username):
@@ -43,13 +43,13 @@ class AccountCreationForm(forms.ModelForm):
         password = self.cleaned_data.get('password')
         
         if confirm_password != password:
-           self.add_error('confirm_password', "Les mots de passe ne sont pas identique. Veuillez les saisir a nouveau ❌")
+           self.add_error('confirm_password', "Les mots de passe ne sont pas identique ❌")
         return confirm_password
     
     def clean_email(self):
         email = self.cleaned_data.get('email')
         if User.objects.filter(email=email).exists():
-            self.add_error('email', "Cet email existe déjà. ❌")
+            self.add_error('email', "Cet email existe déjà ❌")
         return email
 
     def Create_User(self, request):
