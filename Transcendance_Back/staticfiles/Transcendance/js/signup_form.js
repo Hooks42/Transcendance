@@ -21,11 +21,7 @@ document.getElementById('signup_form').addEventListener('submit', function (even
 				bootstrapModal.hide();
 				signup_modal.remove();
 
-				let log_div = document.getElementById('log-div');
-				log_div.remove();
-				load_navbar();
-				load_tabnav();
-				load_tabcontent();
+				clear_connexion_page();
             }
 
             if (data.signup_status == 'fail') {

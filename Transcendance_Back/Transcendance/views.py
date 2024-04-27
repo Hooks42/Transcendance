@@ -15,6 +15,7 @@ from django.http import HttpResponse
 from Transcendance.management.OAuth20.get_info_from_42 import register_user 
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
+from django.contrib.auth.decorators import login_required
 import json
 
 
@@ -87,17 +88,6 @@ def PrivateChatView(request, room_name):
         return redirect('hello')
     return render(request, "Private_chatroom.html", {'message': message_backup})
 
-def redirect_to_provider(request):
-    load_dotenv()
-    base_url = "https://api.intra.42.fr/oauth/authorize"
-    params = {
-        "client_id": os.getenv("CLIENT_ID"),
-        "redirect_uri": 'https://localhost/callback',
-        "response_type": "code",
-    }
-    auth_url = f"{base_url}?{urlencode(params)}"
-    return HttpResponseRedirect(auth_url)
-
 def callback_view(request):
     load_dotenv()
     code = request.GET.get("code")
@@ -117,7 +107,7 @@ def callback_view(request):
         access_token = response_data['access_token']
         user = register_user(access_token)
         login(request, user)
-    return redirect('hello')
+    return redirect('Successfully_Connected_42')
 
 def AccountUpdate(request):
     user = User.objects.get(username=request.user.username)
@@ -163,3 +153,13 @@ def PFC_view(request, room_name):
 def UserInfo(request, username):
     user = get_object_or_404(User, username=username)
     return render(request, 'User_info.html')
+
+def Successfully_Connected_42(request):
+    return render(request, 'Successfully_Connected_42.html')
+
+def get_actual_user(request):
+    if (request.user.is_anonymous):
+        return JsonResponse({'username': None})
+    return JsonResponse({'username': request.user.username})
+    
+    

@@ -12,8 +12,6 @@ document.getElementById("signin-form").addEventListener("submit", function (even
 
 		.then((data) =>
 		{
-			console.log(data);
-
 			if (data.signin_status == "success")
 			{
 				let signin_modal = document.getElementById('signin-modal');
@@ -21,12 +19,7 @@ document.getElementById("signin-form").addEventListener("submit", function (even
 				bootstrapModal.hide();
 				signin_modal.remove();
 
-				let log_div = document.getElementById('log-div');
-				log_div.remove();
-				load_navbar();
-				load_tabnav();
-				load_tabcontent();
-				//create_tabcontent();
+				clear_connexion_page();
 			}
 
 			if (data.signin_status == "fail")
@@ -51,6 +44,7 @@ document.getElementById("signin-form").addEventListener("submit", function (even
 							else
 								errorDiv.textContent = error;
 							document.getElementById("signin-form").appendChild(errorDiv);
+							id++;
 						});
 					}
 				}

@@ -57,15 +57,15 @@
 
 						<div class="wrapper-btn-connexionpage" id="log-div">
 							<button type="button" class="btn-orange" data-bs-toggle="modal"
-								data-bs-target="#signup-modal">
+								data-bs-target="#signup-modal" id="signup-btn">
 								CREER UN COMPTE
 							</button>
 							<button type="button" class="btn-orange" data-bs-toggle="modal"
-								data-bs-target="#signin-modal">
+								data-bs-target="#signin-modal" id="signin-btn">
 								SE CONNECTER
 							</button>
-							<button type="button" class="btn-orange" data-bs-toggle="modal"
-								data-bs-target="#connexion-ft-modal">
+							<button type="button" class="btn-orange" data-bs-target="#connexion-ft-modal"
+								id="signin-42-btn">
 								SE CONNECTER AVEC 42
 							</button>
 						</div>
@@ -148,20 +148,7 @@
 						</div>
 
 						<!-- Connexion 42 Modal -->
-						<div class="modal fade" id="connexion-ft-modal" tabindex="-1"
-							aria-labelledby="connexion-ft-modal" aria-hidden="true">
-							<div class="modal-dialog modal-lg">
-								<div class="modal-content ">
-									<div class="modal-header">
-										<h5 class="modal-title">CONNECTEZ-VOUS AVEC 42</h5>
-										<button type="button" class="btn-heart" data-bs-dismiss="modal" aria-label="Close"></button>
-									</div>
-									<div class="modal-body">
-										<iframe id="authFrame" width="100%" height="500px" src="https://fr.wikipedia.org/wiki/Wikip%C3%A9dia:Accueil_principal"></iframe>
-									</div>
-								</div>
-							</div>
-						</div>
+						<div id="connexion-ft-modal" tabindex="-1"></div>
 					</div>
 				</div>
 			</div>
@@ -186,6 +173,9 @@
 	<script src="/static/Transcendance/js/navbar.js"></script>
 	<script src="/static/Transcendance/js/chat.js"></script>
 	<script src="/static/Transcendance/js/chat.listener.js"></script>
+	<script src="/static/Transcendance/js/clear_connexion_page.js"></script>
+	<script src="/static/Transcendance/js/get_actual_user.js"></script>
+	<script src="/static/Transcendance/js/signin_with_42.js"></script>
 
 </body>
 <!-- <script src="index.js"></script> -->
