@@ -158,6 +158,7 @@ function create_btn_set1()
     btns.classList.add('wrapper_btns');
 
     const btn_check = create_btn(['btn-set1'], "");
+    btn_check.setAttribute("title", "Valider");
     const svg_check = create_svg(['bi', 'bi-check']);
     const path_check = document.createElementNS(svgns, 'path');
     path_check.setAttribute('fill-rule', 'evenodd');
@@ -166,6 +167,7 @@ function create_btn_set1()
     btn_check.appendChild(svg_check);
 
     const btn_x = create_btn(['btn-set1'], "");
+    btn_x.setAttribute("title", "Supprimer");
     const svg_x = create_svg(['bi', 'bi-x']);
     const path_x = document.createElementNS(svgns, 'path');
     path_x.setAttribute('fill-rule', 'evenodd');
@@ -174,6 +176,7 @@ function create_btn_set1()
     btn_x.appendChild(svg_x);
 
     const btn_ban = create_btn(['btn-set1'], "");
+    btn_ban.setAttribute("title", "Bloquer");
     const svg_ban = create_svg(['bi', 'bi-ban']);
     const path_ban = document.createElementNS(svgns, 'path');
     path_ban.setAttribute('fill-rule', 'evenodd');
@@ -182,6 +185,7 @@ function create_btn_set1()
     btn_ban.appendChild(svg_ban);
 
     const btn_person_plus_fill = create_btn(['btn-set1'], "");
+    btn_person_plus_fill.setAttribute("title", "Ajouter en ami");
     const svg_person_plus_fill = create_svg(['bi', 'bi-person-plus-fill']);
     const path_person1 = document.createElementNS(svgns, 'path');
     const path_person2 = document.createElementNS(svgns, 'path');

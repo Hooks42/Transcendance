@@ -39,6 +39,8 @@
 				<div class="main">
 					<div class="container h-100 w-100" id="main">
 
+						{% if user.is_authenticated %}
+						{% else %}
 						<div class="wrapper_btn_connexionpage">
 							<button type="button" class="btn-orange" data-bs-toggle="modal"
 								data-bs-target="#create-account-modal">
@@ -52,6 +54,7 @@
 								data-bs-target="#connexion-ft-modal">
 								SE CONNECTER AVEC 42
 							</button>
+						{% endif %}
 						</div>
 						<!-- Create an account Modal -->
 						<div class="modal fade" id="create-account-modal" tabindex="-1"
@@ -200,25 +203,25 @@
 		<script src="/static/Transcendance/js/chat.js"></script> 
 		<script src="/static/Transcendance/js/chat.listener.js"></script> 
 		<script src="/static/Transcendance/js/main.listener.js"></script>  -->
+	<script src="../../../staticfiles/Transcendance/js/utils.js"></script>
 	<script src="../../../staticfiles/Transcendance/js/navbar.js"></script>
-	<script src="../../../staticfiles/Transcendance/js/chat.js"></script>
 	<script src="../../../staticfiles/Transcendance/js/main.js"></script>
-	<script>
-		create_profile();
-		create_navbar();
-		// load_profile();
-		create_btn_games();
-		// load_btn_games();
-		load_chat();
-		load_navbar();
-
-
-	</script>
+	<script src="../../../staticfiles/Transcendance/js/chat.js"></script>
 	<script src="../../../staticfiles/Transcendance/js/chat.listener.js"></script>
 	<script src="../../../staticfiles/Transcendance/js/main.listener.js"></script>
 	<script src="../../../staticfiles/Transcendance/js/navbar.listener.js"></script>
+	<script>
+		// create_profile();
+		// create_navbar();
+		// load_profile();
+		// create_btn_games();
+		// load_btn_games();
+		chat.create_chat();
+		chat.load_chat();
+		// load_navbar();
+
+
+	</script>
 
 </body>
-<!-- <script src="index.js"></script> -->
-
 </html>
