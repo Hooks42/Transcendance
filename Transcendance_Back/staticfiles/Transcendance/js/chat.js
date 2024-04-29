@@ -122,7 +122,7 @@ function create_tabcontent()
     disc_pane.setAttribute('id', 'disc_pane');
 
     // loopable
-    const disc_one = create_btn_heart_list("Une discussion", lorem);
+    const disc_general = create_btn_heart_list("General", lorem);
 
     // USERS PANE------------------------------------------
 
@@ -130,7 +130,7 @@ function create_tabcontent()
     user_pane.classList.add('chat__list');
     user_pane.setAttribute('id', 'user_pane');
 
-    disc_pane.append(disc_one);
+    disc_pane.append(disc_general);
 
     // loopable
     const user_one = create_btn_heart_list("Un joueur", "Son statut");

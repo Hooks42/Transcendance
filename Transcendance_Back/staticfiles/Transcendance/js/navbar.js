@@ -123,9 +123,10 @@ function create_notif()
     return (notif);
 }
 
-function create_btn_heart_sm(text)
+function create_btn_heart_sm(text, id)
 {
     const button = create_btn(['btn-heart', 'btn-heart-sm'], text);
+    button.id = id;
     button.prepend(create_svg_heart());
     return (button);
 }
@@ -177,8 +178,12 @@ function create_navbar()
     const person_menu_li1 = document.createElement('li');
     const person_menu_li2 = document.createElement('li');
 
-    person_menu_li1.appendChild(create_btn_heart_sm(" Mon compte "));
-    person_menu_li2.appendChild(create_btn_heart_sm(" Se déconnecter "));
+    let account_btn = create_btn_heart_sm(" Mon compte ", 'account-btn');
+    let logout_btn = create_btn_heart_sm(" Se déconnecter ", 'logout-btn');
+    listen_logout(logout_btn);
+
+    person_menu_li1.appendChild(account_btn);
+    person_menu_li2.appendChild(logout_btn);
 
     // Construction de l'arborescence des éléments
 

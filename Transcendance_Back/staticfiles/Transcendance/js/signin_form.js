@@ -1,53 +1,57 @@
-document.getElementById("signin-form").addEventListener("submit", function (event)
+function listen_signin_btn()
 {
-	event.preventDefault();
-	fetch("https://localhost/hello/", {
-		method: "POST",
-		body: new FormData(document.getElementById("signin-form")),
-		headers: {
-			Accept: "application/json",
-		},
-	})
-		.then((response) => response.json())
+	document.getElementById("signin-form").addEventListener("submit", function (event)
+	{
+		event.preventDefault();
+		fetch("https://localhost/hello/", {
+			method: "POST",
+			body: new FormData(document.getElementById("signin-form")),
+			headers: {
+				'Accept': "application/json",
+			},
+		})
+			.then((response) => response.json())
 
-		.then((data) =>
-		{
-			if (data.signin_status == "success")
+			.then((data) =>
 			{
-				let signin_modal = document.getElementById('signin-modal');
-				let bootstrapModal = bootstrap.Modal.getInstance(signin_modal);
-				bootstrapModal.hide();
-				signin_modal.remove();
-
-				clear_connexion_page();
-			}
-
-			if (data.signin_status == "fail")
-			{
-				var errors = data.errors;
-				let div = document.getElementById("signin-form");
-				for (let id = 0; document.getElementById("error-#" + id); id++)
-					document.getElementById("error-#" + id).remove();
-				let id = 0;
-				for (var key in errors)
+				if (data.signin_status == "success")
 				{
-					if (errors.hasOwnProperty(key))
+					let signin_modal = document.getElementById('signin-modal');
+					let bootstrapModal = bootstrap.Modal.getInstance(signin_modal);
+					bootstrapModal.hide();
+					signin_modal.remove();
+
+					clear_connexion_page();
+					connected = true;
+				}
+
+				if (data.signin_status == "fail")
+				{
+					var errors = data.errors;
+					let div = document.getElementById("signin-form");
+					for (let id = 0; document.getElementById("error-#" + id); id++)
+						document.getElementById("error-#" + id).remove();
+					let id = 0;
+					for (var key in errors)
 					{
-						errors[key].forEach(function (error)
+						if (errors.hasOwnProperty(key))
 						{
-							var errorDiv = document.createElement("div");
-							errorDiv.id = "error-#" + id;
-							if (error == "Saisissez une adresse de courriel valide.")
-								errorDiv.textContent = 'Veuillez saisir une addresse email valide❌';
-							else if (error == "Ce champ est obligatoire.")
-								errorDiv.textContent = 'Veuillez saisir une addresse email ainsi qu\'un mot de passe pour vous connecter❌';
-							else
-								errorDiv.textContent = error;
-							document.getElementById("signin-form").appendChild(errorDiv);
-							id++;
-						});
+							errors[key].forEach(function (error)
+							{
+								var errorDiv = document.createElement("div");
+								errorDiv.id = "error-#" + id;
+								if (error == "Saisissez une adresse de courriel valide.")
+									errorDiv.textContent = 'Veuillez saisir une addresse email valide❌';
+								else if (error == "Ce champ est obligatoire.")
+									errorDiv.textContent = 'Veuillez saisir une addresse email ainsi qu\'un mot de passe pour vous connecter❌';
+								else
+									errorDiv.textContent = error;
+								document.getElementById("signin-form").appendChild(errorDiv);
+								id++;
+							});
+						}
 					}
 				}
-			}
-		});
-});
+			});
+	});
+}

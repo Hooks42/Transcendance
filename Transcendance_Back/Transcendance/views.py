@@ -54,10 +54,25 @@ def Hello(request):
     print(f"✅ servor returned HTPP_RESPONSE")
     return render(request, 'main.html', {'signup_form': signup_form, 'signin_form': signin_form})
 
+def LoginPage(request):
+    context = {
+        'request': request,
+        'signup_form': AccountCreationForm(),
+        'signin_form': AccountLoginForm(),
+        }
+    login_page_html = render_to_string('Login_page.html', context, request=request)
+    return JsonResponse({'login_page_html': login_page_html})
+
+@login_required
 def Logout(request):
-    user = request.user
-    logout(request)
-    return redirect('hello')
+    user = User.objects.get(username=request.user.username)
+    try:
+        logout(request)
+        user.is_online = False
+        user.save()
+        return JsonResponse({'logout_status': 'success'})
+    except Exception as e:
+        return JsonResponse({'logout_status': 'fail', 'errors': str(e)})
 
 def ChatView(request):
     if Conversation.objects.all().count() == 0:
@@ -162,4 +177,5 @@ def get_actual_user(request):
         return JsonResponse({'username': None})
     return JsonResponse({'username': request.user.username})
     
-    
+def Fullsite(request):
+    return render(request, 'Fullsite.html')
