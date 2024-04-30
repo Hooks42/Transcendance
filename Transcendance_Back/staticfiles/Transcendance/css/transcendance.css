@@ -46,18 +46,25 @@
 }
 
 /* __________________ ICONS __________________*/
-.bi
+svg
 {
   fill: #e5e5e5;
   background-color: transparent;
-  height: 24px;
-  width: 24px;
 }
 
 .bi-bell-fill
 {
+  padding-top: 2px;
   height: 20px;
   width: 20px;
+}
+
+.bi-person-fill
+{
+
+  height: 24px;
+  width: 24px;
+  padding-bottom: 2px;
 }
 
 .bi-heart-fill
@@ -95,12 +102,14 @@
   width: 16px;
   margin: 4px;
 }
+
 .bi-person-plus-fill
 {
   height: 18px;
   width: 18px;
   margin: 3px;
 }
+
 .icon_sword
 {
   height: 22px;
@@ -343,7 +352,7 @@ p
 .btn-set3
 {
   border: 1px solid #c93726;
-  background-color:#C93726;
+  background-color: #C93726;
   color: #e5e5e5;
   border-radius: 25%;
   padding: 2px;
@@ -354,6 +363,7 @@ p
     background-color: #AC2F21;
   }
 }
+
 .btn-set2
 {
   border: 1px solid rgba(86, 47, 16, 0.5);
@@ -518,6 +528,7 @@ p
   border: 1px solid #e5e5e5;
   padding: 16px;
 }
+
 .sc_modal__title
 {
   margin: auto;

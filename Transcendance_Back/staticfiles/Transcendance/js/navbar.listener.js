@@ -1,16 +1,16 @@
-if (is_navbar_loaded)
-{
-    let btn_home = document.getElementsByClassName("navbar-brand");
-    btn_home[0].addEventListener("click", function (event)
+navbar.listener = {
+    onClickBtnHome: function (event)
     {
         event.preventDefault();
 
-        let page = this.getAttribute("href").substring(1);
+        let page = navbar.btn_home.getAttribute("href").substring(1);
         console.log("click on " + page);
         navigate_main(page);
-    })
+    },
 
-    document.getElementById("btn_logout").addEventListener("click", function (event)
+    // this trigger the modal for a successful connection
+    // TODO: change its behavior to an actual log out
+    onClickBtnLogout: function (event)
     {
         event.preventDefault();
 
@@ -38,5 +38,5 @@ if (is_navbar_loaded)
             }
                 , 1000)
         }
-    })
+    }
 }

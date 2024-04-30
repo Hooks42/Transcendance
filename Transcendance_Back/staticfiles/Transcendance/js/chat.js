@@ -17,7 +17,7 @@ const chat = {
 
     current_pane: null,
 
-    create_chatcontent: function ()
+    create_content: function ()
     {
         //------------- DISC PANE------------------------------------------
         this.disc_pane = create_tab_pane();
@@ -91,10 +91,10 @@ const chat = {
 
         // action_pane.append(btn_add_friend, btn_see_profile, btn_block);
 
-        // chatcontent_el = { disc_pane, user_pane, chatroom, action_pane };
+        // content_el = { disc_pane, user_pane, chatroom, action_pane };
     },
 
-    create_chatnav: function ()
+    create_nav: function ()
     {
         this.disc_tab = create_navtab(" DISCUSSIONS ");
         this.disc_tab.setAttribute('aria-selected', 'true');
@@ -109,16 +109,16 @@ const chat = {
         this.arrow_tab = create_btn_arrow(" WHO WHAT ")
     },
 
-    create_chat: function ()
+    create: function ()
     {
-        this.create_chatnav();
-        this.create_chatcontent();
+        this.create_nav();
+        this.create_content();
         this.disc_pane.onclick = chat.listener.onClickDiscPane.bind(this);
         this.arrow_tab.onclick = chat.listener.onClickArrowBtn.bind(this);
         this.user_pane.onclick = chat.listener.onClickUserPane.bind(this);
     },
 
-    load_chatnav: function ()
+    load_nav: function ()
     {
         if (this.disc_tab == null
             || this.user_tab == null
@@ -132,7 +132,7 @@ const chat = {
         document.getElementById('nav-tab').append(this.arrow_tab);
     },
 
-    load_chatcontent: function ()
+    load_content: function ()
     {
         if (this.disc_pane == null
             || this.user_pane == null
@@ -146,10 +146,10 @@ const chat = {
         document.getElementById("nav-tabContent").append(this.user_pane);
     },
 
-    load_chat: function ()
+    load: function ()
     {
-        this.load_chatnav();
-        this.load_chatcontent();
+        this.load_nav();
+        this.load_content();
     },
 
     get_active_pane: function ()
