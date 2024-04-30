@@ -17,37 +17,37 @@ const chat = {
 
     current_pane: null,
 
-    create_tabcontent: function ()
+    create_chatcontent: function ()
     {
-        // DISC PANE------------------------------------------
+        //------------- DISC PANE------------------------------------------
         this.disc_pane = create_tab_pane();
         this.disc_pane.setAttribute('id', 'disc_pane');
         this.disc_pane.classList.add('show', 'active');
         const buf_pane1 = document.createElement('div');
         buf_pane1.classList.add('chat__list');
 
-        // loopable
+        //// loopable
         const disc1 = create_btn_heart_list("Une discussion", lorem);
         const disc2= create_btn_heart_list("deuxio discussion", lorem);
 
         this.disc_pane.appendChild(buf_pane1);
         buf_pane1.append(disc1, disc2);
 
-        // USERS PANE------------------------------------------
+        //------------- USER PANE------------------------------------------
 
         this.user_pane = create_tab_pane();
         this.user_pane.setAttribute('id', 'user_pane');
         const buf_pane2 = document.createElement('div');
         buf_pane2.classList.add('chat__list');
 
-        // loopable
-        const user_one = create_user_in_pane("Un joueurrrrrrrrrrrrrrrrrrrrrrrr", "Son status");
-        const user_two = create_user_in_pane("Un joueur", "Son status");
+        //// loopable
+        const user1 = create_user_in_pane("Un joueurrrrrrrrrrrrrrrrrrrrrrrr", "Son status");
+        const user2 = create_user_in_pane("Un joueur", "Son status");
 
         this.user_pane.appendChild(buf_pane2);
-        buf_pane2.append(user_one, user_two);
+        buf_pane2.append(user1, user2);
 
-        // CHATROOM PANE-------------------------------------------
+        //------------- CHATROOM PANE------------------------------------------
 
         this.chatroom = create_tab_pane();
         this.chatroom.setAttribute('id', 'chatroom-tab')
@@ -56,7 +56,7 @@ const chat = {
         const inbox = document.createElement('div');
         inbox.classList.add('inbox');
 
-        // loopable
+        //// loopable
         const msg_one = create_msg("Dragon", "18h45");
         const msg_text_one = create_msg_text();
         msg_text_one.appendChild(document.createTextNode(lorem));
@@ -91,7 +91,7 @@ const chat = {
 
         // action_pane.append(btn_add_friend, btn_see_profile, btn_block);
 
-        // tabcontent_el = { disc_pane, user_pane, chatroom, action_pane };
+        // chatcontent_el = { disc_pane, user_pane, chatroom, action_pane };
     },
 
     create_chatnav: function ()
@@ -112,7 +112,7 @@ const chat = {
     create_chat: function ()
     {
         this.create_chatnav();
-        this.create_tabcontent();
+        this.create_chatcontent();
         this.disc_pane.onclick = chat.listener.onClickDiscPane.bind(this);
         this.arrow_tab.onclick = chat.listener.onClickArrowBtn.bind(this);
         this.user_pane.onclick = chat.listener.onClickUserPane.bind(this);
@@ -132,7 +132,7 @@ const chat = {
         document.getElementById('nav-tab').append(this.arrow_tab);
     },
 
-    load_tabcontent: function ()
+    load_chatcontent: function ()
     {
         if (this.disc_pane == null
             || this.user_pane == null
@@ -149,7 +149,7 @@ const chat = {
     load_chat: function ()
     {
         this.load_chatnav();
-        this.load_tabcontent();
+        this.load_chatcontent();
     },
 
     get_active_pane: function ()
