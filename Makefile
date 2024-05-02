@@ -10,6 +10,10 @@ stop:
 clean:
 	docker-compose down -v
 
+cleanall:
+	docker system prune -af
+	docker kill $(docker ps -q)
+
 # Afficher les journaux des services Docker
 logs:
 	docker-compose logs -f
