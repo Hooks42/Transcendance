@@ -1,20 +1,15 @@
-# Utiliser une image de base Nginx
 FROM nginx
 
-# Supprimer le fichier de configuration par défaut de Nginx
+RUN apt-get update && \
+    apt-get install -y netcat-traditional dumb-init && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN mkdir -p /etc/nginx/ssl && \
+    openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/nginx/ssl/localhost.key -out /etc/nginx/ssl/localhost.crt -subj "/C=AT/ST=W/L=W/O=42/OU=42k/CN=trans/UID=trans"
+
 RUN rm /etc/nginx/nginx.conf
 
-# Copier votre fichier de configuration personnalisé Nginx dans le conteneur
+COPY default.conf /etc/nginx/conf.d/default.conf
 COPY nginx.conf /etc/nginx/nginx.conf
 
-# Générer une clé privée lors de la construction de l'image
-RUN openssl genrsa -out /usr/lib/ssl/cert.key 2048
-# RUN openssl req -x509 -nodes -days 365 \
-#     -newkey rsa:4096 -sha256 \
-#     -out usr/lib/ssl/cert.key;
-
-# Exposer le port 80 pour le serveur Nginx
-EXPOSE 80
-
-# Commande par défaut pour démarrer Nginx
-# CMD ["nginx", "-g", "daemon off;"]
