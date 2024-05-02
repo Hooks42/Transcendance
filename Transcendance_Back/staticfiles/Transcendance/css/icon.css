@@ -1,0 +1,75 @@
+
+.bi-bell-fill
+{
+  padding-top: 2px;
+  height: 20px;
+  width: 20px;
+}
+
+.bi-person-fill
+{
+
+  height: 24px;
+  width: 24px;
+  padding-bottom: 2px;
+}
+
+.bi-heart-fill
+{
+  height: 16px;
+  width: 16px;
+  /* margin-bottom: 4px;
+  margin-left: 4px; */
+  fill: transparent;
+}
+
+.bi-arrow-left-short
+{
+  height: 32px;
+  width: 32px;
+  /* margin-left: 8px; */
+}
+
+.bi-three-dots-vertical
+{
+  height: 16px;
+  width: 16px;
+}
+
+.bi-circle-fill
+{
+  height: 8px;
+  width: 8px;
+}
+
+.bi-x
+{
+  height: 24px;
+  width: 24px;
+}
+
+.bi-check
+{
+  height: 24px;
+  width: 24px;
+}
+
+.bi-ban
+{
+  height: 16px;
+  width: 16px;
+  margin: 4px;
+}
+
+.bi-person-plus-fill
+{
+  height: 18px;
+  width: 18px;
+  margin: 3px;
+}
+
+.icon_sword
+{
+  height: 22px;
+  width: 22px;
+}

@@ -1,80 +1,106 @@
-function chat_listener()
-{
-    const btn_nav = document.querySelectorAll('button.btn-nav');
-    // const arrow_tab = document.querySelector("button.btn-arrow");
-
-    const discussions = document.querySelectorAll('#disc_pane > button.btn-heart-list');
-    const users = document.querySelectorAll('#user_pane > button.btn-heart-list');
-
-    // const action_pane = document.querySelectorAll("#action_pane");
-    // const chatroom = document.getElementById("chatroom-tab");
-    // const chat_list = document.querySelectorAll("div.chat__list");
-    let current_pane = document.querySelector('.tab-pane.active.show');
-
-    function get_active_pane()
+chat.listener = {
+    onClickDiscPane: function (event)
     {
-        return (document.querySelector('.tab-pane.active.show'));
-    }
-
-
-    // listener for navbar buttons
-    btn_nav.forEach(triggerEl =>
-    {
-        const tabTrigger = new bootstrap.Tab(triggerEl);
-
-        triggerEl.addEventListener('click', event =>
-        {
-            event.preventDefault();
-            tabTrigger.show();
-        })
-    })
-
-    arrow_tab.addEventListener("click", event =>
-    {
+        let target = event.target.closest(".m-chat__li");
+        if (!target)
+            return;
+        if (!chat.disc_pane.contains(target))
+            return;
         event.preventDefault();
-        arrow_tab.classList.add("hide");
-        chatroom.style.display = "none";
-        action_pane.style.display = "none";
-        btn_nav.forEach(triggerE =>
-        {
-            triggerE.classList.remove("hide");
-        })
 
-        current_pane.classList.add("active", "show");
-    })
+        chat.disc_tab.classList.toggle("hide");
+        chat.user_tab.classList.toggle("hide");
 
-    // listener for list items
-    discussions.forEach(element =>
+        chat.current_pane = this.get_active_pane();
+        chat.current_pane.classList.toggle("active");
+        chat.current_pane.classList.toggle("show");
+
+        chat.arrow_tab.children[1].textContent = target.children[1].textContent;
+        chat.arrow_tab.classList.toggle("hide");
+
+        chat.chatroom.style.display = "flex";
+    },
+
+    onClickArrowBtn: function (event)
     {
-        element.addEventListener('click', event =>
-        {
-            event.preventDefault();
-            btn_nav.forEach(triggerE =>
-            {
-                triggerE.classList.add("hide");
-            })
-            current_pane = get_active_pane();
-            current_pane.classList.remove("active", "show");
-            arrow_tab.classList.remove("hide");
+        let target = event.target.closest(".-arrow");
+        if (!target)
+            return;
+        if (!chat.arrow_tab.contains(target))
+            return;
+        event.preventDefault();
 
-            chatroom.style.display = "flex";
-        })
-    })
+        chat.arrow_tab.classList.toggle("hide");
+        chat.chatroom.style.display = "none";
 
-    users.forEach(element =>
+        chat.disc_tab.classList.toggle("hide");
+        chat.user_tab.classList.toggle("hide");
+
+        chat.current_pane.classList.toggle("active");
+        chat.current_pane.classList.toggle("show");
+    },
+
+    onClickUserPane: function (event)
     {
-        element.addEventListener('click', event =>
+        // if (event.target.closest(".-img"))
+        // {
+        //     let target = event.target.closest(".-img");
+        //     if (!target)
+        //         return;
+        //     if (!chat.user_pane.contains(target))
+        //         return;
+        //     event.preventDefault();
+        //     navigateCenterZone("profile");
+        //     // alert("IMG click, go to that user's profile page");
+        // }
+        if (event.target.closest(".btn-set1"))
         {
-            event.preventDefault();
-            btn_nav.forEach(triggerE =>
-            {
-                triggerE.classList.add("hide");
-            })
-            current_pane = get_active_pane();
-            current_pane.classList.remove("active", "show");
-            arrow_tab.classList.remove("hide");
 
-            action_pane.style.display = "flex";
-        })
-    })
-}
+            let target = event.target.closest(".btn-set1");
+            if (!target)
+                return;
+            if (!chat.user_pane.contains(target))
+                return;
+            event.preventDefault();
+            alert("USER btn click, do action on that user");
+        }
+    },
+
+    onClickChat: function (event)
+    {
+        if (event.target.closest(".-img"))
+        {
+            console.log("click on img");
+            let target = event.target.closest(".-img");
+            if (!target)
+                return;
+            event.preventDefault();
+            navigateCenterZone("profile");
+            event.stopPropagation();
+            // alert("IMG click, go to that user's profile page");
+        }
+    }
+};
+
+
+// document.querySelector('#the-chat').addEventListener('click', function (event)
+// {
+//     if (event.target.closest(".btn-heart-list"))
+//     {
+//         // let triggerEl = event.target.closest(".btn-heart-list");
+//         event.preventDefault();
+
+//         chat.disc_tab.classList.toggle("hide");
+//         chat.user_tab.classList.toggle("hide");
+
+//         chat.current_pane = get_active_pane();
+//         chat.current_pane.classList.toggle("active");
+//         chat.current_pane.classList.toggle("show");
+
+//         // chat.arrow_tab = document.querySelector("button.btn-arrow");
+//         chat.arrow_tab.classList.toggle("hide");
+
+//         // document.getElementById("chatroom-tab");
+//         chat.chatroom.style.display = "flex";
+//     }
+// });

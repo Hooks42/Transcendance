@@ -1,0 +1,125 @@
+/* ---------------------------------------------------------------------------
+//
+// CLASSES THAT COME FROM BOOTSTRAP
+//
+--------------------------------------------------------------------------- */
+
+.navbar
+{
+    height: 80px;
+    min-width: 200px;
+    border: 8px solid var(--white);
+}
+
+.navbar-brand
+{
+    font-family: "CryptOfTomorrow";
+    --bs-navbar-brand-font-size: var(--fs-h5);
+    --bs-navbar-brand-color: var(--white);
+
+    &:hover,
+    &:focus:active
+    {
+    --bs-navbar-brand-hover-color: var(--primary);
+    }
+
+    /* give more weight to MY class */
+    &:not(:disabled):not(:disabled):focus
+    {
+        color: var(--white);
+    }
+}
+
+.nav-item
+{
+    margin-left: 8px;
+    margin-right: 8px;
+}
+
+.dropdown-menu
+{
+    --bs-dropdown-bg: var(--black);
+    --bs-dropdown-border-color: var(--white);
+    --bs-dropdown-border-width: 1px;
+    --bs-dropdown-border-radius: 0%;
+}
+
+/* --------------------------------------------------------------------------- 
+//
+// ORIGINAL CLASSES
+//
+--------------------------------------------------------------------------- */
+
+/* hide caret */
+.caret-off::before
+{
+    display: none !important;
+}
+
+.caret-off::after
+{
+    display: none !important;
+}
+
+.dropdown-menu.-lg
+{
+    width: 380px;
+    max-height: 288px;
+    overflow: scroll;
+    scrollbar-color: rgba(201, 111, 38, 0.4) var(--black);
+    scrollbar-width: thin;
+}
+
+/* to wrap around all of the dropdown-menu content */
+.dropdown-menu>li
+{
+    width: max-content;
+}
+
+.m-notif
+{
+    height: 64px;
+    padding: 4px 12px;
+    white-space: nowrap;
+    border-bottom: 1px dashed var(--white);
+    position: relative;
+}
+
+/* remove the last item's border */
+li:last-child>.m-notif
+{
+    border: none;
+}
+
+.m-wrapperNotif
+{
+    width: 340px;
+    display: flex;
+    justify-content: space-around;
+    white-space: nowrap;
+}
+
+.btn-three-dots
+{
+    border: none;
+    text-decoration: none;
+}
+
+.a-notif__username
+{
+    margin-left: 8px;
+}
+
+.a-notif__username,
+.a-notif__game
+{
+    font-weight: bold;
+}
+
+.m-notif .bi-circle-fill
+{
+    top: 20%;
+    left: 8px;
+    fill: var(--primary);
+    position: absolute;
+}

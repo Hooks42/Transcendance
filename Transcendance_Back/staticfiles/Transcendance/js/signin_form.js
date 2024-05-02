@@ -16,10 +16,15 @@ function listen_signin_btn()
 			{
 				if (data.signin_status == "success")
 				{
-					let signin_modal = document.getElementById('signin-modal');
-					let bootstrapModal = bootstrap.Modal.getInstance(signin_modal);
-					bootstrapModal.hide();
-					signin_modal.remove();
+					let signin_modal = document.getElementById('connexion-modal');
+					if (!signin_modal)
+						console.log("signin_modal not found");
+					else
+					{
+						let bootstrapModal = bootstrap.Modal.getInstance(signin_modal);
+						bootstrapModal.hide();
+						signin_modal.remove();
+					}
 
 					clear_connexion_page();
 					connected = true;

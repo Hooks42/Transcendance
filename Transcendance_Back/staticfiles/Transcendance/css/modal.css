@@ -1,0 +1,64 @@
+/* __________________ MODALS __________________*/
+.modal-content
+{
+  background-color: var(--black);
+  color: var(--white);
+  border: solid var(--white);
+  border-width: 8px;
+  border-radius: 0%;
+}
+
+.modal-body
+{
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* align horizontal */
+  align-items: center;
+  /* align vertical */
+
+}
+
+.modal-header
+{
+  border: none;
+  height: fit-content;
+  padding-top: 32px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  position: relative;
+}
+
+.modal-footer
+{
+  justify-content: center;
+  border: none;
+}
+
+.modal-title
+{
+  height: fit-content;
+  font-size: 28px;
+  font-family: "8bitoperator_jve";
+  left: 50%;
+  transform: translate(-50%, 0);
+  position: absolute;
+}
+
+.modal__input
+{
+  width: 53%;
+  margin: 16px;
+
+  border: 1px solid var(--white);
+  padding: 16px;
+}
+
+.sc_modal__title
+{
+  margin: auto;
+  padding: 32px;
+}

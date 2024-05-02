@@ -1,0 +1,44 @@
+@font-face
+{
+  font-family: "CryptOfTomorrow";
+  src:
+    local('CryptOfTomorrow'),
+    url('../assets/fonts/cryptoftomorrow.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face
+{
+  font-family: "mars";
+  src:
+    local('Mars Needs Cunnilingus'),
+    url('../assets/fonts/Mars-Needs-Cunnilingus.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face
+{
+  font-family: "8bitoperator_jve";
+  src:
+    local('8bitoperator_jve'),
+    url('../assets/fonts/8bitOperatorPlus-Bold.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face
+{
+  font-family: "Comic Neue";
+  src:
+    local('Comic Neue'),
+    url('../assets/fonts/ComicNeue-Regular.ttf') format('truetype'),
+    url('../assets/fonts/ComicNeue-Bold.ttf') format('truetype'),
+    url('../assets/fonts/ComicNeue-BoldItalic.ttf') format('truetype'),
+    url('../assets/fonts/ComicNeue-Light.ttf') format('truetype'),
+    url('../assets/fonts/ComicNeue-LightItalic.ttf') format('truetype'),
+    url('../assets/fonts/ComicNeue-Italic.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}

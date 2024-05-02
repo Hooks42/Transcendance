@@ -1,0 +1,180 @@
+/* ---------------------------------------------------------------------------
+//
+// CLASSES THAT COME FROM BOOTSTRAP
+//
+--------------------------------------------------------------------------- */
+/* ---------------------------------------------------------------------------
+//
+// ORIGINAL CLASSES
+//
+--------------------------------------------------------------------------- */
+
+.a-btn
+{
+    height: fit-content;
+    width: fit-content;
+    background: none;
+    color: inherit;
+    border: none;
+    padding: 0;
+    font: inherit;
+    cursor: pointer;
+    outline: inherit;
+}
+
+.a-btn.-img
+{
+    border-radius: 50%;
+    border: none;
+    height: fit-content;
+    width: fit-content;
+    text-decoration: none;
+}
+
+
+.a-btn.-orange
+{
+    border: solid var(--primary);
+    color: var(--primary);
+    font-family: "mars";
+    font-size: 28px;
+    padding: 0px 8px;
+    white-space: nowrap;
+    position: relative;
+
+    &:active:focus,
+    &:active
+    {
+        color: rgba(194, 183, 0, 0.8);
+        border-color: rgba(194, 183, 0, 0.8);
+    }
+
+    &:hover
+    {
+        color: rgb(194, 183, 0);
+        border-color: rgb(194, 183, 0);
+    }
+}
+
+.a-btn.-orange.-lg
+{
+    height: 80px;
+    width: 380px;
+    margin: 8px;
+}
+
+.a-btn.-orange.-sm
+{
+    margin-right: 8px;
+    margin-bottom: 8px;
+    font-size: var(--fs-p);
+}
+
+.a-btn.-heart
+{
+    height: 40px;
+    margin-left: 16px;
+    margin-right: 16px;
+    font-family: "8bitoperator_jve";
+    font-size: var(--fs-h6);
+    white-space: nowrap;
+    overflow: hidden;
+
+    & .bi-heart-fill
+    {
+        left: 5%;
+    }
+
+    &:hover
+    {
+        & .bi-heart-fill
+        {
+            fill: red;
+        }
+    }
+}
+
+.a-btn.-heart.-sm
+{
+    font-size: var(--fs-small);
+    margin-bottom: 0px;
+    height: 32px;
+
+    & .bi-heart-fill
+    {
+        width: 12px;
+        height: auto;
+        margin: 0px 2px;
+    }
+}
+
+.a-btn.-orange.-twoSVGoneText
+{
+    & .a-btn__text
+    {
+        font-family: "mars";
+        font-size: 40px;
+        padding-left: 30px;
+        color: var(--primary);
+    }
+
+    & .top,
+    & .bottom
+    {
+        height: 30px;
+        width: auto;
+        padding-bottom: 4px;
+        left: 6px;
+        top: 50%;
+        transform: translate(0, -50%);
+        position: absolute;
+    }
+
+    & .top
+    {
+        fill: var(--primary);
+    }
+
+    & .bottom
+    {
+        fill: transparent;
+    }
+
+    &:active:focus,
+    &:active
+    {
+        & .a-btn__text
+        {
+            color: rgba(194, 183, 0, 0.8);
+        }
+
+        & .top
+        {
+            fill: transparent;
+        }
+
+        & .bottom
+        {
+            fill: red;
+        }
+    }
+
+    &:hover
+    {
+        & .a-btn__text
+        {
+            color: rgb(194, 183, 0);
+        }
+
+        & .bottom
+        {
+            fill: red;
+        }
+
+        & .top
+        {
+            fill: transparent;
+        }
+
+    }
+}

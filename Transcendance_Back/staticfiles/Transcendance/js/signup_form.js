@@ -1,11 +1,11 @@
 function listen_signup_btn()
 {
-    document.getElementById('signup_form').addEventListener('submit', function (event)
+    document.getElementById('signup-form').addEventListener('submit', function (event)
     {
         event.preventDefault();
         fetch('https://localhost/hello/', {
             method: 'POST',
-            body: new FormData(document.getElementById('signup_form')),
+            body: new FormData(document.getElementById('signup-form')),
             headers: {
                 'Accept': 'application/json',
             }
@@ -19,7 +19,7 @@ function listen_signup_btn()
 
                 if (data.signup_status == 'success')
                 {
-                    let signup_modal = document.getElementById('signup-modal');
+                    let signup_modal = document.getElementById('create-account-modal');
                     let bootstrapModal = bootstrap.Modal.getInstance(signup_modal);
                     bootstrapModal.hide();
                     signup_modal.remove();
@@ -31,7 +31,7 @@ function listen_signup_btn()
                 if (data.signup_status == 'fail')
                 {
                     var errors = data.errors;
-                    let div = document.getElementById('signup_form');
+                    let div = document.getElementById('signup-form');
                     for (let id = 0; document.getElementById('error-#' + id); id++)
                         document.getElementById('error-#' + id).remove();
                     let id = 0;
@@ -57,7 +57,7 @@ function listen_signup_btn()
                                     errorDiv.textContent = 'Veuillez saisir une addresse email valide❌';
                                 else
                                     errorDiv.textContent = error;
-                                document.getElementById('signup_form').appendChild(errorDiv);
+                                document.getElementById('signup-form').appendChild(errorDiv);
                             });
                         }
                         id++;
