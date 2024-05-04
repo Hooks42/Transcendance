@@ -30,7 +30,22 @@ async function display_login_page()
 		.then(data =>
 		{
 			let login_page_html = data.login_page_html;
-			document.documentElement.innerHTML = login_page_html;
+			
+			//let the_chat = document.getElementById('the-chat');
+			let discuss_btn = document.getElementById('discuss-btn');
+			let user_btn = document.getElementById('user-btn');
+			let disc_pane = document.getElementById('disc_pane');
+			let navbar_icons = document.getElementById('navbar-icons');
+
+			//the_chat.remove();
+			discuss_btn.remove();
+			user_btn.remove();
+			disc_pane.remove();
+			navbar_icons.remove();
+
+
+			let main_div = document.getElementById('main-div');
+			main_div.innerHTML = login_page_html;
 			listen_log_btn();
 		})
 		.catch(error => console.log('error', error));

@@ -1,5 +1,5 @@
-const existing_chatContent = document.getElementsByClassName("tab-content")[0];
-const existing_chatNav = document.getElementsByClassName('nav')[0];
+const existing_chatContent = document.getElementById('nav-tabContent');
+const existing_chatNav = document.getElementById('nav-tab');
 const lorem = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
 /* ---------------------------------------------------------------------------
 //
@@ -30,6 +30,7 @@ const chat = {
         this.disc_pane.classList.add('show', 'active');
         const buf_pane1 = document.createElement('div');
         buf_pane1.classList.add('o-chat__ul');
+        buf_pane1.setAttribute('id', 'chat-ul');
 
         //// loopable
         const disc1 = create_disc_li("Une discussion", lorem);
@@ -61,9 +62,23 @@ const chat = {
         inbox.classList.add('o-inbox');
 
         //// loopable
-        const msg_one = create_msg("Dragon", "18h45");
-        const msg_text_one = create_msg_text();
-        msg_text_one.appendChild(document.createTextNode(lorem));
+        fetch('/get-general-conv-history')
+            .then(response => response.json())
+            .then(data => {
+                let messages = data.messages;
+                if (messages.length > 0)
+                {
+                    for (let i = 0; i < messages.length; i++)
+                    {
+                        var message = messages[i];
+                        const msg_one = create_msg(message.username, message.timestamp, message.profile_picture);
+                        const msg_text_one = create_msg_text();
+                        msg_text_one.appendChild(document.createTextNode(message.content));
+                        inbox.append(msg_one);
+                        msg_one.appendChild(msg_text_one);
+                    }
+                }
+            });
 
         const textarea = document.createElement('div');
         textarea.classList.add('o-textbox');
@@ -79,8 +94,8 @@ const chat = {
 
         this.chatroom.append(inbox, textarea);
 
-        inbox.append(msg_one);
-        msg_one.appendChild(msg_text_one);
+        // inbox.append(msg_one);
+        // msg_one.appendChild(msg_text_one);
 
         textarea.append(textarea_container, btn_send);
         textarea_container.append(typing_area);
@@ -102,12 +117,14 @@ const chat = {
     create_nav: function ()
     {
         this.disc_tab = create_navtab(" DISCUSSIONS ");
+        this.disc_tab.setAttribute('id', 'discuss-btn');
         this.disc_tab.setAttribute('aria-selected', 'true');
         this.disc_tab.classList.add('active');
         this.disc_tab.setAttribute('data-bs-target', '#disc_pane');
         this.disc_tab.setAttribute('aria-controls', 'disc_pane');
 
         this.user_tab = create_navtab(" UTILISATEURS ");
+        this.user_tab.setAttribute('id', 'user-btn');
         this.user_tab.setAttribute('data-bs-target', '#user_pane');
         this.user_tab.setAttribute('aria-controls', 'user_pane');
 

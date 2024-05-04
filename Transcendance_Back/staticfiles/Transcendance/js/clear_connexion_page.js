@@ -4,9 +4,7 @@ function clear_connexion_page()
 	log_div.remove();
 	chat.create();
 	chat.load()
+	console.log("chat created");
 	navbar.create();
 	navbar.load();
-	// load_navbar();
-	// load_tabnav();
-	// load_tabcontent();
 }

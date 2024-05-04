@@ -308,7 +308,7 @@ function create_btn_img(img_class, img_path)
     btn_img.appendChild(img);
     return (btn_img);
 }
-function create_msg(name_text, time_text)
+function create_msg(name_text, time_text, profile_picture)
 {
     const msg = document.createElement('div');
     msg.classList.add('m-message');
@@ -322,7 +322,7 @@ function create_msg(name_text, time_text)
 
     const img = document.createElement('img');
     img.classList.add('a-user__img');
-    img.setAttribute('src', './assets/user.jpg');
+    img.setAttribute('src', profile_picture);
 
     const sender_name = document.createElement('p');
     sender_name.classList.add('a-user__name');

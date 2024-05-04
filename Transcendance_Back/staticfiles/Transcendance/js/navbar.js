@@ -15,6 +15,7 @@ const navbar = {
     {
         this.navbar = document.createElement('ul');
         this.navbar.classList.add('navbar-nav');
+        this.navbar.setAttribute('id', 'navbar-icons');
 
         // li for our anchors
         const nav_item1 = document.createElement('li');

@@ -176,6 +176,27 @@ def get_actual_user(request):
     if (request.user.is_anonymous):
         return JsonResponse({'username': None})
     return JsonResponse({'username': request.user.username})
+
+@login_required
+def get_general_conv_history(request):
+    try:
+        conversation = Conversation.objects.get(conversation="General")
+        message_backup = conversation.messages.all().order_by('timestamp')
+    except Conversation.DoesNotExist:
+        message_backup = None
+        return JsonResponse({'messages': []})
+    
+    message_list = []
+    for message in message_backup:
+        profile_picture = message.user.avatar.url
+        print(f"🔱 profile_picture --> {profile_picture}")
+        message_list.append({
+            'username': message.user.username,
+            'timestamp': message.timestamp.strftime('%d-%m-%y %H:%M'),
+            'content': message.content,
+            'profile_picture': profile_picture,
+        })
+    return JsonResponse({'messages': message_list})
     
 def Fullsite(request):
     return render(request, 'Fullsite.html')
