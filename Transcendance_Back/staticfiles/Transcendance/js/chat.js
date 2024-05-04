@@ -21,6 +21,7 @@ const chat = {
     chatroom: null,
 
     current_pane: null,
+    chat_socket: null,
 
     create_disc_panel: function ()
     {
@@ -119,12 +120,30 @@ const chat = {
         typing_area.setAttribute('name', 'typing-area');
         typing_area.setAttribute('placeholder', 'Ecrire un message...');
 
-        const btn_send = create_btn(['a-btn', '-orange', '-sm'], "ENVOYER");
-
         this.chatroom.append(inbox, textarea);
 
-        textarea.append(textarea_container, btn_send);
-        textarea_container.append(typing_area);
+        if (this.chat_socket != null)
+        {
+            const self = this;
+            const btn_send = create_btn(['a-btn', '-orange', '-sm'], "ENVOYER");
+            btn_send.addEventListener('click' , function ()
+            {
+                chat.listener.sendMessage(typing_area.value, self.chat_socket);
+                typing_area.value = '';
+
+            });
+
+            typing_area.addEventListener('keypress', function (e)
+            {
+                if (e.key === 'Enter')
+                {
+                    chat.listener.sendMessage(typing_area.value, self.chat_socket);
+                    typing_area.value = '';
+                }
+            });
+            textarea.append(textarea_container, btn_send);
+            textarea_container.append(typing_area);
+        }
     },
 
     add_chat: function(username, timestamp, content, profile_picture)
@@ -208,5 +227,32 @@ const chat = {
     get_active_pane: function ()
     {
         return (document.querySelector('.tab-pane.active.show'));
+    },
+
+    launch_socket: function ()
+    {
+        this.chat_socket = new WebSocket('wss://localhost/ws/chat/');
+
+        this.chat_socket.onopen = function (e)
+        {
+            console.log('Socket opened');
+            chat.create();
+            chat.load();
+            navbar.create();
+            navbar.load();
+        };
+
+        this.chat_socket.onclose = function (e)
+        {
+            console.error('Socket closed');
+        }
+
+        this.chat_socket.onmessage = (event) => 
+        {
+            let data = JSON.parse(event.data);
+            console.log("message recieved ---> " + data.message);
+            console.log("profile_picture ---> " + data.profile_picture);
+            this.add_chat(data.username, data.timestamp, data.message, data.profile_picture);
+        };
     }
 }

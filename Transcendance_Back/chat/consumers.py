@@ -491,6 +491,8 @@ class ChatConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de c
         
         user = self.scope['user']  # Récupère l'utilisateur de la portée
         username = user.username if user.is_authenticated else "Anonyme"  # Récupère le nom d'utilisateur de l'utilisateur ou "Anonyme" si l'utilisateur n'est pas authentifié
+        profile_picture = await self.get_user_profile_picture(user)
+        print(f"🔥🔥🔥 profile_picture --> {profile_picture}")
 
         
         await self.save_message('General', user, message)  # Sauvegarde le message dans la base de données
@@ -504,7 +506,8 @@ class ChatConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de c
                 "type": "chat_message", 
                 "message": message,
                 "username": username,
-                "timestamp": formatted_timestamp
+                "timestamp": formatted_timestamp,
+                "profile_picture": profile_picture
             }
         )
     
@@ -512,7 +515,8 @@ class ChatConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de c
         message = event['message']  # Récupère le message de l'événement
         timestamp = event.get("timestamp", "")  # Récupère le timestamp de l'événement
         username = event.get("username", "Anonyme")  # Récupère le nom d'utilisateur de l'événement
-        await self.send(text_data=json.dumps({"message": message, "username" : username, "timestamp" : timestamp}))  # Envoie le message au client
+        profile_picture = event.get("profile_picture", None)
+        await self.send(text_data=json.dumps({"message": message, "username" : username, "timestamp" : timestamp, "profile_picture" : profile_picture}))  # Envoie le message au client
 
     @database_sync_to_async
     def save_message(self, room_name, user, message):  # Méthode pour sauvegarder un message dans la base de données
@@ -523,6 +527,14 @@ class ChatConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de c
             return
         new_message = Message(conversation=conversation, user=user, content=message)  # Crée un nouveau message
         new_message.save()  # Sauvegarde le message
+        
+    @database_sync_to_async
+    def get_user_profile_picture(self, user):
+        try:
+            user = User.objects.get(username=user.username)
+        except User.DoesNotExist:
+            return None
+        return user.avatar.url
 
 class PFCConsumer(AsyncWebsocketConsumer): # Définit une nouvelle classe de consommateur WebSocket
 
