@@ -346,12 +346,12 @@ function create_msg_text()
     return (p);
 }
 
-function create_user_in_pane(username, userstatus)
+function create_user_in_pane(username, userstatus, profile_picture)
 {
     const button = create_btn(['m-chat__li'], "");
 
 
-    const btn_img = create_btn_img(['a-user__img'], "./assets/user.jpg");
+    const btn_img = create_btn_img(['a-user__img'], profile_picture);
 
     const title = document.createElement('span');
     title.classList.add('a-user__name');

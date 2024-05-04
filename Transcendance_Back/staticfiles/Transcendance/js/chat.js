@@ -22,9 +22,8 @@ const chat = {
 
     current_pane: null,
 
-    create_content: function ()
+    create_disc_panel: function ()
     {
-        //------------- DISC PANE------------------------------------------
         this.disc_pane = create_tab_pane();
         this.disc_pane.setAttribute('id', 'disc_pane');
         this.disc_pane.classList.add('show', 'active');
@@ -32,36 +31,75 @@ const chat = {
         buf_pane1.classList.add('o-chat__ul');
         buf_pane1.setAttribute('id', 'chat-ul');
 
-        //// loopable
-        const disc1 = create_disc_li("Une discussion", lorem);
-        const disc2 = create_disc_li("deuxio discussion", lorem);
+        const general_disc = create_disc_li("Général", lorem);
+        general_disc.setAttribute('id', 'General-disc');
 
         this.disc_pane.appendChild(buf_pane1);
-        buf_pane1.append(disc1, disc2);
+        buf_pane1.appendChild(general_disc);
 
-        //------------- USER PANE------------------------------------------
+        fetch('/get-friends-list/')
+            .then(response => response.json())
+            .then(data => {
+                let friends = data.friends;
+                if (friends.length > 0)
+                {
+                    for (let i = 0; i < friends.length; i++)
+                    {
+                        var friend = friends[i];
+                        this.add_disc_panel(friend.username);
+                    }
+                }
+            });
+    },
 
+    add_disc_panel: function (disc_name)
+    {
+        const disc = create_disc_li(disc_name, lorem);
+        this.disc_pane.children[0].appendChild(disc);
+    },
+
+    create_user_panel: function ()
+    {
         this.user_pane = create_tab_pane();
         this.user_pane.setAttribute('id', 'user_pane');
         const buf_pane2 = document.createElement('div');
         buf_pane2.classList.add('o-chat__ul');
-
-        //// loopable
-        const user1 = create_user_in_pane("Un joueurrrrrrrrrrrrrrrrrrrrrrrr", "Son status");
-        const user2 = create_user_in_pane("Un joueur", "Son status");
-
         this.user_pane.appendChild(buf_pane2);
-        buf_pane2.append(user1, user2);
 
-        //------------- CHATROOM PANE------------------------------------------
+        fetch('/get-friends-list/')
+            .then(response => response.json())
+            .then(data => {
+                let friends = data.friends;
+                if (friends.length > 0)
+                {
+                    for (let i = 0; i < friends.length; i++)
+                    {
+                        var friend = friends[i];
+                        this.add_user_panel(friend.username, friend.status, friend.profile_picture);
+                    }
+                }
+            });
+    },
 
+    add_user_panel: function (user_name, user_status, profile_picture)
+    {
+        const user = create_user_in_pane(user_name, user_status ? "En ligne" : "Hors ligne", profile_picture);
+        this.user_pane.children[0].appendChild(user);
+    },
+
+    create_chatroom: function ()
+    {
         this.chatroom = create_tab_pane();
         this.chatroom.classList.add('chatroom');
 
         const inbox = document.createElement('div');
         inbox.classList.add('o-inbox');
 
-        //// loopable
+        const textarea = document.createElement('div');
+        textarea.classList.add('o-textbox');
+        const textarea_container = document.createElement('div');
+        textarea_container.classList.add('container');
+
         fetch('/get-general-conv-history')
             .then(response => response.json())
             .then(data => {
@@ -70,20 +108,11 @@ const chat = {
                 {
                     for (let i = 0; i < messages.length; i++)
                     {
-                        var message = messages[i];
-                        const msg_one = create_msg(message.username, message.timestamp, message.profile_picture);
-                        const msg_text_one = create_msg_text();
-                        msg_text_one.appendChild(document.createTextNode(message.content));
-                        inbox.append(msg_one);
-                        msg_one.appendChild(msg_text_one);
+                        let message = messages[i];
+                        this.add_chat(message.username, message.timestamp, message.content, message.profile_picture);
                     }
                 }
             });
-
-        const textarea = document.createElement('div');
-        textarea.classList.add('o-textbox');
-        const textarea_container = document.createElement('div');
-        textarea_container.classList.add('container');
 
         const typing_area = document.createElement('textarea');
         typing_area.classList.add("m-textareaTag");
@@ -94,24 +123,25 @@ const chat = {
 
         this.chatroom.append(inbox, textarea);
 
-        // inbox.append(msg_one);
-        // msg_one.appendChild(msg_text_one);
-
         textarea.append(textarea_container, btn_send);
         textarea_container.append(typing_area);
+    },
 
-        // ACTIONS PANE------------------------------------------
-        // const action_pane = create_tab_pane();
-        // action_pane.setAttribute('id', 'action_pane');
-        // action_pane.classList.add('o-chat__list');
+    add_chat: function(username, timestamp, content, profile_picture)
+    {
+        const msg = create_msg(username, timestamp, profile_picture);
+        const msg_text = create_msg_text();
+        msg_text.appendChild(document.createTextNode(content));
+        msg.appendChild(msg_text);
+        this.chatroom.children[0].appendChild(msg);
+    },
 
-        // const btn_add_friend = create_disc_li(" Ajouter comme ami ", "");
-        // const btn_see_profile = create_disc_li(" Voir son profil ", "");
-        // const btn_block = create_disc_li(" Bloquer ", "");
 
-        // action_pane.append(btn_add_friend, btn_see_profile, btn_block);
-
-        // content_el = { disc_pane, user_pane, chatroom, action_pane };
+    create_content: function ()
+    {
+        this.create_disc_panel();
+        this.create_user_panel();
+        this.create_chatroom();
     },
 
     create_nav: function ()

@@ -197,6 +197,22 @@ def get_general_conv_history(request):
             'profile_picture': profile_picture,
         })
     return JsonResponse({'messages': message_list})
-    
+
+@login_required
+def get_friends_list(request):
+    try:
+        user = User.objects.get(username=request.user.username)
+        friends = user.friends.all()
+        friend_list = []
+        for friend in friends:
+            friend_list.append({
+                'username': friend.username,
+                'profile_picture': friend.avatar.url,
+                'is_online': friend.is_online,
+            })
+        return JsonResponse({'friends': friend_list})
+    except User.DoesNotExist:
+        return JsonResponse({'friends': []})
+  
 def Fullsite(request):
     return render(request, 'Fullsite.html')
