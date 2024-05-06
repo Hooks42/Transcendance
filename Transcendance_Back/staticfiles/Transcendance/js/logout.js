@@ -31,17 +31,25 @@ async function display_login_page()
 		{
 			let login_page_html = data.login_page_html;
 			
-			//let the_chat = document.getElementById('the-chat');
+
+			let list = [];
 			let discuss_btn = document.getElementById('discuss-btn');
 			let user_btn = document.getElementById('user-btn');
 			let disc_pane = document.getElementById('disc_pane');
+			let tabpanel = document.getElementById('tabpanel');
+			let user_pane = document.getElementById('user_pane');
 			let navbar_icons = document.getElementById('navbar-icons');
+			let arrow_btn = document.getElementById('arrow-btn');
+			let inbox = document.getElementById('active-pane');
+			let text_area = document.getElementById('text-area');
 
-			//the_chat.remove();
-			discuss_btn.remove();
-			user_btn.remove();
-			disc_pane.remove();
-			navbar_icons.remove();
+	
+			list.push(arrow_btn, inbox, text_area, discuss_btn, disc_pane, tabpanel, user_pane, inbox, user_btn, navbar_icons);
+			list.forEach((elem) =>
+			{
+				if (elem)
+					elem.remove();
+			});
 
 
 			let main_div = document.getElementById('main-div');

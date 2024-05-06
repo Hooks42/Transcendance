@@ -94,9 +94,11 @@ const chat = {
         this.chatroom.classList.add('chatroom');
 
         const inbox = document.createElement('div');
+        inbox.setAttribute('id', 'inbox');
         inbox.classList.add('o-inbox');
 
         const textarea = document.createElement('div');
+        textarea.setAttribute('id', 'text-area');
         textarea.classList.add('o-textbox');
         const textarea_container = document.createElement('div');
         textarea_container.classList.add('container');

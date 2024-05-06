@@ -152,53 +152,71 @@ function create_btn_orange_w_heart_sword(game_name)
     btn.append(svg_heart, svg_sword, span);
     return (btn);
 }
-function create_btn_set(whichBtn)
-{
-    const btns = document.createElement('div');
-    btns.classList.add('wrapperBtn');
 
-    const btn_check = create_btn([whichBtn], "");
-    btn_check.setAttribute("title", "Valider");
-    const svg_check = create_svg(['bi', 'bi-check']);
-    const path_check = document.createElementNS(svgns, 'path');
-    path_check.setAttribute('fill-rule', 'evenodd');
-    path_check.setAttribute('d', "M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425z");
-    svg_check.appendChild(path_check);
-    btn_check.appendChild(svg_check);
+function create_accept_friend_btn(whichBtn) {
+    const btn_accept = create_btn([whichBtn], "");
+    btn_accept.setAttribute("title", "Accepter l'ami");
+    const svg_accept = create_svg(['bi', 'bi-accept']);
+    const path_accept = document.createElementNS(svgns, 'path');
+    path_accept.setAttribute('fill-rule', 'evenodd');
+    path_accept.setAttribute('d', "M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425z");
+    svg_accept.appendChild(path_accept);
+    btn_accept.appendChild(svg_accept);
+    return btn_accept;
+}
 
-    const btn_x = create_btn([whichBtn], "");
-    btn_x.setAttribute("title", "Supprimer");
-    const svg_x = create_svg(['bi', 'bi-x']);
-    const path_x = document.createElementNS(svgns, 'path');
-    path_x.setAttribute('fill-rule', 'evenodd');
-    path_x.setAttribute('d', "M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708");
-    svg_x.appendChild(path_x);
-    btn_x.appendChild(svg_x);
+function create_delete_friend_btn(whichBtn) {
+    const btn_delete_friend = create_btn([whichBtn], "");
+    btn_delete_friend.setAttribute("title", "Supprimer l'ami");
+    const svg_delete_friend = create_svg(['bi', 'bi-delete-friend']);
+    const path_delete_friend = document.createElementNS(svgns, 'path');
+    path_delete_friend.setAttribute('fill-rule', 'evenodd');
+    path_delete_friend.setAttribute('d', "M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708");
+    svg_delete_friend.appendChild(path_delete_friend);
+    btn_delete_friend.appendChild(svg_delete_friend);
+    return btn_delete_friend;
+}
 
-    const btn_ban = create_btn([whichBtn], "");
-    btn_ban.setAttribute("title", "Bloquer");
-    const svg_ban = create_svg(['bi', 'bi-ban']);
-    const path_ban = document.createElementNS(svgns, 'path');
-    path_ban.setAttribute('fill-rule', 'evenodd');
-    path_ban.setAttribute('d', "M15 8a6.97 6.97 0 0 0-1.71-4.584l-9.874 9.875A7 7 0 0 0 15 8M2.71 12.584l9.874-9.875a7 7 0 0 0-9.874 9.874ZM16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0");
-    svg_ban.appendChild(path_ban);
-    btn_ban.appendChild(svg_ban);
+function create_block_friend_btn(whichBtn) {
+    const btn_block_friend = create_btn([whichBtn], "");
+    btn_block_friend.setAttribute("title", "Bloquer l'utilisateur");
+    const svg_block_friend = create_svg(['bi', 'bi-block-friend']);
+    const path_block_friend = document.createElementNS(svgns, 'path');
+    path_block_friend.setAttribute('fill-rule', 'evenodd');
+    path_block_friend.setAttribute('d', "M15 8a6.97 6.97 0 0 0-1.71-4.584l-9.874 9.875A7 7 0 0 0 15 8M2.71 12.584l9.874-9.875a7 7 0 0 0-9.874 9.874ZM16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0");
+    svg_block_friend.appendChild(path_block_friend);
+    btn_block_friend.appendChild(svg_block_friend);
+    return btn_block_friend;
+}
 
-    const btn_person_plus_fill = create_btn([whichBtn], "");
-    btn_person_plus_fill.setAttribute("title", "Ajouter en ami");
-    const svg_person_plus_fill = create_svg(['bi', 'bi-person-plus-fill']);
+function create_add_friend_btn(whichBtn) {
+    const btn_add_friend = create_btn([whichBtn], "");
+    btn_add_friend.setAttribute("title", "Ajouter en ami");
+    const svg_add_friend = create_svg(['bi', 'bi-add-friend']);
     const path_person1 = document.createElementNS(svgns, 'path');
     const path_person2 = document.createElementNS(svgns, 'path');
     path_person1.setAttribute('fill-rule', 'evenodd');
     path_person2.setAttribute('fill-rule', 'evenodd');
     path_person2.setAttribute('d', "M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6")
     path_person1.setAttribute('d', "M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5");
-    svg_person_plus_fill.append(path_person2, path_person1);
-    btn_person_plus_fill.appendChild(svg_person_plus_fill);
+    svg_add_friend.append(path_person2, path_person1);
+    btn_add_friend.appendChild(svg_add_friend);
+    return btn_add_friend;
+}
+
+function create_btn_set(whichBtn) {
+    const btns = document.createElement('div');
+    btns.classList.add('wrapperBtn');
+
+    const btn_check = create_accept_friend_btn(whichBtn);
+    const btn_x = create_delete_friend_btn(whichBtn);
+    const btn_ban = create_block_friend_btn(whichBtn);
+    const btn_person_plus_fill = create_add_friend_btn(whichBtn);
 
     btns.append(btn_check, btn_x, btn_ban, btn_person_plus_fill);
-    return (btns);
+    return btns;
 }
+
 function create_btn_setn(btn_class)
 {
     const btns = document.createElement('div');
@@ -256,6 +274,7 @@ function create_navtab(text)
 function create_btn_arrow(text)
 {
     const button = create_btn(['a-btn', '-arrow', 'hide'], "");
+    button.setAttribute("id", "arrow-btn");
 
     const svg = create_svg(['bi', 'bi-arrow-left-short']);
     const path = document.createElementNS(svgns, 'path');
@@ -275,6 +294,7 @@ function create_tab_pane()
     div.classList.add('tab-pane');
     div.setAttribute('role', 'tabpanel');
     div.setAttribute('tabindex', 0);
+    div.setAttribute('id', 'tabpanel');
 
     return (div);
 }
@@ -318,14 +338,13 @@ function create_msg(name_text, time_text, profile_picture)
     const btn_img = document.createElement('button');
     btn_img.setAttribute('type', 'button');
     btn_img.classList.add('a-btn');
-    btn_img.classList.add('-img');
 
     const img = document.createElement('img');
     img.classList.add('a-user__img');
     img.setAttribute('src', profile_picture);
 
     const sender_name = document.createElement('p');
-    sender_name.classList.add('a-user__name');
+    sender_name.classList.add('a-user__name', "msg-" + name_text);
     sender_name.textContent = name_text;
 
     const timestamp = document.createElement('p');
