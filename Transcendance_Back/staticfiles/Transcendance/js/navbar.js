@@ -29,9 +29,7 @@ const navbar = {
 
         const bell_menu = create_dropdown_menu();
         bell_menu.classList.add("-lg");
-        const bell_menu_li1 = document.createElement('li');
-        bell_menu_li1.appendChild(create_notif());
-        const bell_menu_li2 = bell_menu_li1.cloneNode(true);
+        load_notif(bell_menu);
 
         // person anchor
         const person_a = create_nav_link("navbar_account_menu");
@@ -53,7 +51,6 @@ const navbar = {
         nav_item1.append(bell_a, bell_menu);
         nav_item2.append(person_a, person_menu);
 
-        bell_menu.append(bell_menu_li1, bell_menu_li2);
         person_menu.append(person_menu_li1, person_menu_li2);
 
         // Bind listeners to navbar elements

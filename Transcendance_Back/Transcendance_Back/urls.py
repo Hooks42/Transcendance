@@ -19,7 +19,7 @@ from django.urls import path, re_path
 from Transcendance.views import Hello, Logout
 from Transcendance.views import ChatView, callback_view, AccountUpdate, get_actual_user, Fullsite, LoginPage
 from Transcendance.views import PrivateChatView, PFC_view, UserInfo, Successfully_Connected_42, get_general_conv_history
-from Transcendance.views import get_friends_list
+from Transcendance.views import get_friends_list, get_friends_request
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -35,6 +35,7 @@ urlpatterns = [
     path('get-actual-user/', get_actual_user, name='get-actual-user'),
     path('get-general-conv-history/', get_general_conv_history, name='get-general-conv-history'),
     path('get-friends-list/', get_friends_list, name='get-friends-list'),
+    path('get_friends_request/', get_friends_request, name='get-friends-request'),
     path('fullsite/', Fullsite, name='fullsite'),
     re_path(r'^private_chat/(?P<room_name>[a-zA-Z0-9@.+_-]+_[a-zA-Z0-9@.+_-]+)/$', PrivateChatView, name='private-chat-room'),
     re_path(r'^pfc/(?P<room_name>[a-zA-Z0-9@.+_-]+_[a-zA-Z0-9@.+_-]+)/$', PFC_view, name='pfc'),

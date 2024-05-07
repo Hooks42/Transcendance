@@ -213,6 +213,15 @@ def get_friends_list(request):
         return JsonResponse({'friends': friend_list})
     except User.DoesNotExist:
         return JsonResponse({'friends': []})
-  
+
+@login_required
+def get_friends_request(request):
+    try:
+        user = User.objects.get(username=request.user.username)
+        friends_request = list(user.friend_request)
+        return JsonResponse({'friends_request': friends_request})
+    except User.DoesNotExist:
+        return JsonResponse({'friends_request': []})
+
 def Fullsite(request):
     return render(request, 'Fullsite.html')

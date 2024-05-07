@@ -346,6 +346,11 @@ function create_msg(name_text, time_text, profile_picture)
     const sender_name = document.createElement('p');
     sender_name.classList.add('a-user__name', "msg-" + name_text);
     sender_name.textContent = name_text;
+    const button_add_friend = create_add_friend_btn("btn-set4");
+    button_add_friend.style.marginLeft = "40px";
+    const button_block_friend = create_block_friend_btn("btn-set4");
+    sender_name.appendChild(button_add_friend);
+    sender_name.appendChild(button_block_friend);
 
     const timestamp = document.createElement('p');
     timestamp.classList.add('a-user__info');
@@ -472,21 +477,33 @@ function create_svg_bell()
     return (bell_svg);
 }
 
-function create_notif()
+function create_notif(username, action, game = null)
 {
     const notif = document.createElement('div');
     notif.classList.add('m-notif');
 
     const circle = create_svg_circle();
-    const span_usersame = document.createElement('span');
-    span_usersame.classList.add('a-notif__username');
-    span_usersame.classList.add('js_username');
-    span_usersame.textContent = 'uuuuuuuuuuuuuuuuuuuuuuuusername';
+
+    const span_username = document.createElement('span');
+    span_username.classList.add('a-notif__username');
+    span_username.classList.add('js_username');
+    span_username.setAttribute("id", "username_notif")
+    span_username.textContent = username;
+
+    const span_action = document.createElement('span');
+    span_action.setAttribute('id', 'action_notif');
+    if (action === "add_friend")
+        span_action.textContent = ' vous demande en ami !';
+    else if (action === "challenge")
+        span_action.textContent = ' vous défie au ';
 
     const span_game = document.createElement('span');
     span_game.classList.add('a-notif__game');
     span_game.classList.add('js_game');
-    span_game.textContent = 'jeu';
+    if (game === "pong")
+        span_game.textContent = 'pong';
+    else if (game === "pfc")
+        span_game.textContent = 'pierre feuille ciseaux';
 
     const wrapper = document.createElement('div');
     wrapper.classList.add('m-wrapperNotif');
@@ -502,12 +519,28 @@ function create_notif()
     wrapper.append(btn_refuser, btn_accepter, btn_three_dots);
 
     notif.appendChild(circle);
-    notif.appendChild(span_usersame);
-    notif.appendChild(document.createTextNode(' vous défie au '));
+    notif.appendChild(span_username);
+    notif.appendChild(span_action);
     notif.appendChild(span_game);
     notif.appendChild(wrapper);
 
     return (notif);
+}
+
+function load_notif(bell_menu)
+{
+    fetch('/get_friends_request/')
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+            data.friends_request.forEach(element => 
+            {
+                const bell_menu_li = document.createElement('li');
+                const notif = create_notif(element, "add_friend");
+                bell_menu_li.appendChild(notif);
+                bell_menu.appendChild(bell_menu_li);
+            });
+        });
 }
 
 function create_btn_heart_sm(text)
