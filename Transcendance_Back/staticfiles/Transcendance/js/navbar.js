@@ -20,16 +20,17 @@ const navbar = {
         // li for our anchors
         const nav_item1 = document.createElement('li');
         nav_item1.classList.add('nav-item', 'dropdown');
+        nav_item1.setAttribute('id', 'navbar-notif-menu');
         const nav_item2 = document.createElement('li');
         nav_item2.classList.add('nav-item', 'dropdown');
 
         // bell anchor
         const bell_a = create_nav_link("navbar_notif_menu");
         bell_a.appendChild(create_svg_bell());
-
-        const bell_menu = create_dropdown_menu();
+        let bell_menu = create_dropdown_menu();
         bell_menu.classList.add("-lg");
-        load_notif(bell_menu);
+        bell_menu.setAttribute('id', 'notif-menu');
+        load_notif();
 
         // person anchor
         const person_a = create_nav_link("navbar_account_menu");

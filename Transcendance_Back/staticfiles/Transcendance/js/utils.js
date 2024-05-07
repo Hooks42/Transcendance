@@ -346,11 +346,27 @@ function create_msg(name_text, time_text, profile_picture)
     const sender_name = document.createElement('p');
     sender_name.classList.add('a-user__name', "msg-" + name_text);
     sender_name.textContent = name_text;
-    const button_add_friend = create_add_friend_btn("btn-set4");
-    button_add_friend.style.marginLeft = "40px";
-    const button_block_friend = create_block_friend_btn("btn-set4");
-    sender_name.appendChild(button_add_friend);
-    sender_name.appendChild(button_block_friend);
+    if (name_text != current_user)
+    {
+        const button_add_friend = create_add_friend_btn("btn-set4");
+        button_add_friend.style.marginLeft = "40px";
+        const button_block_friend = create_block_friend_btn("btn-set4");
+
+        button_add_friend.addEventListener('click', function (event)
+        {
+            send_msg.add_friend_request(current_user, sender_name.textContent);
+        });
+        button_block_friend.addEventListener('click', function (event)
+        {
+            send_msg.block_friend_request(sender_name.textContent, current_user);
+        });
+
+        sender_name.appendChild(button_add_friend);
+        sender_name.appendChild(button_block_friend);
+    }
+    
+
+    
 
     const timestamp = document.createElement('p');
     timestamp.classList.add('a-user__info');
@@ -479,37 +495,66 @@ function create_svg_bell()
 
 function create_notif(username, action, game = null)
 {
+    let bell_menu = document.getElementById('notif-menu');
+
+    const bell_menu_li = document.createElement('li');
+
     const notif = document.createElement('div');
     notif.classList.add('m-notif');
+    let notif_id = null;
+
 
     const circle = create_svg_circle();
 
     const span_username = document.createElement('span');
     span_username.classList.add('a-notif__username');
     span_username.classList.add('js_username');
-    span_username.setAttribute("id", "username_notif")
+    span_username.setAttribute("id", "username_notif-" + username);
     span_username.textContent = username;
+    id = 'notif-' + username;
 
     const span_action = document.createElement('span');
     span_action.setAttribute('id', 'action_notif');
     if (action === "add_friend")
+    {
         span_action.textContent = ' vous demande en ami !';
+        notif_id += '-add_friend';
+    }
     else if (action === "challenge")
+    {
         span_action.textContent = ' vous défie au ';
+        notif_id += '-challenge';
+    }
 
     const span_game = document.createElement('span');
     span_game.classList.add('a-notif__game');
     span_game.classList.add('js_game');
     if (game === "pong")
+    {
         span_game.textContent = 'pong';
+        id += '-pong';
+    }
     else if (game === "pfc")
+    {
         span_game.textContent = 'pierre feuille ciseaux';
+        id += '-pfc';
+    }
+    bell_menu_li.setAttribute('id', notif_id);
 
     const wrapper = document.createElement('div');
     wrapper.classList.add('m-wrapperNotif');
 
     const btn_refuser = create_btn_heart_sm(" Refuser ");
     const btn_accepter = create_btn_heart_sm(" Accepter ");
+
+    btn_accepter.addEventListener('click', function (event)
+    {
+        send_msg.accept_friend_request(username, current_user);
+    });
+    btn_refuser.addEventListener('click', function (event)
+    {
+        send_msg.reject_friend_request(username, current_user);
+    });
 
     const btn_three_dots = document.createElement('button');
     btn_three_dots.classList.add('btn-three-dots');
@@ -523,24 +568,35 @@ function create_notif(username, action, game = null)
     notif.appendChild(span_action);
     notif.appendChild(span_game);
     notif.appendChild(wrapper);
-
-    return (notif);
+    bell_menu_li.appendChild(notif);
+    bell_menu.appendChild(bell_menu_li);
 }
 
-function load_notif(bell_menu)
+function load_notif()
 {
-    fetch('/get_friends_request/')
+    fetch ('/get-friends-request')
         .then(response => response.json())
         .then(data => {
-            console.log(data);
-            data.friends_request.forEach(element => 
+            let friend_request = data.friends_request;
+            if (friend_request.length > 0)
             {
-                const bell_menu_li = document.createElement('li');
-                const notif = create_notif(element, "add_friend");
-                bell_menu_li.appendChild(notif);
-                bell_menu.appendChild(bell_menu_li);
-            });
+                for (let i = 0; i < friend_request.length; i++)
+                {
+                    let friend = friend_request[i];
+                    create_notif(friend, "add_friend");
+                }
+            }
+            else
+                show_no_notif();
         });
+}
+
+function show_no_notif()
+{
+    let bell_menu = document.getElementById('notif-menu');
+    const bell_menu_li = document.createElement('li');
+    bell_menu_li.textContent = "Aucune notification";
+    bell_menu.appendChild(bell_menu_li);
 }
 
 function create_btn_heart_sm(text)

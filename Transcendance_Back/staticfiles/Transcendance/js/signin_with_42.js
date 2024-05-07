@@ -1,3 +1,5 @@
+var current_user = null;
+
 function listen_42_btn()
 {
 	document.getElementById('signin-42-btn').addEventListener('click', function ()
@@ -9,6 +11,7 @@ function listen_42_btn()
 			{
 				if (user)
 				{
+					current_user = user;
 					clearInterval(checkClosingPopup);
 					clear_connexion_page();
 					connected = true;

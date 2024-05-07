@@ -125,16 +125,12 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
             friend_to_delete = await self.get_user(friend_to_delete)
             print(f"🔱 friend_to_delete : {friend_to_delete}")
 
-        if "already_friend" in json_text:
-            already_friend = json_text["already_friend"]
-            print(f"🔱 already_friend : {already_friend}")
-
         print('\n')
     
         if original_user is not None and user_to_add is not None or "get" in command or friend_to_delete is not None or already_friend is not None:
-            await self.command_handler(command, original_user, user_to_add, current_user, friend_to_delete, already_friend)
+            await self.command_handler(command, original_user, user_to_add, current_user, friend_to_delete)
     
-    async def command_handler(self, command, original_user, user_to_add, current_user, friend_to_delete, already_friend):
+    async def command_handler(self, command, original_user, user_to_add, current_user, friend_to_delete):
         if command == 'add_friend':
             if current_user == original_user and user_to_add not in current_user.block_list and current_user.username not in user_to_add.block_list:
                 add_friend = await self.add_friend_request(original_user, user_to_add)
@@ -146,6 +142,8 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
                             'message': {
                                 'command': "add_friend",
                                 'original_user': original_user.username,
+                                'original_user_status': original_user.is_online,
+                                'original_user_avatar': original_user.avatar.url,
                                 'user_to_add': user_to_add.username
                             }
                         }
@@ -208,8 +206,7 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
                             'message': {
                                 'command': "friend_blocked",
                                 'user_to_add': user_to_add.username,
-                                'original_user': original_user.username,
-                                'already_friend': already_friend
+                                'original_user': original_user.username
                             }
                         }
                     )

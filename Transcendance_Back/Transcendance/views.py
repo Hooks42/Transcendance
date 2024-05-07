@@ -60,7 +60,7 @@ def LoginPage(request):
         'signup_form': AccountCreationForm(),
         'signin_form': AccountLoginForm(),
         }
-    login_page_html = render_to_string('Login_page.html', context, request=request)
+    login_page_html = render_to_string('login_page.html', context, request=request)
     return JsonResponse({'login_page_html': login_page_html})
 
 @login_required
