@@ -79,22 +79,8 @@ chat.listener = {
             event.stopPropagation();
             // alert("IMG click, go to that user's profile page");
         }
-    },
-
-    sendMessage: function (message, chat_socket)
-    {
-        if (chat_socket.readyState === chat_socket.OPEN)
-        {
-            if (message.length > 0)
-            {
-                chat_socket.send(JSON.stringify({
-                    'type': 'send_message',
-                    'message': message
-                }));
-            }
-        }
     }
-};
+}
 
 
 // document.querySelector('#the-chat').addEventListener('click', function (event)
