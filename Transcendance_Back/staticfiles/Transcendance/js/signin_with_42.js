@@ -1,4 +1,4 @@
-var current_user = null;
+var currentUser = null;
 
 function listen_42_btn()
 {
@@ -11,7 +11,7 @@ function listen_42_btn()
 			{
 				if (user)
 				{
-					current_user = user;
+					currentUser = user;
 					clearInterval(checkClosingPopup);
 					clear_connexion_page();
 					connected = true;

@@ -346,7 +346,7 @@ function create_msg(name_text, time_text, profile_picture)
     const sender_name = document.createElement('p');
     sender_name.classList.add('a-user__name', "msg-" + name_text);
     sender_name.textContent = name_text;
-    if (name_text != current_user)
+    if (name_text != currentUser)
     {
         const button_add_friend = create_add_friend_btn("btn-set4");
         button_add_friend.style.marginLeft = "40px";
@@ -354,11 +354,11 @@ function create_msg(name_text, time_text, profile_picture)
 
         button_add_friend.addEventListener('click', function (event)
         {
-            send_msg.add_friend_request(current_user, sender_name.textContent);
+            send_msg.add_friend_request(currentUser, sender_name.textContent);
         });
         button_block_friend.addEventListener('click', function (event)
         {
-            send_msg.block_friend_request(sender_name.textContent, current_user);
+            send_msg.block_friend_request(sender_name.textContent, currentUser);
         });
 
         sender_name.appendChild(button_add_friend);
@@ -511,7 +511,7 @@ function create_notif(username, action, game = null)
     span_username.classList.add('js_username');
     span_username.setAttribute("id", "username_notif-" + username);
     span_username.textContent = username;
-    id = 'notif-' + username;
+    notif_id = 'notif-' + username;
 
     const span_action = document.createElement('span');
     span_action.setAttribute('id', 'action_notif');
@@ -549,11 +549,13 @@ function create_notif(username, action, game = null)
 
     btn_accepter.addEventListener('click', function (event)
     {
-        send_msg.accept_friend_request(username, current_user);
+        console.log("Accepter la demande d'ami de " + username);
+        send_msg.accept_friend_request(username, currentUser);
     });
     btn_refuser.addEventListener('click', function (event)
     {
-        send_msg.reject_friend_request(username, current_user);
+        console.log("Refuser la demande d'ami de " + username);
+        send_msg.reject_friend_request(username, currentUser);
     });
 
     const btn_three_dots = document.createElement('button');

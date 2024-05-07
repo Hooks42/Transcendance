@@ -1,3 +1,5 @@
+
+
 const socket = {
 
 	chat_socket: null,
@@ -48,8 +50,12 @@ const socket = {
 		this.system_socket.onmessage = (event) => 
 		{
 			let data = JSON.parse(event.data);
-			console.log("message recieved ---> " + data.message);
-			if (data.message.command == 'add_friend' && data.message.user_to_add == currentUser)
+			console.log("command recieved ---> " + data.message.command);
+			console.log("user_to_add ---> " + data.message.user_to_add);
+			console.log("original_user ---> " + data.message.original_user);
+			console.log("current_user ---> " + currentUser);
+
+			if (data.message.command === 'add_friend' && data.message.user_to_add === currentUser)
 			{
 				original_user = data.message.original_user;
 				orignal_user_status = data.message.orignal_user_status;
@@ -60,11 +66,16 @@ const socket = {
 
 			}
 			
-			if (data.message.command == 'friend_rejected' && data.message.user_to_add == currentUser)
+			if (data.message.command === 'friend_rejected' && data.message.user_to_add === currentUser)
 			{
 				original_user = data.message.original_user;
+				notif_id = ('notif-' + original_user + '-add_friend');
+				console.log('NOTIF_ID ==> ' + notif_id);
 				notif_to_remove = document.getElementById('notif-' + original_user + '-add_friend');
 				notif_to_remove.remove();
+				notif_menu = document.getElementById('notif-menu');
+				if (notif_menu.childElementCount == 0)
+					show_no_notif();
 			}
 		};
 	},

@@ -41,6 +41,7 @@ send_msg = {
 	// Envoie du refus d'ami
 	reject_friend_request: function(original_user, user_to_add)
 	{
+		console.log("Refus d'ami" + original_user + " " + user_to_add);
 		var message = {
 			'command': 'reject_friend',
 			'original_user': original_user,
