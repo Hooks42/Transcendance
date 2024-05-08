@@ -57,6 +57,12 @@ const socket = {
 			console.log("original_user_avatar ---> " + data.message.original_user_avatar);
 			console.log("current_user ---> " + currentUser);
 
+			if (data.message.command === 'add_friend' && user_to_add === currentUser)
+			{
+				original_user = data.message.original_user;
+				create_notif(original_user, 'add_friend');
+			}
+
 			if (data.message.command === 'friend_accepted')
 			{
 				original_user = data.message.original_user;
