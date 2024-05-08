@@ -223,5 +223,19 @@ def get_friends_request(request):
     except User.DoesNotExist:
         return JsonResponse({'friends_request': []})
 
+@login_required
+def get_user_lists(request):
+    try:
+        user = User.objects.get(username=request.user.username)
+        friend_list = []
+        block_list = []
+        if user.friends is not None:
+            friend_list = [friend.username for friend in user.friends.all()]
+        if user.block_list is not None:
+            block_list = list(user.block_list) 
+        return JsonResponse({'friend_list': friend_list, 'block_list': block_list})
+    except User.DoesNotExist:
+        return JsonResponse({'friend_list': [], 'block_list': []})      
+
 def Fullsite(request):
     return render(request, 'Fullsite.html')

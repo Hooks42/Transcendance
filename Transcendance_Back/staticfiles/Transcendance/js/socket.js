@@ -53,17 +53,38 @@ const socket = {
 			console.log("command recieved ---> " + data.message.command);
 			console.log("user_to_add ---> " + data.message.user_to_add);
 			console.log("original_user ---> " + data.message.original_user);
+			console.log("orignal_user_status ---> " + data.message.original_user_status);
+			console.log("original_user_avatar ---> " + data.message.original_user_avatar);
 			console.log("current_user ---> " + currentUser);
 
-			if (data.message.command === 'add_friend' && data.message.user_to_add === currentUser)
+			if (data.message.command === 'friend_accepted')
 			{
 				original_user = data.message.original_user;
-				orignal_user_status = data.message.orignal_user_status;
+				original_user_status = data.message.orignal_user_status;
 				original_user_avatar = data.message.original_user_avatar;
-				chat.add_user_panel(data);
-				notif_to_remove = document.getElementById('notif-' + original_user + '-add_friend');
-				notif_to_remove.remove();
+				user_to_add = data.message.user_to_add;
+				user_to_add_status = data.message.user_to_add_status;
+				user_to_add_avatar = data.message.user_to_add_avatar;
 
+				if (data.message.user_to_add === currentUser)
+				{
+					chat.add_user_panel(original_user, original_user_status, original_user_avatar);
+					chat.add_disc_panel(original_user);
+
+					notif_to_remove = document.getElementById('notif-' + original_user + '-add_friend');
+					notif_to_remove.remove();
+					notif_menu = document.getElementById('notif-menu');
+					if (notif_menu.childElementCount == 0)
+						show_no_notif();
+					
+					clear_button_if_friend(original_user);
+				}
+				else
+				{
+					chat.add_user_panel(data.message.user_to_add, data.message.user_to_add_status, data.message.user_to_add_avatar);
+					chat.add_disc_panel(data.message.user_to_add);
+					clear_button_if_friend(data.message.user_to_add);
+				}
 			}
 			
 			if (data.message.command === 'friend_rejected' && data.message.user_to_add === currentUser)

@@ -142,8 +142,6 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
                             'message': {
                                 'command': "add_friend",
                                 'original_user': original_user.username,
-                                'original_user_status': original_user.is_online,
-                                'original_user_avatar': original_user.avatar.url,
                                 'user_to_add': user_to_add.username
                             }
                         }
@@ -153,14 +151,19 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
         if command == 'accept_friend':
             if current_user == user_to_add and not original_user in current_user.block_list:
                 await self.accept_friend_request(original_user, user_to_add)
+                infos = await self.get_original_and_user_to_add_infos(original_user, user_to_add)
                 await self.channel_layer.group_send(
                         self.room_group_name,
                         {
                             "type": "system_message",
                             'message': {
                                 'command': "friend_accepted",
-                                'user_to_add': user_to_add.username,
-                                'original_user': original_user.username
+                                'user_to_add': infos['user_to_add'],
+                                'user_to_add_status': infos['user_to_add_status'],
+                                'user_to_add_avatar': infos['user_to_add_avatar'],
+                                'original_user': infos['original_user'],
+                                'original_user_status': infos['original_user_status'],
+                                'original_user_avatar': infos['original_user_avatar'],
                             }
                         }
                     )
@@ -316,9 +319,6 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
                     )
 
 
-#! add_friend : original_user, user_to_add
-#! accept_friend : original_user, user_to_add
-#! reject_friend : original_user, user_to_add
     async def system_message(self, event):
         # Extract the message from the event
         message = event['message']
@@ -387,6 +387,18 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
             original_user.block_list.remove(user_to_add.username)
             original_user.save()
 
+    @database_sync_to_async
+    def get_original_and_user_to_add_infos(self, original_user, user_to_add):
+        data = {
+            'original_user': original_user.username,
+            'original_user_status': original_user.is_online,
+            'original_user_avatar': original_user.avatar.url,
+            'user_to_add': user_to_add.username,
+            'user_to_add_status': user_to_add.is_online,
+            'user_to_add_avatar': user_to_add.avatar.url
+        }
+        return data
+            
 
     @database_sync_to_async
     def get_friends_infos_request(self, user):
@@ -396,7 +408,9 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
             'original_user': 'None',
             'friends': [friend.username for friend in user.friends.all()],
             'friend_request': list(user.friend_request),
-            'block_list': list(user.block_list)
+            'block_list': list(user.block_list),
+            'original_user': user.is_online,
+            'avatar': user.avatar.url,
         }
         return data
 

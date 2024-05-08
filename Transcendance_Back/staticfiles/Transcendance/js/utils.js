@@ -348,21 +348,26 @@ function create_msg(name_text, time_text, profile_picture)
     sender_name.textContent = name_text;
     if (name_text != currentUser)
     {
-        const button_add_friend = create_add_friend_btn("btn-set4");
-        button_add_friend.style.marginLeft = "40px";
-        const button_block_friend = create_block_friend_btn("btn-set4");
-
-        button_add_friend.addEventListener('click', function (event)
+        if (!friend_list.includes(name_text))
         {
-            send_msg.add_friend_request(currentUser, sender_name.textContent);
-        });
-        button_block_friend.addEventListener('click', function (event)
-        {
-            send_msg.block_friend_request(sender_name.textContent, currentUser);
-        });
+            const button_add_friend = create_add_friend_btn("btn-set4");
+            button_add_friend.style.marginLeft = "40px";
 
-        sender_name.appendChild(button_add_friend);
-        sender_name.appendChild(button_block_friend);
+            button_add_friend.addEventListener('click', function (event)
+            {
+                send_msg.add_friend_request(currentUser, sender_name.textContent);
+            });
+            sender_name.appendChild(button_add_friend);
+        }
+        if (!block_list.includes(name_text))
+        {
+            const button_block_friend = create_block_friend_btn("btn-set4");
+            button_block_friend.addEventListener('click', function (event)
+            {
+                send_msg.block_friend_request(sender_name.textContent, currentUser);
+            });
+            sender_name.appendChild(button_block_friend);
+        }
     }
     
 
@@ -391,7 +396,7 @@ function create_user_in_pane(username, userstatus, profile_picture)
     const button = create_btn(['m-chat__li'], "");
 
 
-    const btn_img = create_btn_img(['a-user__img'], profile_picture);
+    const btn_img = create_btn_img(['a-user__img'], "https://localhost" + profile_picture);
 
     const title = document.createElement('span');
     title.classList.add('a-user__name');
@@ -638,3 +643,15 @@ function navigateCenterZone(page)
         })
 }
 
+function clear_button_if_friend(username)
+{
+    let msgs = document.getElementsByClassName("msg-" + username);
+    for (let i = 0; i < msgs.length; i++)
+    {
+        for (let j = 0; j < msgs[i].children.length; j++)
+        {
+            if (msgs[i].children[j].getAttribute("title") === "Ajouter en ami")
+                msgs[i].children[j].remove();
+        }
+    }
+}

@@ -1,4 +1,6 @@
 var currentUser = null;
+var friend_list = [];
+var blocl_list = [];
 
 function listen_42_btn()
 {
@@ -7,14 +9,21 @@ function listen_42_btn()
 		let popupWindow = window.open("https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-8bb20f850854bdd9328693e91af550746179e66027373d8195e08e66afbd5e80&redirect_uri=https%3A%2F%2Flocalhost%2Fcallback&response_type=code", "popupWindow", "width=600,height=600");
 		let checkClosingPopup = setInterval(function ()
 		{
-			get_actual_user().then(user =>
+			get_actual_user().then(async user =>
 			{
 				if (user)
 				{
 					currentUser = user;
+					await get_user_list().then(lists =>
+					{
+						friend_list = lists[0];
+						block_list = lists[1];
+					});
 					clearInterval(checkClosingPopup);
 					clear_connexion_page();
-					connected = true;
+					console.log('current user ---> ' + currentUser);
+					console.log('friend list ---> ' + friend_list);
+					console.log('block list ---> ' + block_list);
 				}
 			});
 		}, 1000);
