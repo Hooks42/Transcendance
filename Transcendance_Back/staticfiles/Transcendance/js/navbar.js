@@ -9,7 +9,7 @@ const navbar = {
     btn_notif: null,
 
     btn_logout: null,
-    btn_myaccount: null,
+    btn_my_account: null,
 
     create: function ()
     {
@@ -42,6 +42,8 @@ const navbar = {
 
         person_menu_li1.appendChild(create_btn_heart_sm(" Mon compte "));
         person_menu_li1.children[0].setAttribute("id", "btn_my_account");
+        person_menu_li1.children[0].setAttribute("href", "#profile");
+        this.btn_my_account = person_menu_li1.children[0];
         person_menu_li2.appendChild(create_btn_heart_sm(" Se déconnecter "));
         person_menu_li2.children[0].setAttribute("id", "btn_logout");
         this.btn_logout = person_menu_li2.children[0];
@@ -57,6 +59,7 @@ const navbar = {
         // Bind listeners to navbar elements
         this.btn_home.onclick = navbar.listener.onClickBtnHome.bind(this);
         this.btn_logout.onclick = navbar.listener.onClickBtnLogout.bind(this);
+        this.btn_my_account.onclick = navbar.listener.onClickBtnMyAccount.bind(this);
 
     },
 

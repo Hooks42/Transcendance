@@ -7,7 +7,14 @@ navbar.listener = {
         console.log("click on " + page);
         navigateCenterZone(page);
     },
+onClickBtnMyAccount: function (event)
+    {
+        event.preventDefault();
 
+        let page = navbar.btn_my_account.getAttribute("href").substring(1);
+        console.log("click on " + page);
+        navigateCenterZone(page);
+    },
     // this trigger the modal for a successful connection
     // TODO: change its behavior to an actual log out
     onClickBtnLogout: function ()

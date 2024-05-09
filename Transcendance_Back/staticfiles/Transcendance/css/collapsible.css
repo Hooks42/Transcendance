@@ -1,0 +1,58 @@
+/* ---------------------------------------------------------------------------
+//
+// ORIGINAL CLASSES 
+//
+--------------------------------------------------------------------------- */
+
+.a-btn.-collapsible
+{
+  padding: 16px;
+  width: 100%;
+  border: none;
+  border-bottom: 1px solid #e5e5e5;
+  text-align: left;
+  font-size: 16px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.a-btn.-collapsible>.bi-plus
+{
+  display: block;
+}
+
+.a-btn.-collapsible>.bi-dash
+{
+  display: none;
+}
+
+.o-collapsible__content
+{
+  padding: 0 16px;
+  display: none;
+  overflow: hidden;
+}
+
+.m-collapsible__item
+{
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  column-gap: 16px;
+  height: 64px;
+  align-items: center; 
+
+  &:hover
+  {
+    background-color: rgba(194, 183, 0, 0.1);
+  }
+}
+
+.m-collapsible__item.-chat
+{
+  grid-template-columns: 1fr 1fr;
+}
+
+.m-collapsible__item .wrapperBtn
+{
+  grid-column: 2;
+}

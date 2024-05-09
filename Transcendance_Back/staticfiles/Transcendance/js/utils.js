@@ -1,5 +1,4 @@
-function create_wrapper_profile()
-{
+function create_wrapper_profile() {
     const wp = document.createElement('div');
     wp.classList.add('wrapper_profile');
     const profile_edit = create_profile_edit();
@@ -9,8 +8,7 @@ function create_wrapper_profile()
     return (wp);
 }
 
-function create_profile_edit()
-{
+function create_profile_edit() {
     const pe = document.createElement('div');
     pe.classList.add('profile__edit');
 
@@ -46,13 +44,12 @@ function create_profile_edit()
     return (pe);
 }
 
-function create_profile_collapsible(name_coll, function_which_btn)
-{
+function create_collapsible(name_coll, function_which_btn) {
     const coll = document.createElement('div');
-    coll.classList.add('collapsible');
+    coll.classList.add('js-collapsible');
 
     // button that open or close the collapsible
-    const btn_coll = create_btn(['btn-collapsible'], name_coll);
+    const btn_coll = create_btn(['a-btn', '-collapsible', 'js-btn-collapsible'], name_coll);
 
     const svg_plus = create_svg(['bi', 'bi-plus']);
     const path_plus = document.createElementNS(svgns, "path");
@@ -68,36 +65,29 @@ function create_profile_collapsible(name_coll, function_which_btn)
 
     // collapsible content
     const ul = document.createElement('ul');
-    ul.classList.add('profile__content');
-
-    const li1 = create_collapsed_item("lejoueurdugrenier", function_which_btn);
-    const li2 = create_collapsed_item("annabelle", function_which_btn);
-    ul.append(li1, li2);
+    ul.classList.add('o-collapsible__content');
 
     coll.append(btn_coll, ul);
     return (coll);
 }
 
-function create_collapsed_item(nameText, function_which_btn)
-{
+function create_collapsed_item(nameText, function_which_btn) {
     const li = document.createElement('li');
-    li.classList.add('collapsed_item');
+    li.classList.add('m-collapsible__item', 'js-collapsible__item');
 
     const name = document.createElement('div');
-    name.classList.add('friend_name');
+    name.classList.add('js-friend__name');
     name.appendChild(document.createTextNode(nameText));
 
     li.appendChild(name);
-    if (function_which_btn != 0)
-    {
+    if (function_which_btn != 0) {
         const wrapper_btn = function_which_btn();
         li.appendChild(wrapper_btn);
     }
     return (li);
 }
 
-function create_blocked_btns()
-{
+function create_blocked_btns() {
     const wrapper = document.createElement('div');
     wrapper.classList.add('wrapperBtn');
 
@@ -109,8 +99,7 @@ function create_blocked_btns()
     return (wrapper);
 }
 
-function create_friend_btns()
-{
+function create_friend_btns() {
     const wrapper = document.createElement('div');
     wrapper.classList.add('wrapperBtn');
 
@@ -124,8 +113,7 @@ function create_friend_btns()
     return (wrapper);
 }
 
-function create_svg_sword()
-{
+function create_svg_sword() {
     const svg = create_svg(['icon_sword', 'top']);
     svg.setAttribute('viewBox', '0 0 22 22');
 
@@ -137,8 +125,7 @@ function create_svg_sword()
     return (svg);
 }
 
-function create_btn_orange_w_heart_sword(game_name)
-{
+function create_btn_orange_w_heart_sword(game_name) {
     const btn = create_btn(['btn-orange'], "");
     const svg_heart = create_svg_heart();
     svg_heart.classList.add('bottom');
@@ -230,8 +217,7 @@ function create_btn_set(username, whichBtn) {
     return btns;
 }
 
-function create_btn_setn(btn_class)
-{
+function create_btn_setn(btn_class) {
     const btns = document.createElement('div');
     btns.classList.add('wrapper');
 
@@ -275,8 +261,7 @@ function create_btn_setn(btn_class)
 }
 
 
-function create_navtab(text)
-{
+function create_navtab(text) {
     const button = create_btn(['a-btn', '-nav'], text);
     button.setAttribute('data-bs-toggle', 'tab');
     button.setAttribute('role', 'tab');
@@ -284,8 +269,7 @@ function create_navtab(text)
     return (button);
 }
 
-function create_btn_arrow(text)
-{
+function create_btn_arrow(text) {
     const button = create_btn(['a-btn', '-arrow', 'hide'], "");
     button.setAttribute("id", "arrow-btn");
 
@@ -301,8 +285,7 @@ function create_btn_arrow(text)
     return (button);
 }
 
-function create_tab_pane()
-{
+function create_tab_pane() {
     const div = document.createElement('div');
     div.classList.add('tab-pane');
     div.setAttribute('role', 'tabpanel');
@@ -312,8 +295,7 @@ function create_tab_pane()
     return (div);
 }
 
-function create_disc_li(title_text, info_text)
-{
+function create_disc_li(title_text, info_text) {
     const button = create_btn(['m-chat__li', '-heart'], "");
     button.setAttribute('id', 'disc_list-' + title_text);
     const title = document.createElement('span');
@@ -327,8 +309,7 @@ function create_disc_li(title_text, info_text)
     return (button);
 }
 
-function create_btn_img(img_class, img_path)
-{
+function create_btn_img(img_class, img_path) {
 
     const btn_img = document.createElement('button');
     btn_img.setAttribute('type', 'button');
@@ -342,8 +323,7 @@ function create_btn_img(img_class, img_path)
     btn_img.appendChild(img);
     return (btn_img);
 }
-function create_msg(name_text, time_text, profile_picture)
-{
+function create_msg(name_text, time_text, profile_picture) {
     const msg = document.createElement('div');
     msg.classList.add('m-message');
     const senderDiv = document.createElement('div');
@@ -389,15 +369,13 @@ function create_msg(name_text, time_text, profile_picture)
     return (msg);
 }
 
-function create_msg_text()
-{
+function create_msg_text() {
     const p = document.createElement('p');
     p.classList.add('a-message__content');
     return (p);
 }
 
-function create_user_in_pane(username, userstatus, profile_picture)
-{
+function create_user_in_pane(username, userstatus, profile_picture) {
     const button = create_btn(['m-chat__li'], "");
     button.setAttribute('id', 'friend_list-' + username);
 
@@ -418,11 +396,9 @@ function create_user_in_pane(username, userstatus, profile_picture)
     return (button);
 }
 
-function create_svg(classes)
-{
+function create_svg(classes) {
     const svg = document.createElementNS(svgns, 'svg');
-    classes.forEach(element =>
-    {
+    classes.forEach(element => {
         svg.classList.add(element);
     });
     svg.setAttribute('xmlns', svgns);
@@ -430,12 +406,10 @@ function create_svg(classes)
     return (svg);
 }
 
-function create_btn(classes, text)
-{
+function create_btn(classes, text) {
 
     const button = document.createElement('button');
-    classes.forEach(element =>
-    {
+    classes.forEach(element => {
         button.classList.add(element);
     });
     button.setAttribute('type', 'button');
@@ -443,16 +417,14 @@ function create_btn(classes, text)
     return (button);
 }
 
-function create_dropdown_menu()
-{
+function create_dropdown_menu() {
     const dropdown_menu = document.createElement('ul');
     dropdown_menu.classList.add('dropdown-menu', 'dropdown-menu-end');
     dropdown_menu.setAttribute('aria-labelledby', 'navbarDropdownMenuLink');
     return (dropdown_menu);
 }
 
-function create_nav_link(id)
-{
+function create_nav_link(id) {
     const nav_link = document.createElement('a');
     nav_link.classList.add('nav-link', 'dropdown-toggle', 'caret-off');
     nav_link.setAttribute('href', '#');
@@ -463,8 +435,7 @@ function create_nav_link(id)
     return (nav_link);
 }
 
-function create_svg_three_dots()
-{
+function create_svg_three_dots() {
     const three_dots_svg = create_svg(['bi', 'bi-three-dots-vertical']);
 
     const path = document.createElementNS(svgns, 'path');
@@ -474,8 +445,7 @@ function create_svg_three_dots()
     return (three_dots_svg);
 }
 
-function create_svg_heart()
-{
+function create_svg_heart() {
     const heart_svg = create_svg(['bi', 'bi-heart-fill']);
 
     const path = document.createElementNS(svgns, 'path');
@@ -485,8 +455,7 @@ function create_svg_heart()
     return (heart_svg);
 }
 
-function create_svg_person()
-{
+function create_svg_person() {
     const person_svg = create_svg(['bi', 'bi-person-fill']);
 
     const path = document.createElementNS(svgns, 'path');
@@ -495,8 +464,7 @@ function create_svg_person()
     return (person_svg);
 }
 
-function create_svg_bell()
-{
+function create_svg_bell() {
     const bell_svg = create_svg(['bi', 'bi-bell-fill']);
 
     const path = document.createElementNS(svgns, 'path');
@@ -588,8 +556,7 @@ function create_notif(username, action, game = null)
     bell_menu.appendChild(bell_menu_li);
 }
 
-function load_notif()
-{
+function load_notif() {
     fetch ('/get-friends-request')
         .then(response => response.json())
         .then(data => {
@@ -622,8 +589,7 @@ function create_btn_heart_sm(text)
     return (button);
 }
 
-function create_svg_circle()
-{
+function create_svg_circle() {
     const circle_svg = document.createElementNS(svgns, 'svg');
     circle_svg.classList.add('bi', 'bi-circle-fill');
     circle_svg.setAttribute('xmlns', svgns);
@@ -636,18 +602,25 @@ function create_svg_circle()
     return (circle_svg);
 }
 
-function navigateCenterZone(page)
-{
+function navigateCenterZone(page) {
     let container = document.getElementsByClassName("centerZone")[0].children[0];
 
     console.log("navigate to " + page);
-    fetch("./page/" + page + ".html")
+    // fetch("./page/" + page + ".html")
+    //     .then(response => response.text())
+    //     .then(html => {
+    //         container.innerHTML = html;
+    //     })
+    //     .catch(error =>
+    //     {
+    //         console.error("Error fetching page: ", error);
+    //     })
+    fetch('/' + page + '/')
         .then(response => response.text())
         .then(html => {
             container.innerHTML = html;
         })
-        .catch(error =>
-        {
+        .catch(error => {
             console.error("Error fetching page: ", error);
         })
 }

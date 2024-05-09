@@ -23,6 +23,11 @@
     position: relative;
 }
 
+.tab-pane
+{
+    height: 100%;
+}
+
 /* ---------------------------------------------------------------------------
 //
 // ORIGINAL CLASSES - navigation bar
