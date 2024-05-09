@@ -18,6 +18,11 @@ from django.template.loader import render_to_string
 from django.contrib.auth.decorators import login_required
 import json
 
+def Profile(request):
+    return render(request, 'profile.html')
+
+def Home(request):
+    return render(request, 'home.html')
 
 def Hello(request):
     signup_form = AccountCreationForm()
@@ -60,7 +65,7 @@ def LoginPage(request):
         'signup_form': AccountCreationForm(),
         'signin_form': AccountLoginForm(),
         }
-    login_page_html = render_to_string('Login_page.html', context, request=request)
+    login_page_html = render_to_string('login_page.html', context, request=request)
     return JsonResponse({'login_page_html': login_page_html})
 
 @login_required
@@ -122,7 +127,7 @@ def callback_view(request):
         access_token = response_data['access_token']
         user = register_user(access_token)
         login(request, user)
-    return redirect('Successfully_Connected_42')
+    return render(request, 'successfully_connected_42.html')
 
 def AccountUpdate(request):
     user = User.objects.get(username=request.user.username)

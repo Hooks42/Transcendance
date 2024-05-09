@@ -43,30 +43,34 @@
 //
 --------------------------------------------------------------------------- */
 
-.m-profile__edit
+.m-profile__info
 {
   grid-template-columns: 200px 1fr;
   column-gap: 16px;
   grid-auto-rows: minmax(80px, 80px);
   padding: 0px 16px;
+  align-items: center;
   display: grid;
 }
 
-.m-profile__edit>.a-btn
+.m-profile__info>.a-btn
 {
-  grid-row-start: 1;
+  grid-row-start: 2;
   grid-row-end: 3;
-  place-self: center;
+  /* place-self: center; */
 }
 
 .a-profile__img
 {
+  grid-row-start: 1;
+  grid-row-end: 3;
   border-radius: 50%;
   height: 160px;
   width: 160px;
+  place-self: center;
 }
 
-.m-profile__edit .a-btn.-orange
+.m-profile__info .a-btn.-orange
 {
   font-size: 16px;
   grid-column: 1;
@@ -79,57 +83,5 @@
 {
   height: fit-content;
   width: fit-content;
-  grid-column: 2;
-}
-
-/* ---------------------------------------------------------------------------
-//
-// ORIGINAL CLASSES - profile - user lists
-//
---------------------------------------------------------------------------- */
-
-.a-btn.-collapsible
-{
-  padding: 16px;
-  width: 100%;
-  border: none;
-  border-bottom: 1px solid #e5e5e5;
-  text-align: left;
-  font-size: 16px;
-  display: flex;
-  justify-content: space-between;
-}
-
-.a-btn.-collapsible>.bi-plus
-{
-  display: block;
-}
-
-.a-btn.-collapsible>.bi-dash
-{
-  display: none;
-}
-
-.o-collapsible__content
-{
-  padding: 0 16px;
-  display: none;
-  overflow: hidden;
-}
-
-.m-collapsible__item
-{
-  display: grid;
-  grid-template-columns: 200px 1fr;
-  column-gap: 16px;
-
-  &:hover
-  {
-    background-color: rgba(194, 183, 0, 0.1);
-  }
-}
-
-.m-collapsible__item .wrapperBtn
-{
   grid-column: 2;
 }

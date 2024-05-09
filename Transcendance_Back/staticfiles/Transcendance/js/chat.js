@@ -9,225 +9,243 @@ const lorem = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do e
 
 const chat = {
 
-    chat: document.getElementById("the-chat"),
-    // elements in the chat navigation bar
-    arrow_tab: null,
-    disc_tab: null,
-    user_tab: null,
+	chat: document.getElementById("the-chat"),
+	// elements in the chat navigation bar
+	arrow_tab: null,
+	disc_tab: null,
+	user_tab: null,
 
-    // elements in the chat content
-    disc_pane: null,
-    user_pane: null,
-    chatroom: null,
+	// elements in the chat content
+	disc_pane: null,
+	user_pane: null,
+	chatroom: null,
 
-    current_pane: null,
-    chat_socket: null,
+	current_pane: null,
+	chat_socket: null,
 
-    create_disc_panel: function ()
-    {
-        this.disc_pane = create_tab_pane();
-        this.disc_pane.setAttribute('id', 'disc_pane');
-        this.disc_pane.classList.add('show', 'active');
-        const buf_pane1 = document.createElement('div');
-        buf_pane1.classList.add('o-chat__ul');
-        buf_pane1.setAttribute('id', 'chat-ul');
+	create_disc_panel: function ()
+	{
+		this.disc_pane = create_tab_pane();
+		this.disc_pane.setAttribute('id', 'disc_pane');
+		this.disc_pane.classList.add('show', 'active');
+		const buf_pane1 = document.createElement('div');
+		buf_pane1.classList.add('o-chat__ul');
+		buf_pane1.setAttribute('id', 'chat-ul');
 
-        const general_disc = create_disc_li("Général", lorem);
-        general_disc.setAttribute('id', 'General-disc');
+		const general_disc = create_disc_li("Général", lorem);
+		general_disc.setAttribute('id', 'General-disc');
 
-        this.disc_pane.appendChild(buf_pane1);
-        buf_pane1.appendChild(general_disc);
+		this.disc_pane.appendChild(buf_pane1);
+		buf_pane1.appendChild(general_disc);
 
-        fetch('/get-friends-list/')
-            .then(response => response.json())
-            .then(data => {
-                let friends = data.friends;
-                if (friends.length > 0)
-                {
-                    for (let i = 0; i < friends.length; i++)
-                    {
-                        var friend = friends[i];
-                        this.add_disc_panel(friend.username);
-                    }
-                }
-            });
-    },
+		fetch('/get-friends-list/')
+			.then(response => response.json())
+			.then(data => {
+				let friends = data.friends;
+				if (friends.length > 0)
+				{
+					for (let i = 0; i < friends.length; i++)
+					{
+						var friend = friends[i];
+						this.add_disc_panel(friend.username);
+					}
+				}
+			});
+	},
 
-    add_disc_panel: function (disc_name)
-    {
-        const disc = create_disc_li(disc_name, lorem);
-        this.disc_pane.children[0].appendChild(disc);
-    },
+	add_disc_panel: function (disc_name)
+	{
+		const disc = create_disc_li(disc_name, lorem);
+		this.disc_pane.children[0].appendChild(disc);
+	},
 
-    create_user_panel: function ()
-    {
-        this.user_pane = create_tab_pane();
-        this.user_pane.setAttribute('id', 'user_pane');
-        const buf_pane2 = document.createElement('div');
-        buf_pane2.classList.add('o-chat__ul');
-        this.user_pane.appendChild(buf_pane2);
+	create_user_panel: function ()
+	{
+		this.user_pane = create_tab_pane();
+		this.user_pane.setAttribute('id', 'user_pane');
+		const buf_pane2 = document.createElement('div');
+		buf_pane2.classList.add('o-chat__ul');
+		this.user_pane.appendChild(buf_pane2);
 
-        fetch('/get-friends-list/')
-            .then(response => response.json())
-            .then(data => {
-                let friends = data.friends;
-                if (friends.length > 0)
-                {
-                    for (let i = 0; i < friends.length; i++)
-                    {
-                        var friend = friends[i];
-                        this.add_user_panel(friend.username, friend.status, friend.profile_picture);
-                    }
-                }
-            });
-    },
+		// menu deroulant (collapsible) pour liste des amis
+		const coll_friend = create_collapsible('AMIS', 0);
 
-    add_user_panel: function (user_name, user_status, profile_picture)
-    {
-        const user = create_user_in_pane(user_name, user_status ? "En ligne" : "Hors ligne", profile_picture);
-        this.user_pane.children[0].appendChild(user);
-    },
+		// menu deroulant pour liste des bloques
+		const coll_blocked = create_collapsible('PERSONNES BLOQUEES', 0);
+		buf_pane2.append(coll_friend, coll_blocked);
 
-    create_chatroom: function ()
-    {
-        this.chatroom = create_tab_pane();
-        this.chatroom.classList.add('chatroom');
+		fetch('/get-friends-list/')
+			.then(response => response.json())
+			.then(data => {
+				let friends = data.friends;
+				if (friends.length > 0)
+				{
+					for (let i = 0; i < friends.length; i++)
+					{
+						var friend = friends[i];
+						this.add_user_panel(friend.username, friend.status, friend.profile_picture);
+					}
+				}
+			});
+	},
 
-        const inbox = document.createElement('div');
-        inbox.setAttribute('id', 'inbox');
-        inbox.classList.add('o-inbox');
+	add_user_panel: function (user_name, user_status, profile_picture)
+	{
+		const user = create_user_in_pane(user_name, user_status ? "En ligne" : "Hors ligne", profile_picture);
+		// this.user_pane.children[0].appendChild(user);
 
-        const textarea = document.createElement('div');
-        textarea.setAttribute('id', 'text-area');
-        textarea.classList.add('o-textbox');
-        const textarea_container = document.createElement('div');
-        textarea_container.classList.add('container');
+		const li = document.createElement('li');
+		li.classList.add('m-collapsible__item', '-chat', 'js-collapsible__item');
+		li.append(user);
 
-        fetch('/get-general-conv-history')
-            .then(response => response.json())
-            .then(data => {
-                let messages = data.messages;
-                if (messages.length > 0)
-                {
-                    for (let i = 0; i < messages.length; i++)
-                    {
-                        let message = messages[i];
-                        this.add_chat(message.username, message.timestamp, message.content, message.profile_picture);
-                    }
-                }
-            });
+		// append the coll item on the coll btn
+		let parent = document.getElementsByClassName("o-collapsible__content");
+		console.log(parent[0]);
+		parent[0].append(li);
+	},
 
-        const typing_area = document.createElement('textarea');
-        typing_area.classList.add("m-textareaTag");
-        typing_area.setAttribute('name', 'typing-area');
-        typing_area.setAttribute('placeholder', 'Ecrire un message...');
+	create_chatroom: function ()
+	{
+		this.chatroom = create_tab_pane();
+		this.chatroom.classList.add('chatroom');
 
-        this.chatroom.append(inbox, textarea);
+		const inbox = document.createElement('div');
+		inbox.setAttribute('id', 'inbox');
+		inbox.classList.add('o-inbox');
 
-        if (this.chat_socket != null)
-        {
-            const self = this;
-            const btn_send = create_btn(['a-btn', '-orange', '-sm'], "ENVOYER");
-            btn_send.addEventListener('click' , function ()
-            {
-                chat.listener.sendMessage(typing_area.value, self.chat_socket);
-                typing_area.value = '';
+		const textarea = document.createElement('div');
+		textarea.setAttribute('id', 'text-area');
+		textarea.classList.add('o-textbox');
+		const textarea_container = document.createElement('div');
+		textarea_container.classList.add('container');
 
-            });
+		fetch('/get-general-conv-history')
+			.then(response => response.json())
+			.then(data => {
+				let messages = data.messages;
+				if (messages.length > 0)
+				{
+					for (let i = 0; i < messages.length; i++)
+					{
+						let message = messages[i];
+						this.add_chat(message.username, message.timestamp, message.content, message.profile_picture);
+					}
+				}
+			});
 
-            typing_area.addEventListener('keypress', function (e)
-            {
-                if (e.key === 'Enter')
-                {
-                    chat.listener.sendMessage(typing_area.value, self.chat_socket);
-                    typing_area.value = '';
-                }
-            });
-            textarea.append(textarea_container, btn_send);
-            textarea_container.append(typing_area);
-        }
-    },
+		const typing_area = document.createElement('textarea');
+		typing_area.classList.add("m-textareaTag");
+		typing_area.setAttribute('name', 'typing-area');
+		typing_area.setAttribute('placeholder', 'Ecrire un message...');
 
-    add_chat: function(username, timestamp, content, profile_picture)
-    {
-        const msg = create_msg(username, timestamp, profile_picture);
-        const msg_text = create_msg_text();
-        msg_text.appendChild(document.createTextNode(content));
-        msg.appendChild(msg_text);
-        this.chatroom.children[0].appendChild(msg);
-    },
+		this.chatroom.append(inbox, textarea);
+
+		if (this.chat_socket != null)
+		{
+			const self = this;
+			const btn_send = create_btn(['a-btn', '-orange', '-sm'], "ENVOYER");
+			btn_send.addEventListener('click' , function ()
+				{
+					chat.listener.sendMessage(typing_area.value, self.chat_socket);
+					typing_area.value = '';
+
+				});
+
+			typing_area.addEventListener('keypress', function (e)
+				{
+					if (e.key === 'Enter')
+					{
+						chat.listener.sendMessage(typing_area.value, self.chat_socket);
+						typing_area.value = '';
+					}
+				});
+			textarea.append(textarea_container, btn_send);
+			textarea_container.append(typing_area);
+		}
+	},
+
+	add_chat: function(username, timestamp, content, profile_picture)
+	{
+		const msg = create_msg(username, timestamp, profile_picture);
+		const msg_text = create_msg_text();
+		msg_text.appendChild(document.createTextNode(content));
+		msg.appendChild(msg_text);
+		this.chatroom.children[0].appendChild(msg);
+	},
 
 
-    create_content: function ()
-    {
-        this.create_disc_panel();
-        this.create_user_panel();
-        this.create_chatroom();
-    },
+	create_content: function ()
+	{
+		this.create_disc_panel();
+		this.create_user_panel();
+		this.create_chatroom();
+	},
 
-    create_nav: function ()
-    {
-        this.disc_tab = create_navtab(" DISCUSSIONS ");
-        this.disc_tab.setAttribute('id', 'discuss-btn');
-        this.disc_tab.setAttribute('aria-selected', 'true');
-        this.disc_tab.classList.add('active');
-        this.disc_tab.setAttribute('data-bs-target', '#disc_pane');
-        this.disc_tab.setAttribute('aria-controls', 'disc_pane');
+	create_nav: function ()
+	{
+		this.disc_tab = create_navtab(" DISCUSSIONS ");
+		this.disc_tab.setAttribute('id', 'discuss-btn');
+		this.disc_tab.setAttribute('aria-selected', 'true');
+		this.disc_tab.classList.add('active');
+		this.disc_tab.setAttribute('data-bs-target', '#disc_pane');
+		this.disc_tab.setAttribute('aria-controls', 'disc_pane');
 
-        this.user_tab = create_navtab(" UTILISATEURS ");
-        this.user_tab.setAttribute('id', 'user-btn');
-        this.user_tab.setAttribute('data-bs-target', '#user_pane');
-        this.user_tab.setAttribute('aria-controls', 'user_pane');
+		this.user_tab = create_navtab(" UTILISATEURS ");
+		this.user_tab.setAttribute('id', 'user-btn');
+		this.user_tab.setAttribute('data-bs-target', '#user_pane');
+		this.user_tab.setAttribute('aria-controls', 'user_pane');
 
-        this.arrow_tab = create_btn_arrow(" WHO WHAT ")
-    },
+		this.arrow_tab = create_btn_arrow(" WHO WHAT ")
+	},
 
-    create: function ()
-    {
-        this.create_nav();
-        this.create_content();
-        this.disc_pane.onclick = chat.listener.onClickDiscPane.bind(this);
-        this.arrow_tab.onclick = chat.listener.onClickArrowBtn.bind(this);
-        this.user_pane.onclick = chat.listener.onClickUserPane.bind(this);
-        this.chat.onclick = chat.listener.onClickChat.bind(this);
-    },
+	create: function ()
+	{
+		this.create_nav();
+		this.create_content();
+		this.disc_pane.onclick = chat.listener.onClickDiscPane.bind(this);
+		this.arrow_tab.onclick = chat.listener.onClickArrowBtn.bind(this);
+		this.user_pane.onclick = chat.listener.onClickUserPane.bind(this);
+		this.chat.onclick = chat.listener.onClickChat.bind(this);
+		console.log("chat is created");
+	},
 
-    load_nav: function ()
-    {
-        if (this.disc_tab == null
-            || this.user_tab == null
-            || this.arrow_tab == null)
-        {
-            console.error("Could not load the chat's navigation bar. It must be created first.");
-            return;
-        }
-        existing_chatNav.append(this.disc_tab);
-        existing_chatNav.append(this.user_tab);
-        existing_chatNav.append(this.arrow_tab);
-    },
+	load_nav: function ()
+	{
+		if (this.disc_tab == null
+			|| this.user_tab == null
+			|| this.arrow_tab == null)
+		{
+			console.error("Could not load the chat's navigation bar. It must be created first.");
+			return;
+		}
+		existing_chatNav.append(this.disc_tab);
+		existing_chatNav.append(this.user_tab);
+		existing_chatNav.append(this.arrow_tab);
+	},
 
-    load_content: function ()
-    {
-        if (this.disc_pane == null
-            || this.user_pane == null
-            || this.chatroom == null)
-        {
-            console.error("Could not load the chat's content. It must be created first.");
-            return;
-        }
-        existing_chatContent.append(this.disc_pane);
-        existing_chatContent.append(this.chatroom);
-        existing_chatContent.append(this.user_pane);
-    },
+	load_content: function ()
+	{
+		if (this.disc_pane == null
+			|| this.user_pane == null
+			|| this.chatroom == null)
+		{
+			console.error("Could not load the chat's content. It must be created first.");
+			return;
+		}
+		existing_chatContent.append(this.disc_pane);
+		existing_chatContent.append(this.chatroom);
+		existing_chatContent.append(this.user_pane);
+	},
 
-    load: function ()
-    {
-        this.load_nav();
-        this.load_content();
-    },
+	load: function ()
+	{
+		this.load_nav();
+		this.load_content();
+		console.log("chat is loaded");
+	},
 
-    get_active_pane: function ()
-    {
-        return (document.querySelector('.tab-pane.active.show'));
-    },
+	get_active_pane: function ()
+	{
+		return (document.querySelector('.tab-pane.active.show'));
+	},
 }

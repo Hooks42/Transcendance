@@ -1,0 +1,171 @@
+<div class="wrapperProfile">
+	<div class="m-profile__info">
+		<!-- <button type="button" class="a-btn -img"> -->
+		<img class="a-profile__img " src="./assets/user.jpg">
+		<!-- </button> -->
+		<div id="my_username" class="a-profile__input">Username</div>
+		<div id="my_email" class="a-profile__input">adress@email.com</div>
+		<button type="button" class="a-btn -orange" data-bs-toggle="modal" data-bs-target="#edit-profile-modal"
+			id="edit-profile-btn">
+			Editer</button>
+
+			<!-- Edit my profile Modal -->
+		<div class="modal fade" id="edit-profile-modal" tabindex="-1" aria-labelledby="edit-profile-modal"
+			aria-hidden="true">
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content ">
+
+					<form method="post" id="signup-form">
+						<input type="hidden" name="form_type" value="signup">
+						<div class="modal-header">
+							<h5 class="modal-title">EDITER MON PROFIL</h5>
+							<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+								aria-label="Close"></button>
+						</div>
+						<div class="modal-body">
+							<!-- {% csrf_token %}
+							{{ signup_form }} -->
+						</div>
+						<div class="modal-footer">
+							<button data-bs-dismiss="modal" type="button" class="a-btn -heart">
+								<svg xmlns="http://www.w3.org/2000/svg" class="bi bi-heart-fill " viewBox="0 0 16 16">
+									<path fill-rule="evenodd"
+										d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314" />
+								</svg>
+								ANNULER</button>
+							<button type="submit" class="a-btn -heart" id="signup-btn">
+								<svg xmlns="http://www.w3.org/2000/svg" class="bi bi-heart-fill " viewBox="0 0 16 16">
+									<path fill-rule="evenodd"
+										d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314" />
+								</svg>
+								SAUVEGARDER</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+
+	</div>
+	<div class="wrapperCollapsibles">
+		<div class="js-collapsible">
+			<button class="a-btn -collapsible js-btn-collapsible" type="button">AMIS (nb)<svg class="bi bi-plus"
+					xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+					<path
+						d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4">
+					</path>
+				</svg><svg class="bi bi-dash" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+					<path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8"></path>
+				</svg></button>
+			<ul class="o-collapsible__content">
+				<li class="m-collapsible__item js-collapsible__item">
+					<div class="js-friend__name">lejoueurdugrenier</div>
+					<div class="wrapperBtn">
+						<button class="a-btn -heart -sm" type="button">
+							<svg class="bi bi-heart-fill" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+								<path fill-rule="evenodd"
+									d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314"></path>
+							</svg>Retirer</button>
+						<button class="a-btn -heart -sm" type="button">
+							<svg class="bi bi-heart-fill" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+								<path fill-rule="evenodd"
+									d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314"></path>
+							</svg>Bloquer</button>
+						<button class="a-btn -heart -sm" type="button">
+							<svg class="bi bi-heart-fill" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+								<path fill-rule="evenodd"
+									d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314"></path>
+							</svg>Discuster en privée</button>
+						<button class="a-btn -heart -sm" type="button">
+							<svg class="bi bi-heart-fill" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+								<path fill-rule="evenodd"
+									d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314"></path>
+							</svg>Voir les infos</button>
+					</div>
+				</li>
+				<li class="m-collapsible__item js-collapsible__item">
+					<div class="js-friend__name">annabelle</div>
+					<div class="wrapperBtn">
+						<button class="a-btn -heart -sm" type="button">
+							<svg class="bi bi-heart-fill" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+								<path fill-rule="evenodd"
+									d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314"></path>
+							</svg>Retirer</button>
+						<button class="a-btn -heart -sm" type="button">
+							<svg class="bi bi-heart-fill" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+								<path fill-rule="evenodd"
+									d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314"></path>
+							</svg>Bloquer</button>
+						<button class="a-btn -heart -sm" type="button">
+							<svg class="bi bi-heart-fill" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+								<path fill-rule="evenodd"
+									d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314"></path>
+							</svg>Discuster en privée</button>
+						<button class="a-btn -heart -sm" type="button">
+							<svg class="bi bi-heart-fill" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+								<path fill-rule="evenodd"
+									d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314"></path>
+							</svg>Voir les infos</button>
+					</div>
+				</li>
+			</ul>
+		</div>
+		<div class="js-collapsible">
+			<button class="a-btn -collapsible js-btn-collapsible" type="button">PERSONNES BLOQUEES (nb)
+				<svg class="bi bi-plus" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+					<path
+						d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4">
+					</path>
+				</svg>
+				<svg class="bi bi-dash" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+					<path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8"></path>
+				</svg>
+			</button>
+			<ul class="o-collapsible__content">
+				<li class="m-collapsible__item js-collapsible__item">
+					<div class="js-friend__name">lejoueurdugrenier</div>
+					<div class="wrapperBtn"><button class="a-btn -heart -sm" type="button"><svg class="bi bi-heart-fill"
+								xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+								<path fill-rule="evenodd"
+									d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314"></path>
+							</svg>Débloquer</button><button class="a-btn -heart -sm" type="button"><svg
+								class="bi bi-heart-fill" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+								<path fill-rule="evenodd"
+									d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314"></path>
+							</svg>Voir les infos</button></div>
+				</li>
+				<li class="m-collapsible__item js-collapsible__item">
+					<div class="js-friend__name">annabelle</div>
+					<div class="wrapperBtn">
+						<button class="a-btn -heart -sm" type="button">
+							<svg class="bi bi-heart-fill" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+								<path fill-rule="evenodd"
+									d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314"></path>
+							</svg>Débloquer</button>
+						<button class="a-btn -heart -sm" type="button"><svg class="bi bi-heart-fill"
+								xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+								<path fill-rule="evenodd"
+									d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314"></path>
+							</svg>Voir les infos</button>
+					</div>
+				</li>
+			</ul>
+		</div>
+		<div class="js-collapsible"><button class="a-btn -collapsible js-btn-collapsible" type="button">HISTORIQUE<svg
+					class="bi bi-plus" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+					<path
+						d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4">
+					</path>
+				</svg><svg class="bi bi-dash" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+					<path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8"></path>
+				</svg></button>
+			<ul class="o-collapsible__content">
+				<li class="m-collapsible__item js-collapsible__item">
+					<div class="js-friend__name">lejoueurdugrenier</div>
+				</li>
+				<li class="m-collapsible__item js-collapsible__item">
+					<div class="js-friend__name">annabelle</div>
+				</li>
+			</ul>
+		</div>
+	</div>
+</div>
