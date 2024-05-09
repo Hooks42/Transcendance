@@ -50,14 +50,25 @@ const socket = {
 		this.system_socket.onmessage = (event) => 
 		{
 			let data = JSON.parse(event.data);
-			console.log("command recieved ---> " + data.message.command);
-			console.log("user_to_add ---> " + data.message.user_to_add);
-			console.log("original_user ---> " + data.message.original_user);
-			console.log("orignal_user_status ---> " + data.message.original_user_status);
-			console.log("original_user_avatar ---> " + data.message.original_user_avatar);
+			if (data.message.command)
+				console.log("command recieved ---> " + data.message.command);
+			if (data.message.user_to_add)
+				console.log("user_to_add ---> " + data.message.user_to_add);
+			if (data.message.original_user)
+				console.log("original_user ---> " + data.message.original_user);
+			if (data.message.friend_to_delete)
+				console.log("orignal_user_status ---> " + data.message.original_user_status);
+			if (data.message.user_to_add_status)
+				console.log("original_user_avatar ---> " + data.message.original_user_avatar);
+			if (data.message.user_to_add_status)
+				console.log("user_to_add_status ---> " + data.message.user_to_add_status);
+			if (data.message.user_to_add_avatar)
+				console.log("user_to_add_avatar ---> " + data.message.user_to_add_avatar);
+			if (data.message.friend_to_delete)
+				console.log("friend_to_delete ---> " + data.message.friend_to_delete);
 			console.log("current_user ---> " + currentUser);
 
-			if (data.message.command === 'add_friend' && user_to_add === currentUser)
+			if (data.message.command === 'add_friend' && data.message.user_to_add === currentUser)
 			{
 				original_user = data.message.original_user;
 				create_notif(original_user, 'add_friend');
@@ -85,7 +96,7 @@ const socket = {
 					
 					clear_button_if_friend(original_user);
 				}
-				else
+				else if(data.message.original_user === currentUser)
 				{
 					chat.add_user_panel(data.message.user_to_add, data.message.user_to_add_status, data.message.user_to_add_avatar);
 					chat.add_disc_panel(data.message.user_to_add);
@@ -103,6 +114,33 @@ const socket = {
 				notif_menu = document.getElementById('notif-menu');
 				if (notif_menu.childElementCount == 0)
 					show_no_notif();
+			}
+
+			if (data.message.command === 'friend_deleted')
+			{
+				if (data.message.original_user === currentUser)
+				{
+					document.getElementById("disc_list-" + data.message.friend_to_delete).remove();
+					document.getElementById("friend_list-" + data.message.friend_to_delete).remove();
+					let messages = document.getElementsByClassName("msg-" + data.message.friend_to_delete);
+					for (let i = 0; i < messages.length; i++)
+					{
+						const button_add_friend = create_add_friend_btn("btn-set4", data.message.friend_to_delete);
+						messages[i].appendChild(button_add_friend);
+					}
+				}
+				else if(data.message.friend_to_delete === currentUser)
+				{
+					document.getElementById("disc_list-" + data.message.original_user).remove();
+					document.getElementById("friend_list-" + data.message.original_user).remove();
+					let messages = document.getElementsByClassName("msg-" + data.message.original_user);
+					for (let i = 0; i < messages.length; i++)
+					{
+						const button_add_friend = create_add_friend_btn("btn-set4", data.message.original_user);
+						messages[i].appendChild(button_add_friend);
+					}
+				}
+				
 			}
 		};
 	},

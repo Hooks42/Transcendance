@@ -153,7 +153,7 @@ function create_btn_orange_w_heart_sword(game_name)
     return (btn);
 }
 
-function create_accept_friend_btn(whichBtn) {
+function create_accept_friend_btn(whichBtn, who) {
     const btn_accept = create_btn([whichBtn], "");
     btn_accept.setAttribute("title", "Accepter l'ami");
     const svg_accept = create_svg(['bi', 'bi-accept']);
@@ -165,31 +165,39 @@ function create_accept_friend_btn(whichBtn) {
     return btn_accept;
 }
 
-function create_delete_friend_btn(whichBtn) {
+function create_delete_friend_btn(whichBtn, who) {
     const btn_delete_friend = create_btn([whichBtn], "");
     btn_delete_friend.setAttribute("title", "Supprimer l'ami");
     const svg_delete_friend = create_svg(['bi', 'bi-delete-friend']);
     const path_delete_friend = document.createElementNS(svgns, 'path');
     path_delete_friend.setAttribute('fill-rule', 'evenodd');
     path_delete_friend.setAttribute('d', "M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708");
+    btn_delete_friend.addEventListener('click', function (event)
+    {
+        send_msg.delete_friend_request(who, currentUser);
+    });
     svg_delete_friend.appendChild(path_delete_friend);
     btn_delete_friend.appendChild(svg_delete_friend);
     return btn_delete_friend;
 }
 
-function create_block_friend_btn(whichBtn) {
+function create_block_friend_btn(whichBtn, who) {
     const btn_block_friend = create_btn([whichBtn], "");
     btn_block_friend.setAttribute("title", "Bloquer l'utilisateur");
     const svg_block_friend = create_svg(['bi', 'bi-block-friend']);
     const path_block_friend = document.createElementNS(svgns, 'path');
     path_block_friend.setAttribute('fill-rule', 'evenodd');
     path_block_friend.setAttribute('d', "M15 8a6.97 6.97 0 0 0-1.71-4.584l-9.874 9.875A7 7 0 0 0 15 8M2.71 12.584l9.874-9.875a7 7 0 0 0-9.874 9.874ZM16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0");
+    btn_block_friend.addEventListener('click', function (event)
+    {
+        send_msg.block_friend_request(who, currentUser);
+    });
     svg_block_friend.appendChild(path_block_friend);
     btn_block_friend.appendChild(svg_block_friend);
     return btn_block_friend;
 }
 
-function create_add_friend_btn(whichBtn) {
+function create_add_friend_btn(whichBtn, who) {
     const btn_add_friend = create_btn([whichBtn], "");
     btn_add_friend.setAttribute("title", "Ajouter en ami");
     const svg_add_friend = create_svg(['bi', 'bi-add-friend']);
@@ -199,21 +207,26 @@ function create_add_friend_btn(whichBtn) {
     path_person2.setAttribute('fill-rule', 'evenodd');
     path_person2.setAttribute('d', "M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6")
     path_person1.setAttribute('d', "M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5");
+    btn_add_friend.addEventListener('click', function (event)
+    {
+        send_msg.add_friend_request(currentUser, who);
+    });
     svg_add_friend.append(path_person2, path_person1);
     btn_add_friend.appendChild(svg_add_friend);
+
     return btn_add_friend;
 }
 
-function create_btn_set(whichBtn) {
+function create_btn_set(username, whichBtn) {
     const btns = document.createElement('div');
     btns.classList.add('wrapperBtn');
 
-    const btn_check = create_accept_friend_btn(whichBtn);
-    const btn_x = create_delete_friend_btn(whichBtn);
-    const btn_ban = create_block_friend_btn(whichBtn);
-    const btn_person_plus_fill = create_add_friend_btn(whichBtn);
+    //const btn_check = create_accept_friend_btn(whichBtn);
+    const btn_x = create_delete_friend_btn(whichBtn, username);
+    const btn_ban = create_block_friend_btn(whichBtn, username);
+    //const btn_person_plus_fill = create_add_friend_btn(whichBtn);
 
-    btns.append(btn_check, btn_x, btn_ban, btn_person_plus_fill);
+    btns.append(btn_x, btn_ban);
     return btns;
 }
 
@@ -302,6 +315,7 @@ function create_tab_pane()
 function create_disc_li(title_text, info_text)
 {
     const button = create_btn(['m-chat__li', '-heart'], "");
+    button.setAttribute('id', 'disc_list-' + title_text);
     const title = document.createElement('span');
     title.classList.add('a-li__title');
     title.appendChild(document.createTextNode(title_text));
@@ -350,22 +364,13 @@ function create_msg(name_text, time_text, profile_picture)
     {
         if (!friend_list.includes(name_text))
         {
-            const button_add_friend = create_add_friend_btn("btn-set4");
+            const button_add_friend = create_add_friend_btn("btn-set4", sender_name.textContent);
             button_add_friend.style.marginLeft = "40px";
-
-            button_add_friend.addEventListener('click', function (event)
-            {
-                send_msg.add_friend_request(currentUser, sender_name.textContent);
-            });
             sender_name.appendChild(button_add_friend);
         }
         if (!block_list.includes(name_text))
         {
-            const button_block_friend = create_block_friend_btn("btn-set4");
-            button_block_friend.addEventListener('click', function (event)
-            {
-                send_msg.block_friend_request(sender_name.textContent, currentUser);
-            });
+            const button_block_friend = create_block_friend_btn("btn-set4", sender_name.textContent);
             sender_name.appendChild(button_block_friend);
         }
     }
@@ -394,6 +399,7 @@ function create_msg_text()
 function create_user_in_pane(username, userstatus, profile_picture)
 {
     const button = create_btn(['m-chat__li'], "");
+    button.setAttribute('id', 'friend_list-' + username);
 
 
     const btn_img = create_btn_img(['a-user__img'], "https://localhost" + profile_picture);
@@ -404,9 +410,10 @@ function create_user_in_pane(username, userstatus, profile_picture)
 
     const info = document.createElement('span');
     info.classList.add('a-user__info');
+    info.setAttribute('id', 'friend_list_status-' + userstatus);
     info.appendChild(document.createTextNode(userstatus));
 
-    const btns = create_btn_set("btn-set4");
+    const btns = create_btn_set(username, "btn-set4");
     button.append(btn_img, title, info, btns);
     return (button);
 }
@@ -501,6 +508,8 @@ function create_svg_bell()
 function create_notif(username, action, game = null)
 {
     let bell_menu = document.getElementById('notif-menu');
+    if (bell_menu.children[0].textContent === "Aucune notification")
+        bell_menu.removeChild(bell_menu.children[0])
 
     const bell_menu_li = document.createElement('li');
 
