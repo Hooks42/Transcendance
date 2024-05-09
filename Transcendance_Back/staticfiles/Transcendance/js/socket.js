@@ -85,6 +85,7 @@ const socket = {
 
 				if (data.message.user_to_add === currentUser)
 				{
+					friend_list.push(original_user);
 					chat.add_user_panel(original_user, original_user_status, original_user_avatar);
 					chat.add_disc_panel(original_user);
 
@@ -98,6 +99,7 @@ const socket = {
 				}
 				else if(data.message.original_user === currentUser)
 				{
+					friend_list.push(user_to_add);
 					chat.add_user_panel(data.message.user_to_add, data.message.user_to_add_status, data.message.user_to_add_avatar);
 					chat.add_disc_panel(data.message.user_to_add);
 					clear_button_if_friend(data.message.user_to_add);
@@ -120,6 +122,7 @@ const socket = {
 			{
 				if (data.message.original_user === currentUser)
 				{
+					friend_list = friend_list.filter(e => e !== data.message.friend_to_delete);
 					document.getElementById("disc_list-" + data.message.friend_to_delete).remove();
 					document.getElementById("friend_list-" + data.message.friend_to_delete).remove();
 					let messages = document.getElementsByClassName("msg-" + data.message.friend_to_delete);
@@ -131,6 +134,7 @@ const socket = {
 				}
 				else if(data.message.friend_to_delete === currentUser)
 				{
+					friend_list = friend_list.filter(e => e !== data.message.original_user);
 					document.getElementById("disc_list-" + data.message.original_user).remove();
 					document.getElementById("friend_list-" + data.message.original_user).remove();
 					let messages = document.getElementsByClassName("msg-" + data.message.original_user);
@@ -141,6 +145,32 @@ const socket = {
 					}
 				}
 				
+			}
+
+			if (data.message.command === 'friend_blocked')
+			{
+				if (data.message.original_user === currentUser)
+				{
+					block_list.push(data.message.user_to_add);
+					if (friend_list.includes(data.message.user_to_add))
+					{
+						document.getElementById("disc_list-" + data.message.user_to_add).remove();
+						document.getElementById("friend_list-" + data.message.user_to_add).remove();
+						friend_list = friend_list.filter(e => e !== data.message.user_to_add);
+					}
+					// Ajouter ici dans la liste des amis bloqués quand elle sera implémentée
+					hide_or_unhide_msg(true, data.message.user_to_add);
+				}
+				else if (data.message.user_to_add === currentUser)
+				{
+					block_list.push(data.message.original_user);
+					if (friend_list.includes(data.message.original_user))
+					{
+						document.getElementById("disc_list-" + data.message.original_user).remove();
+						document.getElementById("friend_list-" + data.message.original_user).remove();
+						friend_list = friend_list.filter(e => e !== data.message.original_user);
+					}
+				}
 			}
 		};
 	},

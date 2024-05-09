@@ -664,8 +664,16 @@ function hide_or_unhide_msg(hide, username)
     let msgs = document.getElementsByClassName("msg_div-" + username);
     if (hide === true)
         for (let i = 0; i < msgs.length; i++)
+        {
+            if (msgs[i].classList.contains('unhide'))
+                msgs[i].classList.remove('unhide');
             msgs[i].classList.add('hide');
+        }
     else
         for (let i = 0; i < msgs.length; i++)
-            msgs[i].classList.remove('hide');
+        {
+            if (msgs[i].classList.contains('hide'))
+                msgs[i].classList.remove('hide');
+            msgs[i].classList.add('unhide');
+        }
 }
