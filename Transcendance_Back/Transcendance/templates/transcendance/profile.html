@@ -3,8 +3,8 @@
 		<!-- <button type="button" class="a-btn -img"> -->
 		<img class="a-profile__img " src="./assets/user.jpg">
 		<!-- </button> -->
-		<div id="my_username" class="a-profile__input">Username</div>
-		<div id="my_email" class="a-profile__input">adress@email.com</div>
+		<div id="profile__username" class="a-profile__input">Username</div>
+		<!-- <div id="my_email" class="a-profile__input">adress@email.com</div> -->
 		<button type="button" class="a-btn -orange" data-bs-toggle="modal" data-bs-target="#edit-profile-modal"
 			id="edit-profile-btn">
 			Editer</button>
@@ -25,6 +25,10 @@
 						<div class="modal-body">
 							<!-- {% csrf_token %}
 							{{ signup_form }} -->
+							<input id="my_username" type="text" value="MyUsername" placeholder="Nom d'utilisateur" class="modal__input">
+							<input id="my_email" type="text" value="adresse@email.com" placeholder="Adresse email" class="modal__input">
+							<input id="my_pw" type="password" value="***" placeholder="Mot de passe" class="modal__input">
+							<input id="my_cpw" type="password" value="***" placeholder="Mot de passe" class="modal__input">
 						</div>
 						<div class="modal-footer">
 							<button data-bs-dismiss="modal" type="button" class="a-btn -heart">

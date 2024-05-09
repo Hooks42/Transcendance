@@ -83,5 +83,14 @@
 {
   height: fit-content;
   width: fit-content;
+  font-size: var(--fs-h6);
+  font-family: "mars";
   grid-column: 2;
+}
+
+.a-profile__editInput
+{
+  width: 53%;
+  height: 80px;
+
 }
