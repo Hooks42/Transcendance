@@ -362,17 +362,11 @@ function create_msg(name_text, time_text, profile_picture)
     sender_name.textContent = name_text;
     if (name_text != currentUser)
     {
-        if (!friend_list.includes(name_text))
-        {
-            const button_add_friend = create_add_friend_btn("btn-set4", sender_name.textContent);
-            button_add_friend.style.marginLeft = "40px";
-            sender_name.appendChild(button_add_friend);
-        }
-        if (!block_list.includes(name_text))
-        {
-            const button_block_friend = create_block_friend_btn("btn-set4", sender_name.textContent);
-            sender_name.appendChild(button_block_friend);
-        }
+        const button_add_friend = create_add_friend_btn("btn-set4", sender_name.textContent);
+        button_add_friend.style.marginLeft = "40px";
+        sender_name.appendChild(button_add_friend);
+        const button_block_friend = create_block_friend_btn("btn-set4", sender_name.textContent);
+        sender_name.appendChild(button_block_friend);
     }
     
 
@@ -663,4 +657,15 @@ function clear_button_if_friend(username)
                 msgs[i].children[j].remove();
         }
     }
+}
+
+function hide_or_unhide_msg(hide, username)
+{
+    let msgs = document.getElementsByClassName("msg_div-" + username);
+    if (hide === true)
+        for (let i = 0; i < msgs.length; i++)
+            msgs[i].classList.add('hide');
+    else
+        for (let i = 0; i < msgs.length; i++)
+            msgs[i].classList.remove('hide');
 }

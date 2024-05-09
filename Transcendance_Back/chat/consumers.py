@@ -200,7 +200,7 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
                     )
         
         if command == 'block_friend':
-            if current_user == original_user:
+            if current_user == original_user and not user_to_add in current_user.block_list:
                 await self.block_friend_request(original_user, user_to_add)
                 await self.channel_layer.group_send(
                         self.room_group_name,

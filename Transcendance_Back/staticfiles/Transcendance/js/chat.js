@@ -152,6 +152,9 @@ const chat = {
         const msg = create_msg(username, timestamp, profile_picture);
         const msg_text = create_msg_text();
         msg_text.appendChild(document.createTextNode(content));
+        msg.classList.add('msg_div-' + username);
+        if (block_list.includes(username))
+            msg.classList.add('hide');
         msg.appendChild(msg_text);
         this.chatroom.children[0].appendChild(msg);
     },

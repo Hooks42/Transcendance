@@ -1,3 +1,15 @@
+.hide
+{
+    display: none;
+}
+
+.unhide
+{
+    display: block;
+}
+
+
+
 /* ---------------------------------------------------------------------------
 //
 // CLASSES THAT COME FROM BOOTSTRAP
