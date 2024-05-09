@@ -1,7 +1,3 @@
-var currentUser = null;
-var friend_list = [];
-var blocl_list = [];
-
 function listen_42_btn()
 {
 	document.getElementById('signin-42-btn').addEventListener('click', function ()
@@ -11,19 +7,10 @@ function listen_42_btn()
 		{
 			get_actual_user().then(async user =>
 			{
-				if (user)
+				if (user.username)
 				{
-					currentUser = user;
-					await get_user_list().then(lists =>
-					{
-						friend_list = lists[0];
-						block_list = lists[1];
-					});
 					clearInterval(checkClosingPopup);
 					clear_connexion_page();
-					console.log('current user ---> ' + currentUser);
-					console.log('friend list ---> ' + friend_list);
-					console.log('block list ---> ' + block_list);
 				}
 			});
 		}, 1000);

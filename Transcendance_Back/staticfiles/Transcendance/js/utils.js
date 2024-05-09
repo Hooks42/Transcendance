@@ -677,3 +677,20 @@ function hide_or_unhide_msg(hide, username)
             msgs[i].classList.add('unhide');
         }
 }
+
+function create_and_display_profile()
+{
+    let main_div = document.getElementById('main-div');
+
+//------------------------------------ PROFILE ------------------------------------
+
+    let profile_edit_div = document.createElement('div');
+    let profile_picture = document.createElement('img');
+    let profile_name = document.createElement('h3');
+    let edit_profile_btn = document.createElement('button');
+
+    profile_edit_div.classList.add('profile_edit');
+    profile_picture.classList.add('profile_pic');
+
+
+}

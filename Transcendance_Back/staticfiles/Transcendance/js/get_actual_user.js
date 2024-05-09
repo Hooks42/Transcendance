@@ -4,8 +4,8 @@ async function get_actual_user()
 		.then(response => response.json())
 		.then(data =>
 		{
-			if (data.username)
-				return (data.username);
+			if (data)
+				return (data);
 			else
 				return (null);
 		});
@@ -26,3 +26,4 @@ async function get_user_list()
 			return [friend_list, block_list];
 		});
 }
+

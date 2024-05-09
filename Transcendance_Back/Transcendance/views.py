@@ -175,7 +175,7 @@ def Successfully_Connected_42(request):
 def get_actual_user(request):
     if (request.user.is_anonymous):
         return JsonResponse({'username': None})
-    return JsonResponse({'username': request.user.username})
+    return JsonResponse({'username': request.user.username, 'profile_picture': request.user.avatar.url})
 
 @login_required
 def get_general_conv_history(request):
