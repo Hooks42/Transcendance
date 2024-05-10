@@ -17,6 +17,7 @@ const socket = {
 			chat.load();
 			navbar.create();
 			navbar.load();
+			centerZone.listen();
 		};
 
 		this.chat_socket.onclose = function (e)

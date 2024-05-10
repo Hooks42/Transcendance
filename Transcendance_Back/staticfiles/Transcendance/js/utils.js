@@ -615,7 +615,7 @@ function navigateCenterZone(page) {
     //     {
     //         console.error("Error fetching page: ", error);
     //     })
-    fetch('/' + page + '/')
+    fetch('/' + page  )
         .then(response => response.text())
         .then(html => {
             container.innerHTML = html;

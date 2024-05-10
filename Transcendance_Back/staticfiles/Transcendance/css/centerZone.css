@@ -11,10 +11,14 @@
 
 .centerZone
 {
-  padding: 16px;
+  padding: 16px 0px 0px 0px;
   width: 100%;
-  height: 1px;
+  min-height: 240;
+  min-width: 432;
+
   /* needed for the overflow to trigger */
+  height: 1px;
+
   flex-grow: 1;
   overflow: visible;
 }
