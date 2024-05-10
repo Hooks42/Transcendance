@@ -13,8 +13,8 @@
 {
   padding: 16px 0px 0px 0px;
   width: 100%;
-  min-height: 240;
-  min-width: 432;
+  min-height: 256px;
+  min-width: 432px;
 
   /* needed for the overflow to trigger */
   height: 1px;

@@ -1,6 +1,6 @@
 const pong = {
-	groundWidth: 432, // min groundwidth
-	groundHeight: 240, // min groundheight
+	groundWidth: 0, // min groundwidth
+	groundHeight: 0, // min groundheight
 	groundColor: "#000000",
 
 	netWidth: 6,
@@ -21,18 +21,19 @@ const pong = {
 	textWINLOSE: "WINLOSE",
 
 	currentNotice: "",
-	currentState: null,
+	currentState: null, // states are: start, game, pause and end
 
 	init: function (container) {
-		let left = container.getBoundingClientRect().left;
-		let top = container.getBoundingClientRect().top;
+		let left = Math.floor(container.getBoundingClientRect().left);
+		let top = Math.floor(container.getBoundingClientRect().top);
 
-		let width = container.getBoundingClientRect().right - container.getBoundingClientRect().left;
-		let height = container.getBoundingClientRect().bottom - container.getBoundingClientRect().top;
-		if (width > this.groundWidth)
-			this.groundWidth = width;
-		if (height > this.groundHeight)
-			this.groundHeight = height;
+		// pong fills up all of its (parent) container
+		this.groundWidth = Math.floor(container.getBoundingClientRect().right) - left;
+		this.groundHeight = Math.floor(container.getBoundingClientRect().bottom) - top;
+		if (this.groundWidth % 2 == 1)
+			this.groundWidth--;
+		if (this.groundHeight % 2 == 1)
+			this.groundHeight--;
 
 		// creer 3 layers superposes, optimise le temps de refresh
 		this.groundLayer = pong.display.createLayer("ground", this.groundWidth, this.groundHeight, container, 0, this.groundColor, left, top);
@@ -52,14 +53,17 @@ const pong = {
 		this.displayBall();
 		this.displayPaddles();
 
+		// console.log("paddleL (" + pong.paddleL.posX + ", " + pong.paddleL.posY + ")");
+		// console.log("paddleR (" + pong.paddleR.posX + ", " + pong.paddleR.posY + ")");
+		// console.log("ball (" + pong.ball.posX + ", " + pong.ball.posY + ")");
 		this.initKeyboard(pong.control.onKeyDown, pong.control.onKeyUp);
 		this.currentNotice = this.textStartGame;
 		this.displayNotice();
 		this.currentState = pong.start;
 	},
 
+	// Game state
 	start: function () {
-		// TODO draw a "Press Enter to start" layer
 		if (pong.code["Enter"].pressed) {
 			pong.clearLayer(this.noticeLayer);
 			pong.currentNotice = "";
@@ -68,16 +72,23 @@ const pong = {
 		}
 	},
 
+	// Game state
 	game: function () {
 		// clear notice layer
+		if (pong.currentState == pong.pause)
+			return;
+		// clear old layers
 		pong.clearLayer(this.noticeLayer);
-		// update
+		pong.clearLayer(pong.ballPaddlesLayer);
+
+		// update values
 		pong.moveBall();
 		pong.movePaddles();
+
 		// check if there is a winner and update scores
 		pong.winLoseSystem();
-		// render
-		pong.clearLayer(pong.ballPaddlesLayer);
+
+		// draw new layers with updated values for ball and paddles
 		pong.displayBall();
 		pong.displayPaddles();
 		// pause game
@@ -87,13 +98,15 @@ const pong = {
 		}
 	},
 
+	// Game state
 	pause: function () {
-		// add "PAUSE" on screen
-		pong.clearLayer(this.noticeLayer);
+		// draw "PAUSE" on screen
+		console.log("game is paused");
 		pong.currentNotice = this.textPausedGame;
 		pong.displayNotice();
+
 		if (pong.code["Space"].pressed) {
-			// remove "PAUSE"
+			// remove on screen "PAUSE"
 			pong.currentNotice = "";
 			pong.clearLayer(this.noticeLayer);
 			// resume the game
@@ -102,6 +115,7 @@ const pong = {
 		}
 	},
 
+	// Game state
 	end: function () {
 		this.currentNotice = this.textNewGame;
 		this.displayNotice();

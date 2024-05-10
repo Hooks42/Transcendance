@@ -2,8 +2,8 @@ pong.ball = {
 	width : 10,
 	height : 10, // must be equal to width
 	color : "#0000FF",
-	posX : 700 / 2,
-	posY : 400 / 2,
+	posX : 0,
+	posY : 0,
 	cooldown : false,
 
 	speed : 5,
