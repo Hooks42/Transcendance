@@ -197,6 +197,25 @@ function create_block_friend_btn(whichBtn, who) {
     return btn_block_friend;
 }
 
+function create_unblock_friend_btn(whichBtn, who) 
+{
+    const btn_unblock_friend = create_btn([whichBtn], "");
+    btn_unblock_friend.setAttribute("title", "Débloquer l'utilisateur");
+    const svg_unblock_friend = create_svg(['bi', 'bi-unblock-friend']);
+    const path_unblock_friend = document.createElementNS(svgns, 'path');
+    path_unblock_friend.setAttribute('fill-rule', 'evenodd');
+    path_unblock_friend.setAttribute('d', "M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708");
+    btn_unblock_friend.addEventListener('click', function (event)
+    {
+        send_msg.unblock_friend_request(who, currentUser);
+    });
+    svg_unblock_friend.appendChild(path_unblock_friend);
+    btn_unblock_friend.appendChild(svg_unblock_friend);
+    return btn_unblock_friend;
+
+
+}
+
 function create_add_friend_btn(whichBtn, who) {
     const btn_add_friend = create_btn([whichBtn], "");
     btn_add_friend.setAttribute("title", "Ajouter en ami");
@@ -227,6 +246,17 @@ function create_btn_set(username, whichBtn) {
     //const btn_person_plus_fill = create_add_friend_btn(whichBtn);
 
     btns.append(btn_x, btn_ban);
+    return btns;
+}
+
+function create_block_btn_set(username, whichBtn)
+{
+    const btns = document.createElement('div');
+    btns.classList.add('wrapperBtn');
+
+    const btn_x = create_unblock_friend_btn(whichBtn, username);
+
+    btns.append(btn_x);
     return btns;
 }
 
@@ -362,11 +392,17 @@ function create_msg(name_text, time_text, profile_picture)
     sender_name.textContent = name_text;
     if (name_text != currentUser)
     {
-        const button_add_friend = create_add_friend_btn("btn-set4", sender_name.textContent);
-        button_add_friend.style.marginLeft = "40px";
-        sender_name.appendChild(button_add_friend);
-        const button_block_friend = create_block_friend_btn("btn-set4", sender_name.textContent);
-        sender_name.appendChild(button_block_friend);
+        if (friend_list.includes(name_text))
+        {
+            const button_block_friend = create_block_friend_btn("btn-set4", sender_name.textContent);
+            sender_name.appendChild(button_block_friend);
+        }
+        else
+        {
+            const button_add_friend = create_add_friend_btn("btn-set4", sender_name.textContent);
+            button_add_friend.style.marginLeft = "40px";
+            sender_name.appendChild(button_add_friend);
+        }
     }
     
 
@@ -390,7 +426,7 @@ function create_msg_text()
     return (p);
 }
 
-function create_user_in_pane(username, userstatus, profile_picture)
+function create_user_in_pane(username, userstatus, profile_picture, which_list)
 {
     const button = create_btn(['m-chat__li'], "");
     button.setAttribute('id', 'friend_list-' + username);
@@ -407,7 +443,11 @@ function create_user_in_pane(username, userstatus, profile_picture)
     info.setAttribute('id', 'friend_list_status-' + userstatus);
     info.appendChild(document.createTextNode(userstatus));
 
-    const btns = create_btn_set(username, "btn-set4");
+    let btns = null;
+    if (which_list === "FRIEND")
+        btns = create_btn_set(username, "btn-set4");
+    else if (which_list === "BLOCKED")
+        btns = create_block_btn_set(username, "btn-set4");
     button.append(btn_img, title, info, btns);
     return (button);
 }
@@ -678,19 +718,104 @@ function hide_or_unhide_msg(hide, username)
         }
 }
 
-function create_and_display_profile()
+async function create_and_display_profile_page(username = null)
 {
+    let avatar = null;
+    if (username === null)
+    {
+        avatar = profile_picture;
+        username = currentUser;
+    }
+    else
+    {
+        const data = await get_user_infos(username);
+        console.log('avatar: ' + data.profile_picture);
+        avatar = data.profile_picture;
+    }
+
     let main_div = document.getElementById('main-div');
 
 //------------------------------------ PROFILE ------------------------------------
 
     let profile_edit_div = document.createElement('div');
-    let profile_picture = document.createElement('img');
+    let profile_picture_div = document.createElement('img');
     let profile_name = document.createElement('h3');
     let edit_profile_btn = document.createElement('button');
 
-    profile_edit_div.classList.add('profile_edit');
-    profile_picture.classList.add('profile_pic');
+    profile_edit_div.classList.add('m-profile__edit');
 
+    profile_picture_div.classList.add('a-profile__img');
+    profile_picture_div.setAttribute('src', avatar);
+    profile_picture_div.setAttribute('id', 'profile_picture');
 
+    profile_name.classList.add('a-profile__input');
+    profile_name.innerText = username;
+    profile_name.setAttribute('id', 'profile_name');
+
+    edit_profile_btn.classList.add('a-btn', '-orange');
+    edit_profile_btn.setAttribute('data-bs-toggle', 'modal');
+    edit_profile_btn.setAttribute('data-bs-target', '#editProfileModal');
+    edit_profile_btn.textContent = "Editer mon profil";
+
+    
+
+    profile_edit_div.append(profile_picture_div, profile_name, edit_profile_btn);
+    main_div.appendChild(profile_edit_div);
+}
+
+function create_collapsible(name_coll, function_which_btn)
+{
+    const coll = document.createElement('div');
+    coll.classList.add('js-collapsible');
+
+    // button that open or close the collapsible
+    const btn_coll = create_btn(['a-btn', '-collapsible', 'js-btn-collapsible'], name_coll);
+
+    const svg_plus = create_svg(['bi', 'bi-plus']);
+    const path_plus = document.createElementNS(svgns, "path");
+    path_plus.setAttribute("d", "M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4");
+    svg_plus.appendChild(path_plus);
+
+    const svg_dash = create_svg(['bi', 'bi-dash']);
+    const path_dash = document.createElementNS(svgns, "path");
+    path_dash.setAttribute('d', "M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8");
+    svg_dash.appendChild(path_dash);
+
+    // collapsible content
+    const ul = document.createElement('ul');
+    ul.classList.add('o-collapsible__content');
+    ul.style.display = 'none';
+    if (function_which_btn === "FRIEND")
+        ul.setAttribute('id', 'friend_list_toogle-btn');
+    else if (function_which_btn === "BLOCKED")
+        ul.setAttribute('id', 'blocked_list_toogle-btn');
+
+    btn_coll.addEventListener('click', function (event)
+    {
+        if (ul.style.display === 'none')
+            ul.style.display = 'block';
+        else
+            ul.style.display = 'none';
+    });
+
+    btn_coll.append(svg_plus, svg_dash);
+    coll.append(btn_coll, ul);
+    return (coll);
+}
+
+function create_collapsed_item(nameText, function_which_btn) 
+{
+    const li = document.createElement('li');
+    li.classList.add('m-collapsible__item', 'js-collapsible__item');
+
+    const name = document.createElement('div');
+    name.classList.add('js-friend__name');
+    name.appendChild(document.createTextNode(nameText));
+
+    li.appendChild(name);
+    if (function_which_btn != 0) {
+        const wrapper_btn = function_which_btn();
+        li.appendChild(wrapper_btn);
+    }
+    return (li);
 }

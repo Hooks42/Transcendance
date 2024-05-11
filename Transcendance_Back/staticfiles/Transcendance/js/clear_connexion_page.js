@@ -5,7 +5,7 @@ var block_list = [];
 
 async function clear_connexion_page()
 {
-	const user = await get_actual_user();
+	const user = await get_user_infos();
 	if (user.username)
 	{
 		currentUser = user.username;

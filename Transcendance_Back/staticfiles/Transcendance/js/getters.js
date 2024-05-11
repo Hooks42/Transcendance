@@ -1,6 +1,10 @@
-async function get_actual_user()
+async function get_user_infos(username = null)
 {
-	return fetch('/get-actual-user/')
+	//console.log("get_user_infos called with username: " + username);
+	let url = '/get-user-infos';
+	if (!username)
+		url = url + "?username=" + username;
+	return fetch(url)
 		.then(response => response.json())
 		.then(data =>
 		{

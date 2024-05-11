@@ -45,6 +45,7 @@ const navbar = {
         person_menu_li2.appendChild(create_btn_heart_sm(" Se déconnecter "));
         person_menu_li2.children[0].setAttribute("id", "btn_logout");
         this.btn_logout = person_menu_li2.children[0];
+        this.btn_myaccount = person_menu_li1.children[0];
 
         // Construction de l'arborescence des éléments
         this.navbar.append(nav_item1, nav_item2);
@@ -57,6 +58,7 @@ const navbar = {
         // Bind listeners to navbar elements
         this.btn_home.onclick = navbar.listener.onClickBtnHome.bind(this);
         this.btn_logout.onclick = navbar.listener.onClickBtnLogout.bind(this);
+        this.btn_myaccount.onclick = navbar.listener.onClickBtnProfile.bind(this);
 
     },
 

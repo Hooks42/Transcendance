@@ -66,6 +66,13 @@ const chat = {
         buf_pane2.classList.add('o-chat__ul');
         this.user_pane.appendChild(buf_pane2);
 
+        // menu deroulant (collapsible) pour liste des amis
+		const coll_friend = create_collapsible('AMIS', "FRIEND");
+
+		// menu deroulant pour liste des bloques
+		const coll_blocked = create_collapsible('PERSONNES BLOQUEES', "BLOCKED");
+		buf_pane2.append(coll_friend, coll_blocked);
+
         fetch('/get-friends-list/')
             .then(response => response.json())
             .then(data => {
@@ -75,16 +82,42 @@ const chat = {
                     for (let i = 0; i < friends.length; i++)
                     {
                         var friend = friends[i];
-                        this.add_user_panel(friend.username, friend.status, friend.profile_picture);
+                        this.add_user_panel(friend.username, friend.status, friend.profile_picture, "FRIEND");
+                    }
+                }
+            });
+        
+        fetch('/get-block-list/')
+            .then(response => response.json())
+            .then(data => {
+                let blocked = data.block_list;
+                if (blocked.length > 0)
+                {
+                    for (let i = 0; i < blocked.length; i++)
+                    {
+                        var blocked_user = blocked[i];
+                        this.add_user_panel(blocked_user.username, blocked_user.status, blocked_user.profile_picture, "BLOCKED");
                     }
                 }
             });
     },
 
-    add_user_panel: function (user_name, user_status, profile_picture)
+    add_user_panel: function (user_name, user_status, profile_picture, which_list)
     {
-        const user = create_user_in_pane(user_name, user_status ? "En ligne" : "Hors ligne", profile_picture);
-        this.user_pane.children[0].appendChild(user);
+        const user = create_user_in_pane(user_name, user_status ? "En ligne" : "Hors ligne", profile_picture, which_list);
+        // this.user_pane.children[0].appendChild(user);
+
+		const li = document.createElement('li');
+		li.classList.add('m-collapsible__item', '-chat', 'js-collapsible__item');
+		li.append(user);
+
+		// append the coll item on the coll btn
+        let parent = null;
+        if (which_list === "FRIEND")
+            parent = document.getElementById("friend_list_toogle-btn");
+        else if (which_list === "BLOCKED")
+		    parent = document.getElementById("blocked_list_toogle-btn");
+		parent.append(li);
     },
 
     create_chatroom: function ()

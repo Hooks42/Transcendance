@@ -74,34 +74,6 @@ def Logout(request):
     except Exception as e:
         return JsonResponse({'logout_status': 'fail', 'errors': str(e)})
 
-def ChatView(request):
-    if Conversation.objects.all().count() == 0:
-        conversation = Conversation(conversation="General")
-        conversation.save()
-    try:
-        conversation = Conversation.objects.get(conversation="General")
-        message_backup = conversation.messages.all().order_by('timestamp')
-    except Conversation.DoesNotExist:
-        message_backup = None
-    return render(request, "Chat_room.html", {'message': message_backup})
-
-def PrivateChatView(request, room_name):
-    Sortroom_name = room_name.split('_')
-    Sortroom_name.sort()
-    room_name = "_".join(Sortroom_name)
-    if Conversation.objects.filter(conversation=room_name).count() == 0:
-        conversation = Conversation(conversation=room_name)
-        conversation.save()
-    try:
-        conversation = Conversation.objects.get(conversation=room_name)
-        message_backup = conversation.messages.all().order_by('timestamp')
-    except Conversation.DoesNotExist:
-        message_backup = None
-
-    usernames = room_name.split('_')
-    if request.user.username not in usernames:
-        return redirect('hello')
-    return render(request, "Private_chatroom.html", {'message': message_backup})
 
 def callback_view(request):
     load_dotenv()
@@ -159,23 +131,21 @@ def AccountUpdate(request):
             }, instance=user)
     return render(request, 'Update_account.html', {'form': form})
 
-def PFC_view(request, room_name):
-    users = room_name.split('_')
-    if request.user.username not in users:
-        return redirect('hello')
-    return render(request, 'PFC.html')
-
-def UserInfo(request, username):
-    user = get_object_or_404(User, username=username)
-    return render(request, 'User_info.html')
-
 def Successfully_Connected_42(request):
     return render(request, 'Successfully_Connected_42.html')
 
-def get_actual_user(request):
-    if (request.user.is_anonymous):
-        return JsonResponse({'username': None})
-    return JsonResponse({'username': request.user.username, 'profile_picture': request.user.avatar.url})
+def get_user_infos(request):
+    user_username = request.GET.get('username', None)
+    if user_username is None or user_username == '' or user_username == "null":
+        if (request.user.is_anonymous):
+            return JsonResponse({'username': None})
+        return JsonResponse({'username': request.user.username, 'profile_picture': request.user.avatar.url})
+    else:
+        try:
+            user = User.objects.get(username=user_username)
+            return JsonResponse({'username': user.username, 'profile_picture': user.avatar.url})
+        except User.DoesNotExist:
+            return JsonResponse({'username': None})
 
 @login_required
 def get_general_conv_history(request):
@@ -213,7 +183,26 @@ def get_friends_list(request):
         return JsonResponse({'friends': friend_list})
     except User.DoesNotExist:
         return JsonResponse({'friends': []})
-
+    
+@login_required
+def get_block_list(request):
+    try:
+        user = User.objects.get(username=request.user.username)
+        block_list = []
+        for user in user.block_list:
+            try:
+                blocked_user = User.objects.get(username=user)
+                block_list.append({
+                    'username': blocked_user.username,
+                    'profile_picture': blocked_user.avatar.url,
+                    'is_online': blocked_user.is_online,
+                })
+            except User.DoesNotExist:
+                pass
+        return JsonResponse({'block_list': block_list})
+    except User.DoesNotExist:
+        return JsonResponse({'block_list': []})
+            
 @login_required
 def get_friends_request(request):
     try:

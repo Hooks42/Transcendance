@@ -30,5 +30,14 @@ navbar.listener = {
                 display_login_page();
             }
         });
+    },
+
+    onClickBtnProfile: function ()
+    {
+        let main_div = document.getElementById('main-div');
+        if (main_div.children.length > 0)
+            for (let i = 0; i < main_div.children.length; i++)
+                main_div.children[i].remove();
+        create_and_display_profile_page();
     }
 }

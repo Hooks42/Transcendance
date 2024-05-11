@@ -202,6 +202,7 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
         if command == 'block_friend':
             if current_user == original_user and not user_to_add in current_user.block_list:
                 await self.block_friend_request(original_user, user_to_add)
+                infos = await self.get_original_and_user_to_add_infos(original_user, user_to_add)
                 await self.channel_layer.group_send(
                         self.room_group_name,
                         {
@@ -209,7 +210,11 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
                             'message': {
                                 'command': "friend_blocked",
                                 'user_to_add': user_to_add.username,
-                                'original_user': original_user.username
+                                'user_to_add_status': infos['user_to_add_status'],
+                                'user_to_add_avatar': infos['user_to_add_avatar'],
+                                'original_user': original_user.username,
+                                'original_user_status': infos['original_user_status'],
+                                'original_user_avatar': infos['original_user_avatar'],
                             }
                         }
                     )

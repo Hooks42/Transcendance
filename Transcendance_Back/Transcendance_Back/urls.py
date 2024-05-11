@@ -17,9 +17,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, re_path
 from Transcendance.views import Hello, Logout
-from Transcendance.views import ChatView, callback_view, AccountUpdate, get_actual_user, Fullsite, LoginPage
-from Transcendance.views import PrivateChatView, PFC_view, UserInfo, Successfully_Connected_42, get_general_conv_history
-from Transcendance.views import get_friends_list, get_friends_request, get_user_lists
+from Transcendance.views import callback_view, AccountUpdate, Fullsite, LoginPage
+from Transcendance.views import Successfully_Connected_42, get_general_conv_history
+from Transcendance.views import get_friends_list, get_friends_request, get_user_lists, get_user_infos
+from Transcendance.views import get_block_list
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -28,18 +29,15 @@ urlpatterns = [
     path('login-page/', LoginPage, name='login-page'),
     path('hello/', Hello, name='hello'),
     path('logout/', Logout, name='logout'),
-    path('chatroom/', ChatView, name='chat-room'),
     path('callback/', callback_view, name='callback-view'),
     path('update-account/', AccountUpdate, name='update-account'),
     path('successfully-connected-42/', Successfully_Connected_42, name='Successfully_Connected_42'),
-    path('get-actual-user/', get_actual_user, name='get-actual-user'),
+    path('get-user-infos', get_user_infos, name='get-actual-user'),
     path('get-general-conv-history/', get_general_conv_history, name='get-general-conv-history'),
     path('get-friends-list/', get_friends_list, name='get-friends-list'),
+    path('get-block-list/', get_block_list, name='get-block-list'),
     path('get-friends-request/', get_friends_request, name='get-friends-request'),
     path('get-user-lists/', get_user_lists, name='get-user-lists'),
     path('fullsite/', Fullsite, name='fullsite'),
-    re_path(r'^private_chat/(?P<room_name>[a-zA-Z0-9@.+_-]+_[a-zA-Z0-9@.+_-]+)/$', PrivateChatView, name='private-chat-room'),
-    re_path(r'^pfc/(?P<room_name>[a-zA-Z0-9@.+_-]+_[a-zA-Z0-9@.+_-]+)/$', PFC_view, name='pfc'),
-    re_path(r'^user_info/(?P<username>[a-zA-Z0-9@.+_-]+)/$', UserInfo, name='user-info'),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
