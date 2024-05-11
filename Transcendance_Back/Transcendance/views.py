@@ -6,7 +6,7 @@ from django import forms
 from django.contrib import messages
 from django.contrib.auth import login, logout, update_session_auth_hash, authenticate
 from django.contrib.auth.hashers import make_password
-from .models import Message, User, Conversation
+from .models import Message, User, Conversation, GameStats, GameHistory
 from dotenv import load_dotenv
 from django.http import HttpResponseRedirect, JsonResponse, HttpResponse
 from urllib.parse import urlencode
@@ -228,3 +228,78 @@ def get_user_lists(request):
 
 def Fullsite(request):
     return render(request, 'Fullsite.html')
+
+@login_required
+def UserProfile(request):
+    is_42 = 0;
+    status = None
+    user_username = request.GET.get('username', None)
+    if user_username is None or user_username == '' or user_username == "null":
+        user_username = request.user.username
+        is_42 = request.user.id_42
+    try:
+        user = User.objects.get(username=user_username)
+    except User.DoesNotExist:
+        return JsonResponse({'user_profile_html': None, 'status': 'fail'})
+    
+    try:
+        user_stats = GameStats.objects.get(user=user)
+        try:
+            user_history_list = GameHistory.get_games_for_user(user)
+            user_history = []
+            for i, user_history_instance in enumerate(user_history_list):
+                user_history[i] = {
+                    'game_id': user_history_instance.game_id,
+                    'player1': user_history_instance.player1.username,
+                    'player2': user_history_instance.player2.username,
+                    'round_count': user_history_instance.round_count,
+                    'player1_moves': user_history_instance.player1_moves,
+                    'player2_moves': user_history_instance.player2_moves,
+                    'player1_score': user_history_instance.player1_score,
+                    'player2_score': user_history_instance.player2_score,
+                    'player1_penalties': user_history_instance.player1_penalties,
+                    'player2_penalties': user_history_instance.player2_penalties,
+                    'timestamp': user_history_instance.timestamp.strftime('%d-%m-%y %H:%M'),
+                }
+                
+                
+                
+        except GameHistory.DoesNotExist:
+            status = 'history error'
+    except GameStats.DoesNotExist:
+        status = 'No stats'
+        
+    
+    context = {
+        'request': request,
+        'regular_update_form': RegularAccountUpdateForm(),
+        'auth42_update_form': Auth42AccountUpdateForm(),
+        'username': user.username,
+        'avatar': user.avatar.url,
+    }
+    
+    if (is_42 != 0):
+        context['is_42'] = True
+    
+    if status is None:
+        context['total_pong_win'] = user_stats.total_pong_win
+        context['total_pong_los'] = user_stats.total_pong_los
+        context['total_pong_win_tie'] = user_stats.total_pong_win_tie
+        context['total_pong_los_tie'] = user_stats.total_pong_los_tie
+        
+        context['total_scissors'] = user_stats.total_scissors
+        context['total_paper'] = user_stats.total_paper
+        context['total_rock'] = user_stats.total_rock
+        context['total_spr_win'] = user_stats.total_spr_win
+        context['total_spr_los'] = user_stats.total_spr_los
+        context['total_spr_win_tie'] = user_stats.total_spr_win_tie
+        context['total_spr_los_tie'] = user_stats.total_spr_los_tie
+        
+        if status != "history error":
+            context['user_history'] = user_history
+    
+    user_profile_html = render_to_string('user_profile.html', context, request=request)
+    return JsonResponse({'user_profile_html': user_profile_html, 'status': status})
+            
+        
+        

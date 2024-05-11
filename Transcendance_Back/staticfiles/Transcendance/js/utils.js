@@ -392,17 +392,14 @@ function create_msg(name_text, time_text, profile_picture)
     sender_name.textContent = name_text;
     if (name_text != currentUser)
     {
-        if (friend_list.includes(name_text))
-        {
-            const button_block_friend = create_block_friend_btn("btn-set4", sender_name.textContent);
-            sender_name.appendChild(button_block_friend);
-        }
-        else
+        if (!friend_list.includes(name_text))
         {
             const button_add_friend = create_add_friend_btn("btn-set4", sender_name.textContent);
             button_add_friend.style.marginLeft = "40px";
             sender_name.appendChild(button_add_friend);
         }
+        const button_block_friend = create_block_friend_btn("btn-set4", sender_name.textContent);
+        sender_name.appendChild(button_block_friend);
     }
     
 
@@ -542,7 +539,7 @@ function create_svg_bell()
 function create_notif(username, action, game = null)
 {
     let bell_menu = document.getElementById('notif-menu');
-    if (bell_menu.children[0].textContent === "Aucune notification")
+    if (bell_menu.children.length > 0 && bell_menu.children[0].textContent === "Aucune notification")
         bell_menu.removeChild(bell_menu.children[0])
 
     const bell_menu_li = document.createElement('li');
@@ -718,49 +715,54 @@ function hide_or_unhide_msg(hide, username)
         }
 }
 
-async function create_and_display_profile_page(username = null)
+// async function create_and_display_profile_page(username = null)
+// {
+//     let avatar = null;
+//     if (username === null)
+//     {
+//         avatar = profile_picture;
+//         username = currentUser;
+//     }
+//     else
+//     {
+//         const data = await get_user_infos(username);
+//         console.log('avatar: ' + data.profile_picture);
+//         avatar = data.profile_picture;
+//     }
+
+//     let main_div = document.getElementById('main-div');
+
+// //------------------------------------ PROFILE ------------------------------------
+
+//     let profile_edit_div = document.createElement('div');
+//     let profile_picture_div = document.createElement('img');
+//     let profile_name = document.createElement('h3');
+//     let edit_profile_btn = document.createElement('button');
+
+//     profile_edit_div.classList.add('m-profile__edit');
+
+//     profile_picture_div.classList.add('a-profile__img');
+//     profile_picture_div.setAttribute('src', avatar);
+//     profile_picture_div.setAttribute('id', 'profile_picture');
+
+//     profile_name.classList.add('a-profile__input');
+//     profile_name.innerText = username;
+//     profile_name.setAttribute('id', 'profile_name');
+
+//     edit_profile_btn.classList.add('a-btn', '-orange');
+//     edit_profile_btn.setAttribute('data-bs-toggle', 'modal');
+//     edit_profile_btn.setAttribute('data-bs-target', '#editProfileModal');
+//     edit_profile_btn.textContent = "Editer mon profil";
+
+
+
+//     profile_edit_div.append(profile_picture_div, profile_name, edit_profile_btn);
+//     main_div.appendChild(profile_edit_div);
+// }
+
+async function display_profile_page(username = null)
 {
-    let avatar = null;
-    if (username === null)
-    {
-        avatar = profile_picture;
-        username = currentUser;
-    }
-    else
-    {
-        const data = await get_user_infos(username);
-        console.log('avatar: ' + data.profile_picture);
-        avatar = data.profile_picture;
-    }
-
-    let main_div = document.getElementById('main-div');
-
-//------------------------------------ PROFILE ------------------------------------
-
-    let profile_edit_div = document.createElement('div');
-    let profile_picture_div = document.createElement('img');
-    let profile_name = document.createElement('h3');
-    let edit_profile_btn = document.createElement('button');
-
-    profile_edit_div.classList.add('m-profile__edit');
-
-    profile_picture_div.classList.add('a-profile__img');
-    profile_picture_div.setAttribute('src', avatar);
-    profile_picture_div.setAttribute('id', 'profile_picture');
-
-    profile_name.classList.add('a-profile__input');
-    profile_name.innerText = username;
-    profile_name.setAttribute('id', 'profile_name');
-
-    edit_profile_btn.classList.add('a-btn', '-orange');
-    edit_profile_btn.setAttribute('data-bs-toggle', 'modal');
-    edit_profile_btn.setAttribute('data-bs-target', '#editProfileModal');
-    edit_profile_btn.textContent = "Editer mon profil";
-
-    
-
-    profile_edit_div.append(profile_picture_div, profile_name, edit_profile_btn);
-    main_div.appendChild(profile_edit_div);
+    f
 }
 
 function create_collapsible(name_coll, function_which_btn)
