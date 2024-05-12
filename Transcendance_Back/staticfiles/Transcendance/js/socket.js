@@ -1,5 +1,3 @@
-
-
 const socket = {
 
 	chat_socket: null,
@@ -66,6 +64,13 @@ const socket = {
 				console.log("user_to_add_avatar ---> " + data.message.user_to_add_avatar);
 			if (data.message.friend_to_delete)
 				console.log("friend_to_delete ---> " + data.message.friend_to_delete);
+			if (data.message.user_to_edit)
+				console.log("user_to_edit ---> " + data.message.user_to_edit);
+			if (data.message.new_avatar)
+				console.log("new_avatar ---> " + data.message.new_avatar);
+			if (data.message.new_username)
+				console.log("new_username ---> " + data.message.new_username);
+
 			console.log("current_user ---> " + currentUser);
 
 			if (data.message.command === 'add_friend' && data.message.user_to_add === currentUser)
@@ -193,6 +198,11 @@ const socket = {
 					document.getElementById("friend_list-" + data.message.user_to_add).remove();
 					hide_or_unhide_msg(false, data.message.user_to_add);
 				}
+			}
+
+			if (data.message.command === 'profile_edited')
+			{
+				console.log("✅ Message recu ! :)");
 			}
 		};
 	},

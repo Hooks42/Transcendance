@@ -99,7 +99,9 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
         original_user = None
         user_to_add = None
         friend_to_delete = None
-        already_friend = None
+        user_to_edit = None
+        new_username = None
+        new_avatar = None
 
         current_user = self.scope['user']
 
@@ -124,13 +126,26 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
             friend_to_delete = json_text["friend_to_delete"]
             friend_to_delete = await self.get_user(friend_to_delete)
             print(f"🔱 friend_to_delete : {friend_to_delete}")
+            
+        if "user_to_edit" in json_text:
+            user_to_edit = json_text["user_to_edit"]
+            print(f"🔱 user_to_edit : {user_to_edit}")
+        
+        if "new_username" in json_text:
+            new_username = json_text["new_username"]
+            print(f"🔱 new_username : {new_username}")
+        
+        if "new_avatar" in json_text:
+            new_avatar = json_text["new_avatar"]
+            print(f"🔱 new_avatar : {new_avatar}")
 
         print('\n')
     
-        if original_user is not None and user_to_add is not None or "get" in command or friend_to_delete is not None or already_friend is not None:
-            await self.command_handler(command, original_user, user_to_add, current_user, friend_to_delete)
-    
-    async def command_handler(self, command, original_user, user_to_add, current_user, friend_to_delete):
+        if original_user is not None and user_to_add is not None or "get" in command or friend_to_delete is not None or user_to_edit is not None and new_username is not None and new_avatar is not None:
+            await self.command_handler(command, original_user, user_to_add, current_user, friend_to_delete, user_to_edit, new_username, new_avatar)
+        else:
+            print(f"❌ {current_user.username} tried to cheat ❌")
+    async def command_handler(self, command, original_user, user_to_add, current_user, friend_to_delete, user_to_edit, new_username, new_avatar):
         if command == 'add_friend':
             if current_user == original_user and user_to_add not in current_user.block_list and current_user.username not in user_to_add.block_list:
                 add_friend = await self.add_friend_request(original_user, user_to_add)
@@ -272,6 +287,21 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
                                 'command': "pfc_rejected",
                                 'user_to_add': user_to_add.username,
                                 'original_user': original_user.username
+                            }
+                        }
+                    )
+                
+        if command == 'edit_profile':
+            if current_user.username == user_to_edit:
+                await self.channel_layer.group_send(
+                        self.room_group_name,
+                        {
+                            "type": "system_message",
+                            'message': {
+                                'command': "profile_edited",
+                                'user_to_edit': user_to_edit,
+                                'new_username': new_username,
+                                'new_avatar': new_avatar
                             }
                         }
                     )

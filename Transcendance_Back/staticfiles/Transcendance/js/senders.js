@@ -115,6 +115,19 @@ send_msg = {
 
 		var messageJson = JSON.stringify(message);
 		socket.system_socket.send(messageJson);
+	},
+
+	edit_profile_request: function(user_to_edit, new_username, new_avatar)
+	{
+		var message = {
+			'command': 'edit_profile',
+			'user_to_edit': user_to_edit,
+			'new_username': new_username,
+			'new_avatar': new_avatar,
+		}
+
+		var messageJson = JSON.stringify(message);
+		socket.system_socket.send(messageJson);
 	}
 
 }
