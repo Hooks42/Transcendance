@@ -51,6 +51,27 @@ def Hello(request):
             else:
                 print(f"✅ signin returned JsonResponse")
                 return JsonResponse({'signin_status': 'fail', 'errors': signin_form.errors})
+        
+        elif form_type == 'edit':
+            user = User.objects.get(username=request.user.username)
+            if user.id_42:
+                edit_form = Auth42AccountUpdateForm(request.POST, request.FILES, instance=user)
+            else:
+                edit_form = RegularAccountUpdateForm(request.POST, request.FILES, instance=user)
+            if edit_form.is_valid():
+                username = edit_form.cleaned_data.get('email')
+                password = edit_form.cleaned_data.get('new_password')
+                edit_form.save()
+                if username:
+                    user = authenticate(username=username, password=password)
+                    if user is not None:
+                        login(request, user)
+                elif password:
+                    update_session_auth_hash(request, user)
+                return JsonResponse({'edit_status': 'success'})
+            else:
+                return JsonResponse({'edit_status': 'fail', 'errors': edit_form.errors})
+            
     print(f"✅ servor returned HTPP_RESPONSE")
     return render(request, 'main.html', {'signup_form': signup_form, 'signin_form': signin_form})
 
@@ -231,24 +252,30 @@ def Fullsite(request):
 
 @login_required
 def UserProfile(request):
-    is_42 = 0;
+    is_42 = False;
     status = None
     user_username = request.GET.get('username', None)
+    print(f"🔱 user_username --> {user_username}")
     if user_username is None or user_username == '' or user_username == "null":
+        print(f"🔱 request.user.username --> {request.user.username}")
         user_username = request.user.username
-        is_42 = request.user.id_42
+        print(f"🔱 user_username --> {user_username}")
     try:
         user = User.objects.get(username=user_username)
     except User.DoesNotExist:
+        print(f"🔱 user {user_username} User.DoesNotExist")
         return JsonResponse({'user_profile_html': None, 'status': 'fail'})
+    
+    is_42 = user.id_42
+    print(f"🔱 is_42 --> {is_42}")
     
     try:
         user_stats = GameStats.objects.get(user=user)
         try:
             user_history_list = GameHistory.get_games_for_user(user)
             user_history = []
-            for i, user_history_instance in enumerate(user_history_list):
-                user_history[i] = {
+            for user_history_instance in user_history_list:
+                user_history.append({
                     'game_id': user_history_instance.game_id,
                     'player1': user_history_instance.player1.username,
                     'player2': user_history_instance.player2.username,
@@ -260,25 +287,35 @@ def UserProfile(request):
                     'player1_penalties': user_history_instance.player1_penalties,
                     'player2_penalties': user_history_instance.player2_penalties,
                     'timestamp': user_history_instance.timestamp.strftime('%d-%m-%y %H:%M'),
-                }
-                
-                
-                
+                })
         except GameHistory.DoesNotExist:
             status = 'history error'
     except GameStats.DoesNotExist:
         status = 'No stats'
         
+    initial = {
+        'username': user.username,
+        'first_name': user.first_name,
+        'last_name': user.last_name,
+        'email': "",
+    }
+    
+    initial_42 = {
+        'username': user.username,
+        'first_name': user.first_name,
+        'last_name': user.last_name,
+        'email': user.email,
+    }
     
     context = {
         'request': request,
-        'regular_update_form': RegularAccountUpdateForm(),
-        'auth42_update_form': Auth42AccountUpdateForm(),
+        'regular_update_form': RegularAccountUpdateForm(initial=initial, instance=user),
+        'auth42_update_form': Auth42AccountUpdateForm(initial=initial_42, instance=user),
         'username': user.username,
         'avatar': user.avatar.url,
     }
     
-    if (is_42 != 0):
+    if (is_42 is not None):
         context['is_42'] = True
     
     if status is None:

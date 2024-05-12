@@ -124,6 +124,7 @@ const chat = {
     {
         this.chatroom = create_tab_pane();
         this.chatroom.classList.add('chatroom');
+        this.chatroom.setAttribute('id', 'tabpanel');
 
         const inbox = document.createElement('div');
         inbox.setAttribute('id', 'inbox');

@@ -91,14 +91,14 @@ class AccountLoginForm(forms.Form):
             return False
 
 class RegularAccountUpdateForm(forms.ModelForm):
-    username = forms.CharField(required=False, widget=forms.TextInput(attrs={'autocomplete': 'off'}))
-    first_name = forms.CharField(required=False, widget=forms.TextInput(attrs={'autocomplete': 'off'}))
-    last_name = forms.CharField(required=False, widget=forms.TextInput(attrs={'autocomplete': 'off'}))
-    email = forms.EmailField(required=False, widget=forms.EmailInput(attrs={'autocomplete': 'off'}), help_text="Pour modifier votre email, veuillez remplir le champs mot de passe.")
-    password = forms.CharField(widget=forms.PasswordInput(render_value=False), required=False)
-    new_password = forms.CharField(widget=forms.PasswordInput(render_value=False), required=False)
-    confirm_password = forms.CharField(widget=forms.PasswordInput(render_value=True), required=False)
-    avatar = forms.ImageField(required=False, widget=FileInput)
+    username = forms.CharField(required=False, widget=forms.TextInput(attrs={'autocomplete': 'off', 'class': 'modal__input', 'id': 'update-username', 'placeholder': 'Username'}))
+    first_name = forms.CharField(required=False, widget=forms.TextInput(attrs={'autocomplete': 'off', 'class': 'modal__input', 'id': 'update-firstname', 'placeholder': 'First Name'}))
+    last_name = forms.CharField(required=False, widget=forms.TextInput(attrs={'autocomplete': 'off', 'class': 'modal__input', 'id': 'update-lastname', 'placeholder': 'Last Name'}))
+    email = forms.EmailField(required=False, widget=forms.EmailInput(attrs={'autocomplete': 'off', 'class': 'modal__input', 'id': 'update-email', 'placeholder': 'email'}), help_text="Pour modifier votre email, veuillez remplir le champs mot de passe.")
+    password = forms.CharField(required=False, widget=forms.PasswordInput(render_value=False, attrs={'class': 'modal__input', 'id': 'update-password', 'placeholder': 'Password'}))
+    new_password = forms.CharField(widget=forms.PasswordInput(render_value=False, attrs={'class': 'modal__input', 'id': 'update-new-password', 'placeholder': 'New Password'}), required=False)
+    confirm_password = forms.CharField(widget=forms.PasswordInput(render_value=False, attrs={'class': 'modal__input', 'id': 'update-confrim-password', 'placeholder': 'Confirm Password'}), required=False)
+    avatar = forms.ImageField(required=False, widget=FileInput(attrs={'class': 'modal__input', 'id': 'update-avatar', 'placeholder': 'Avatar'}))
 
     def __init__(self, *args, **kwargs):
         super(RegularAccountUpdateForm, self).__init__(*args, **kwargs)
@@ -215,7 +215,8 @@ class RegularAccountUpdateForm(forms.ModelForm):
 
         if email and not password:
             self.add_error('password', "Pour modifier votre email, veuillez remplir le champs mot de passe. ❌")
-        if email and password and check_password(password, self.user.password) == False:
+        print(f"🔥password: {password}, 🔥user_password: {self.user.password},🔥confirm_password: {confirm_password}, 🔥new_password: {new_password}")
+        if password and check_password(password, self.user.password) == False:
             self.add_error('password', "Le mot de passe est incorrect. ❌")
 
         
@@ -261,11 +262,11 @@ class RegularAccountUpdateForm(forms.ModelForm):
         return user
     
 class Auth42AccountUpdateForm(forms.ModelForm):
-    username = forms.CharField(required=False, widget=forms.TextInput(attrs={'autocomplete': 'off'}))
-    first_name = forms.CharField(required=False, widget=forms.TextInput(attrs={'autocomplete': 'off'}))
-    last_name = forms.CharField(required=False, widget=forms.TextInput(attrs={'autocomplete': 'off'}))
-    email = forms.EmailField(required=False, widget=forms.EmailInput(attrs={'autocomplete': 'off'}))
-    avatar = forms.ImageField(required=False, widget=FileInput)
+    username = forms.CharField(required=False, widget=forms.TextInput(attrs={'autocomplete': 'off', 'class': 'modal__input', 'id': 'update-username', 'placeholder': 'Username'}))
+    first_name = forms.CharField(required=False, widget=forms.TextInput(attrs={'autocomplete': 'off', 'class': 'modal__input', 'id': 'update-firstname', 'placeholder': 'First Name'}))
+    last_name = forms.CharField(required=False, widget=forms.TextInput(attrs={'autocomplete': 'off', 'class': 'modal__input', 'id': 'update-lastname', 'placeholder': 'Last Name'}))
+    email = forms.EmailField(required=False, widget=forms.EmailInput(attrs={'autocomplete': 'off', 'class': 'modal__input', 'id': 'update-email', 'placeholder': 'email'}))
+    avatar = forms.ImageField(required=False, widget=FileInput(attrs={'class': 'modal__input', 'id': 'update-avatar', 'placeholder': 'Avatar'}))
 
     def __init__(self, *args, **kwargs):
         super(Auth42AccountUpdateForm, self).__init__(*args, **kwargs)
@@ -331,5 +332,19 @@ class Auth42AccountUpdateForm(forms.ModelForm):
             avatar.name = f"{unique_id}.jpg"
             print(f"🔥avatar: {str(avatar)}")
         return avatar
+    
+    def clean(self):
+        cleaned_data = super().clean()
+        username = cleaned_data.get('username')
+        first_name = cleaned_data.get('first_name')
+        last_name = cleaned_data.get('last_name')
+        email = cleaned_data.get('email')
+        avatar = cleaned_data.get('avatar')
+        
+        
+        if username == self.user.username and first_name == self.user.first_name and last_name == self.user.last_name and email == self.user.email and avatar == self.user.avatar:
+            self.add_error('username', "Aucun champ n'a été modifié. ❌")
+
+        return cleaned_data
     
     

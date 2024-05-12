@@ -337,7 +337,6 @@ function create_tab_pane()
     div.classList.add('tab-pane');
     div.setAttribute('role', 'tabpanel');
     div.setAttribute('tabindex', 0);
-    div.setAttribute('id', 'tabpanel');
 
     return (div);
 }
@@ -762,7 +761,19 @@ function hide_or_unhide_msg(hide, username)
 
 async function display_profile_page(username = null)
 {
-    f
+    fetch('/user-profile?username=' + username, {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+        }
+    })
+        .then(response => response.json())
+        .then(data => {
+            let user_profile_html = data.user_profile_html;
+            let main_div = document.getElementById('main-div');
+            main_div.innerHTML = user_profile_html;
+            listen_update_btn();
+        });
 }
 
 function create_collapsible(name_coll, function_which_btn)

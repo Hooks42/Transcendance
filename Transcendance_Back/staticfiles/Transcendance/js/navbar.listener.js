@@ -38,6 +38,6 @@ navbar.listener = {
         if (main_div.children.length > 0)
             for (let i = 0; i < main_div.children.length; i++)
                 main_div.children[i].remove();
-        create_and_display_profile_page();
+        display_profile_page();
     }
 }
