@@ -128,26 +128,20 @@ const socket = {
 				if (data.message.original_user === currentUser)
 				{
 					friend_list = friend_list.filter(e => e !== data.message.friend_to_delete);
-					document.getElementById("disc_list-" + data.message.friend_to_delete).remove();
+					document.getElementById("disc_btn-" + data.message.friend_to_delete).remove();
 					document.getElementById("friend_list-" + data.message.friend_to_delete).remove();
-					let messages = document.getElementsByClassName("msg-" + data.message.friend_to_delete);
-					for (let i = 0; i < messages.length; i++)
-					{
-						const button_add_friend = create_add_friend_btn("btn-set4", data.message.friend_to_delete);
-						messages[i].appendChild(button_add_friend);
-					}
+					let btns = document.getElementsByClassName("add_friend_btn-" + data.message.friend_to_delete);
+					for (let i = 0; i < btns.length; i++)
+						btns[i].style.display = "inline";
 				}
 				else if(data.message.friend_to_delete === currentUser)
 				{
 					friend_list = friend_list.filter(e => e !== data.message.original_user);
-					document.getElementById("disc_list-" + data.message.original_user).remove();
+					document.getElementById("disc_btn-" + data.message.original_user).remove();
 					document.getElementById("friend_list-" + data.message.original_user).remove();
-					let messages = document.getElementsByClassName("msg-" + data.message.original_user);
-					for (let i = 0; i < messages.length; i++)
-					{
-						const button_add_friend = create_add_friend_btn("btn-set4", data.message.original_user);
-						messages[i].appendChild(button_add_friend);
-					}
+					let btns = document.getElementsByClassName("add_friend_btn-" + data.message.original_user);
+					for (let i = 0; i < btns.length; i++)
+						btns[i].style.display = "inline";
 				}
 				
 			}
@@ -159,15 +153,12 @@ const socket = {
 					block_list.push(data.message.user_to_add);
 					if (friend_list.includes(data.message.user_to_add))
 					{
-						document.getElementById("disc_list-" + data.message.user_to_add).remove();
+						document.getElementById("disc_btn-" + data.message.user_to_add).remove();
 						document.getElementById("friend_list-" + data.message.user_to_add).remove();
 						friend_list = friend_list.filter(e => e !== data.message.user_to_add);
-						let messages = document.getElementsByClassName("msg-" + data.message.user_to_add);
-						for (let i = 0; i < messages.length; i++)
-						{
-							const button_add_friend = create_add_friend_btn("btn-set4", data.message.user_to_add);
-							messages[i].appendChild(button_add_friend);
-						}
+						let btns = document.getElementsByClassName("add_friend_btn-" + data.message.user_to_add);
+						for (let i = 0; i < btns.length; i++)
+							btns[i].style.display = "inline";
 					}
 					chat.add_user_panel(data.message.user_to_add, data.message.user_to_add_status, data.message.user_to_add_avatar, "BLOCKED");
 					hide_or_unhide_msg(true, data.message.user_to_add);
@@ -177,15 +168,12 @@ const socket = {
 					block_list.push(data.message.original_user);
 					if (friend_list.includes(data.message.original_user))
 					{
-						document.getElementById("disc_list-" + data.message.original_user).remove();
+						document.getElementById("disc_btn-" + data.message.original_user).remove();
 						document.getElementById("friend_list-" + data.message.original_user).remove();
 						friend_list = friend_list.filter(e => e !== data.message.original_user);
-						let messages = document.getElementsByClassName("msg-" + data.message.original_user);
-						for (let i = 0; i < messages.length; i++)
-						{
-							const button_add_friend = create_add_friend_btn("btn-set4", data.message.original_user);
-							messages[i].appendChild(button_add_friend);
-						}
+						let btns = document.getElementsByClassName("add_friend_btn-" + data.message.original_user);
+						for (let i = 0; i < btns.length; i++)
+							btns[i].style.display = "inline";
 					}
 				}
 			}
@@ -202,8 +190,35 @@ const socket = {
 
 			if (data.message.command === 'profile_edited')
 			{
-				console.log("✅ Message recu ! :)");
+				let user_to_edit = data.message.user_to_edit;
+				let new_username = data.message.new_username;
+				let new_avatar = data.message.new_avatar;
+
+				console.log("✅ Message recu ! : --> user_to_edit(" + user_to_edit + ") currentUser (" + currentUser + ")");
+				if (user_to_edit === currentUser)
+				{
+					currentUser = new_username;
+					profile_picture = new_avatar;
+				}
+				else
+				{
+					if (friend_list.includes(user_to_edit))
+					{
+						friend_list = friend_list.filter(e => e !== user_to_edit);
+						friend_list.push(new_username);
+					}
+					if (block_list.includes(user_to_edit))
+					{
+						block_list = block_list.filter(e => e !== user_to_edit);
+						block_list.push(new_username);
+					}
+					send_msg.update_friend_request_and_block_list(user_to_edit, new_username);
+				}
+				update_when_user_edit(user_to_edit, new_username, new_avatar);
 			}
+			
+			if (data.message.command === 'friend_request_and_block_list_updated')
+				console.log("✅ modification de la liste d'amis et de bloqués ! status --> " + data.message.is_updated);
 		};
 	},
 

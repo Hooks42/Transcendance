@@ -172,9 +172,12 @@ function create_delete_friend_btn(whichBtn, who) {
     const path_delete_friend = document.createElementNS(svgns, 'path');
     path_delete_friend.setAttribute('fill-rule', 'evenodd');
     path_delete_friend.setAttribute('d', "M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708");
+    
+    
+    btn_delete_friend.dataset.username = who;
     btn_delete_friend.addEventListener('click', function (event)
     {
-        send_msg.delete_friend_request(who, currentUser);
+        send_msg.delete_friend_request(this.dataset.username, currentUser);
     });
     svg_delete_friend.appendChild(path_delete_friend);
     btn_delete_friend.appendChild(svg_delete_friend);
@@ -188,9 +191,12 @@ function create_block_friend_btn(whichBtn, who) {
     const path_block_friend = document.createElementNS(svgns, 'path');
     path_block_friend.setAttribute('fill-rule', 'evenodd');
     path_block_friend.setAttribute('d', "M15 8a6.97 6.97 0 0 0-1.71-4.584l-9.874 9.875A7 7 0 0 0 15 8M2.71 12.584l9.874-9.875a7 7 0 0 0-9.874 9.874ZM16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0");
+    
+    
+    btn_block_friend.dataset.username = who;
     btn_block_friend.addEventListener('click', function (event)
     {
-        send_msg.block_friend_request(who, currentUser);
+        send_msg.block_friend_request(this.dataset.username, currentUser);
     });
     svg_block_friend.appendChild(path_block_friend);
     btn_block_friend.appendChild(svg_block_friend);
@@ -205,9 +211,12 @@ function create_unblock_friend_btn(whichBtn, who)
     const path_unblock_friend = document.createElementNS(svgns, 'path');
     path_unblock_friend.setAttribute('fill-rule', 'evenodd');
     path_unblock_friend.setAttribute('d', "M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708");
+    
+    
+    btn_unblock_friend.dataset.username = who;
     btn_unblock_friend.addEventListener('click', function (event)
     {
-        send_msg.unblock_friend_request(who, currentUser);
+        send_msg.unblock_friend_request(this.dataset.username, currentUser);
     });
     svg_unblock_friend.appendChild(path_unblock_friend);
     btn_unblock_friend.appendChild(svg_unblock_friend);
@@ -226,9 +235,11 @@ function create_add_friend_btn(whichBtn, who) {
     path_person2.setAttribute('fill-rule', 'evenodd');
     path_person2.setAttribute('d', "M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6")
     path_person1.setAttribute('d', "M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5");
+
+    btn_add_friend.dataset.username = who;
     btn_add_friend.addEventListener('click', function (event)
     {
-        send_msg.add_friend_request(currentUser, who);
+        send_msg.add_friend_request(currentUser, this.dataset.username);
     });
     svg_add_friend.append(path_person2, path_person1);
     btn_add_friend.appendChild(svg_add_friend);
@@ -242,7 +253,9 @@ function create_btn_set(username, whichBtn) {
 
     //const btn_check = create_accept_friend_btn(whichBtn);
     const btn_x = create_delete_friend_btn(whichBtn, username);
+    btn_x.classList.add('delete_friend_btn-' + username);
     const btn_ban = create_block_friend_btn(whichBtn, username);
+    btn_ban.classList.add('block_friend_btn-' + username);
     //const btn_person_plus_fill = create_add_friend_btn(whichBtn);
 
     btns.append(btn_x, btn_ban);
@@ -255,6 +268,7 @@ function create_block_btn_set(username, whichBtn)
     btns.classList.add('wrapperBtn');
 
     const btn_x = create_unblock_friend_btn(whichBtn, username);
+    btn_x.classList.add('unblock_friend_btn-' + username);
 
     btns.append(btn_x);
     return btns;
@@ -344,9 +358,10 @@ function create_tab_pane()
 function create_disc_li(title_text, info_text)
 {
     const button = create_btn(['m-chat__li', '-heart'], "");
-    button.setAttribute('id', 'disc_list-' + title_text);
+    button.setAttribute('id', 'disc_btn-' + title_text);
     const title = document.createElement('span');
     title.classList.add('a-li__title');
+    title.setAttribute('id', 'disc_btn_username-' + title_text);
     title.appendChild(document.createTextNode(title_text));
 
     const info = document.createElement('span');
@@ -371,10 +386,13 @@ function create_btn_img(img_class, img_path)
     btn_img.appendChild(img);
     return (btn_img);
 }
+
+
 function create_msg(name_text, time_text, profile_picture)
 {
     const msg = document.createElement('div');
     msg.classList.add('m-message');
+
     const senderDiv = document.createElement('div');
     senderDiv.classList.add('a-message__header');
 
@@ -383,26 +401,35 @@ function create_msg(name_text, time_text, profile_picture)
     btn_img.classList.add('a-btn');
 
     const img = document.createElement('img');
-    img.classList.add('a-user__img');
+    img.classList.add('a-user__img', 'msg_img-' + name_text);
     img.setAttribute('src', profile_picture);
 
-    const sender_name = document.createElement('p');
-    sender_name.classList.add('a-user__name', "msg-" + name_text);
+    const sender_part = document.createElement('p');
+    sender_part.classList.add('a-user__name');
+
+    const userInfo = document.createElement('span');
+    userInfo.classList.add('user-info');
+
+    const sender_name = document.createElement('span');
+    sender_name.classList.add('sender_name-' + name_text);
     sender_name.textContent = name_text;
+    userInfo.appendChild(sender_name);
+
     if (name_text != currentUser)
     {
         if (!friend_list.includes(name_text))
         {
             const button_add_friend = create_add_friend_btn("btn-set4", sender_name.textContent);
+            button_add_friend.classList.add('add_friend_btn-' + name_text);
             button_add_friend.style.marginLeft = "40px";
-            sender_name.appendChild(button_add_friend);
+            userInfo.appendChild(button_add_friend);
         }
         const button_block_friend = create_block_friend_btn("btn-set4", sender_name.textContent);
-        sender_name.appendChild(button_block_friend);
+        button_block_friend.classList.add('block_friend_btn-' + name_text);
+        userInfo.appendChild(button_block_friend);
     }
-    
 
-    
+    sender_part.appendChild(userInfo);
 
     const timestamp = document.createElement('p');
     timestamp.classList.add('a-user__info');
@@ -410,7 +437,7 @@ function create_msg(name_text, time_text, profile_picture)
 
     // Arborescence
     msg.appendChild(senderDiv);
-    senderDiv.append(btn_img, sender_name, timestamp);
+    senderDiv.append(btn_img, sender_part, timestamp);
     btn_img.appendChild(img);
     return (msg);
 }
@@ -432,6 +459,7 @@ function create_user_in_pane(username, userstatus, profile_picture, which_list)
 
     const title = document.createElement('span');
     title.classList.add('a-user__name');
+    title.setAttribute('id', 'friend_list_username-' + username);
     title.appendChild(document.createTextNode(username));
 
     const info = document.createElement('span');
@@ -594,12 +622,12 @@ function create_notif(username, action, game = null)
     btn_accepter.addEventListener('click', function (event)
     {
         console.log("Accepter la demande d'ami de " + username);
-        send_msg.accept_friend_request(username, currentUser);
+        send_msg.accept_friend_request(span_username.textContent, currentUser);
     });
     btn_refuser.addEventListener('click', function (event)
     {
         console.log("Refuser la demande d'ami de " + username);
-        send_msg.reject_friend_request(username, currentUser);
+        send_msg.reject_friend_request(span_username.textContent, currentUser);
     });
 
     const btn_three_dots = document.createElement('button');
@@ -684,15 +712,9 @@ function navigateCenterZone(page)
 
 function clear_button_if_friend(username)
 {
-    let msgs = document.getElementsByClassName("msg-" + username);
-    for (let i = 0; i < msgs.length; i++)
-    {
-        for (let j = 0; j < msgs[i].children.length; j++)
-        {
-            if (msgs[i].children[j].getAttribute("title") === "Ajouter en ami")
-                msgs[i].children[j].remove();
-        }
-    }
+    let btns = document.getElementsByClassName('add_friend_btn-' + username);
+    for (let i = 0; i < btns.length; i++)
+        btns[i].style.display = 'none';
 }
 
 function hide_or_unhide_msg(hide, username)
@@ -773,6 +795,7 @@ async function display_profile_page(username = null)
             let main_div = document.getElementById('main-div');
             main_div.innerHTML = user_profile_html;
             listen_update_btn();
+            listen_toggle_btn();
         });
 }
 
@@ -831,4 +854,134 @@ function create_collapsed_item(nameText, function_which_btn)
         li.appendChild(wrapper_btn);
     }
     return (li);
+}
+
+function update_when_user_edit(user_to_edit, new_username, new_avatar)
+{
+    update_self_profile(new_username, new_avatar);
+    update_dicussion_pannel(user_to_edit, new_username);
+    update_msg_names(user_to_edit, new_username, new_avatar);
+    update_notif(user_to_edit, new_username);
+    update_friend_list_pannel(user_to_edit, new_username);
+    update_buttons(user_to_edit, new_username);
+}
+
+function update_self_profile(new_username, new_avatar)
+{
+    console.log('✅currentUser: ' + currentUser + ' new_username: ' + new_username);
+    if (currentUser === new_username)
+    {
+        let avatar = document.getElementById('profile_edit-avatar');
+        let username = document.getElementById('profile_edit-username');
+
+        if (avatar && username)
+        {
+            avatar.setAttribute('src', new_avatar);
+            username.textContent = new_username;
+        }
+    }
+}
+
+function update_dicussion_pannel(user_to_edit, new_username)
+{
+    let discussion_btn = document.getElementById('disc_btn-' + user_to_edit);
+    let discussion_name = document.getElementById('disc_btn_username-' + user_to_edit);
+    if (discussion_name)
+    {
+        discussion_name.textContent = new_username;
+        discussion_name.setAttribute('id', 'disc_btn_username-' + new_username);
+        discussion_btn.setAttribute('id', 'disc_btn-' + new_username);
+    }
+}
+
+function update_msg_names(user_to_edit, new_username, new_avatar)
+{
+    let msgs_div = Array.from(document.getElementsByClassName('msg_div-' + user_to_edit));
+    let msgs_to_edit = Array.from(document.getElementsByClassName('sender_name-' + user_to_edit));
+    let avatar_to_edit = Array.from(document.getElementsByClassName('msg_img-' + user_to_edit));
+
+    for (let i = 0; i < msgs_div.length; i++)
+    {
+        msgs_div[i].classList.add('msg_div-' + new_username);
+        msgs_div[i].classList.remove('msg_div-' + user_to_edit);
+    }
+
+    for (let i = 0; i < msgs_to_edit.length; i++)
+    {
+        msgs_to_edit[i].textContent = new_username;
+        msgs_to_edit[i].classList.add('sender_name-' + new_username);
+        msgs_to_edit[i].classList.remove('sender_name-' + user_to_edit);
+    }
+    
+    for (let i = 0; i < avatar_to_edit.length; i++)
+    {
+        avatar_to_edit[i].setAttribute('src', new_avatar);
+        avatar_to_edit[i].classList.add('msg_img-' + new_username);
+        avatar_to_edit[i].classList.remove('msg_img-' + user_to_edit);
+    }
+}
+
+function update_notif(user_to_edit, new_username)
+{
+    let notif = document.getElementById('notif-' + user_to_edit + '-add_friend');
+    let element = document.getElementById('username_notif-' + user_to_edit);
+    if (element)
+    {
+        element.textContent = new_username;
+        element.setAttribute('id', 'username_notif-' + new_username);
+    }
+    if (notif)
+        notif.setAttribute('id', 'notif-' + new_username + '-add_friend');
+        
+}
+
+function update_buttons(user_to_edit, new_username)
+{
+    let friend_btns = Array.from(document.getElementsByClassName('add_friend_btn-' + user_to_edit));
+    let block_btns = Array.from(document.getElementsByClassName('block_friend_btn-' + user_to_edit));
+    let unfriend_btns = Array.from(document.getElementsByClassName('delete_friend_btn-' + user_to_edit));
+    let unblock_btns = Array.from(document.getElementsByClassName('unblock_friend_btn-' + user_to_edit));
+
+    for (let i = 0; i < friend_btns.length; i++)
+    {
+        friend_btns[i].dataset.username = new_username;
+        friend_btns[i].classList.add('add_friend_btn-' + new_username);
+        friend_btns[i].classList.remove('add_friend_btn-' + user_to_edit);
+    }
+
+    for (let i = 0; i < block_btns.length; i++)
+    {
+        block_btns[i].dataset.username = new_username;
+        block_btns[i].classList.add('block_friend_btn-' + new_username);
+        block_btns[i].classList.remove('block_friend_btn-' + user_to_edit);
+    }
+
+    for (let i = 0; i < unfriend_btns.length; i++)
+    {
+        unfriend_btns[i].dataset.username = new_username;
+        unfriend_btns[i].classList.add('delete_friend_btn-' + new_username);
+        unfriend_btns[i].classList.remove('delete_friend_btn-' + user_to_edit);
+    }
+
+    for (let i = 0; i < unblock_btns.length; i++)
+    {
+        unblock_btns[i].dataset.username = new_username;
+        unblock_btns[i].classList.add('unblock_friend_btn-' + new_username);
+        unblock_btns[i].classList.remove('unblock_friend_btn-' + user_to_edit);
+    }
+}
+
+function update_friend_list_pannel(user_to_edit, new_username)
+{
+    let username_to_update = document.getElementById('friend_list_username-' + user_to_edit);
+    let friend_block_to_update = document.getElementById('friend_list-' + user_to_edit);
+    if (username_to_update)
+    {
+        username_to_update.textContent = new_username;
+        username_to_update.setAttribute('id', 'friend_list_username-' + new_username);
+
+    }
+
+    if (friend_block_to_update)
+        friend_block_to_update.setAttribute('id', 'friend_list-' + new_username);
 }

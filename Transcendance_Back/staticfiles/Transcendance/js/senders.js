@@ -128,6 +128,18 @@ send_msg = {
 
 		var messageJson = JSON.stringify(message);
 		socket.system_socket.send(messageJson);
-	}
+	},
+
+	update_friend_request_and_block_list: function(user_to_edit, new_username)
+	{
+		var message = {
+			'command': 'update_friend_request_and_block_list',
+			'user_to_edit': user_to_edit,
+			'new_username': new_username,
+		}
+
+		var messageJson = JSON.stringify(message);
+		socket.system_socket.send(messageJson);
+	},
 
 }

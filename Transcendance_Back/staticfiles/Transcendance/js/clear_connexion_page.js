@@ -20,6 +20,7 @@ async function clear_connexion_page()
 	console.log("friend_list ---> " + friend_list);
 	console.log("block_list ---> " + block_list);
 	let log_div = document.getElementById('log-div');
-	log_div.remove();
+	if (log_div)
+		log_div.remove();
 	socket.launch_socket();
 }

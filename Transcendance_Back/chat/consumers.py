@@ -141,10 +141,10 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
 
         print('\n')
     
-        if original_user is not None and user_to_add is not None or "get" in command or friend_to_delete is not None or user_to_edit is not None and new_username is not None and new_avatar is not None:
+        if original_user is not None and user_to_add is not None or "get" in command or friend_to_delete is not None or user_to_edit is not None and new_username is not None or new_avatar is not None:
             await self.command_handler(command, original_user, user_to_add, current_user, friend_to_delete, user_to_edit, new_username, new_avatar)
         else:
-            print(f"❌ {current_user.username} tried to cheat ❌")
+            print(f"❌ {current_user.username} tried to cheat ❌ due to these parameters : {original_user} - {user_to_add} - {friend_to_delete} - {user_to_edit} - {new_username} - {new_avatar}")
     async def command_handler(self, command, original_user, user_to_add, current_user, friend_to_delete, user_to_edit, new_username, new_avatar):
         if command == 'add_friend':
             if current_user == original_user and user_to_add not in current_user.block_list and current_user.username not in user_to_add.block_list:
@@ -292,7 +292,9 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
                     )
                 
         if command == 'edit_profile':
+            print(f"🌿 current_user --> {current_user.username} || user_to_edit --> {user_to_edit} 🌿")
             if current_user.username == user_to_edit:
+                self.scope['user'] = await self.get_user(new_username)
                 await self.channel_layer.group_send(
                         self.room_group_name,
                         {
@@ -305,6 +307,21 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
                             }
                         }
                     )
+                
+        if command == 'update_friend_request_and_block_list':
+            if current_user != user_to_edit:
+                is_updated = False if await self.update_friend_request_and_block_list_request(user_to_edit, new_username) is None else True
+                await self.channel_layer.group_send(
+                        self.room_group_name,
+                        {
+                            "type": "system_message",
+                            'message': {
+                                'command': "friend_request_and_block_list_updated",
+                                'is_updated': is_updated,
+                            }
+                        }
+                    )
+                
     
         if command == 'get_friends_infos':
             if current_user == user_to_add:
@@ -362,6 +379,36 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
         await self.send(text_data=json.dumps({
             'message': message
         }))
+        
+    
+    @database_sync_to_async
+    def update_friend_request_and_block_list_request(self, user_to_edit, new_username):
+        try:
+            all_user = User.objects.all()
+        except User.DoesNotExist:
+            return None
+        
+        print(f"🔱 all_user --> {all_user}")
+        
+        for user in all_user:
+            print(f"🔱 {user.username} --> {user.friend_request}")
+            if user_to_edit in user.friend_request:
+                user.friend_request.remove(user_to_edit)
+                user.friend_request.append(new_username)
+                user.save()
+        
+        for user in all_user:
+            print(f"✅ {user.username} --> {user.friend_request}")
+        
+        for user in all_user:
+            if user_to_edit in user.block_list:
+                user.block_list.remove(user_to_edit)
+                user.block_list.append(new_username)
+                user.save()
+        
+        user.save()
+        return True;
+        
 
     @database_sync_to_async
     def get_user(self, username):

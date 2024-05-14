@@ -19,7 +19,6 @@ async function listen_update_btn()
 
 			.then((data) => 
 			{
-				console.log("data: ", data);
 				let old_username = currentUser;
 				let old_profile_picture = profile_picture;
 				if (data.edit_status === "success")
@@ -42,6 +41,9 @@ async function listen_update_btn()
 							}
 							if (has_changed)
 								send_msg.edit_profile_request(currentUser, new_username, new_profile_picture);
+							let modal = document.getElementById('edit-profile-modal');
+							let modal_instance = bootstrap.Modal.getInstance(modal);
+							modal_instance.hide();
 						});		
 				}
 
@@ -70,4 +72,24 @@ async function listen_update_btn()
 				}
 			})
 	});
+}
+
+function listen_toggle_btn()
+{
+	let toggle_btn = Array.from(document.getElementsByClassName('profile_toggle_btn'));
+	let toggle_lists = Array.from(document.getElementsByClassName('profile_toggle_list'));
+
+	for (let i = 0; i < toggle_lists.length; i++)
+		toggle_lists[i].style.display = 'none';
+
+	for (let i = 0; i < toggle_btn.length; i++)
+	{
+		toggle_btn[i].addEventListener('click', function ()
+		{
+			if (toggle_lists[i].style.display === 'none')
+				toggle_lists[i].style.display = 'block';
+			else
+				toggle_lists[i].style.display = 'none';
+		});
+	}
 }

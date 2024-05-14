@@ -1,7 +1,7 @@
-<div class="m-profile__edit">
-	<img class="a-profile__img" src={{avatar}} id="profile_picture"></img>
-	<h3 class="a-profile__input"> {{username}} </h3>
-	<button class="a-btn -orange" data-bs-toggle="modal" data-bs-target="#edit-profile-modal" id="edit-btn">Editer mon profil</button>
+<div class="m-profile__edit" id="profile_edit-main">
+	<img class="a-profile__img" src={{avatar}} id="profile_edit-avatar"></img>
+	<h3 class="a-profile__input" id="profile_edit-username"> {{username}} </h3>
+	<button class="a-btn -orange" data-bs-toggle="modal" data-bs-target="#edit-profile-modal" id="profile_edit-btn">Editer mon profil</button>
 </div>
 
 <div class="modal fade" id="edit-profile-modal" tabindex="-1" aria-labelledby="edit-profile-modal" aria-hidden="true">
@@ -39,10 +39,39 @@
 		</div>
 	</div>
 </div>
+
 <div>
-	<h2>History</h2>
-	<ul>
-		<li></li>
-		<li></li>
-	</ul>
+	<div class="wrapperCollapsibles">
+		<div class="js-collapsible">
+			<button class="a-btn -collapsible js-btn-collapsible profile_toggle_btn" type="button">PONG<svg class="bi bi-plus"
+					xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+					<path
+						d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4">
+					</path>
+				</svg><svg class="bi bi-dash" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+					<path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8"></path>
+				</svg></button>
+			<ul class="o-collapsible__content profile_toggle_list">
+				<li class="m-collapsible__item js-collapsible__item">Item1</li>
+				<li class="m-collapsible__item js-collapsible__item">Item2</li>
+				<li class="m-collapsible__item js-collapsible__item">Item3</li>
+			</ul>
+		</div>
+
+		<div class="js-collapsible">
+			<button class="a-btn -collapsible js-btn-collapsible profile_toggle_btn" type="button">PIERRE FEUILLE CISEAUX<svg class="bi bi-plus"
+					xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+					<path
+						d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4">
+					</path>
+				</svg><svg class="bi bi-dash" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+					<path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8"></path>
+				</svg></button>
+			<ul class="o-collapsible__content profile_toggle_list">
+				<li class="m-collapsible__item js-collapsible__item">Item1</li>
+				<li class="m-collapsible__item js-collapsible__item">Item2</li>
+				<li class="m-collapsible__item js-collapsible__item">Item3</li>
+			</ul>
+		</div>		
+	</div>
 </div>
