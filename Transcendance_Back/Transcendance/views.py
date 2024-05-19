@@ -32,10 +32,10 @@ def Hello(request):
         
             if signup_form.is_valid():
                 signup_form.Create_User(request)
-                print(f"✅ signup returned JsonResponse")
+                print(f"✅ signup returned JsonResponse with success")
                 return JsonResponse({'signup_status': 'success'})
             else:
-                print(f"✅ signup returned JsonResponse")
+                print(f"✅ signup returned JsonResponse with fail")
                 return JsonResponse({'signup_status': 'fail', 'errors': signup_form.errors})
         
         elif form_type == 'signin':
@@ -272,21 +272,21 @@ def UserProfile(request):
     try:
         user_stats = GameStats.objects.get(user=user)
         try:
-            user_history_list = GameHistory.get_games_for_user(user)
-            user_history = []
-            for user_history_instance in user_history_list:
-                user_history.append({
-                    'game_id': user_history_instance.game_id,
-                    'player1': user_history_instance.player1.username,
-                    'player2': user_history_instance.player2.username,
-                    'round_count': user_history_instance.round_count,
-                    'player1_moves': user_history_instance.player1_moves,
-                    'player2_moves': user_history_instance.player2_moves,
-                    'player1_score': user_history_instance.player1_score,
-                    'player2_score': user_history_instance.player2_score,
-                    'player1_penalties': user_history_instance.player1_penalties,
-                    'player2_penalties': user_history_instance.player2_penalties,
-                    'timestamp': user_history_instance.timestamp.strftime('%d-%m-%y %H:%M'),
+            user_pfc_history_list = GameHistory.get_games_for_user(user)
+            user_pfc_history = []
+            for user_pfc_history_instance in user_pfc_history_list:
+                user_pfc_history.append({
+                    'game_id': user_pfc_history_instance.game_id,
+                    'player1': user_pfc_history_instance.player1.username,
+                    'player2': user_pfc_history_instance.player2.username,
+                    'round_count': user_pfc_history_instance.round_count,
+                    'player1_moves': user_pfc_history_instance.player1_moves,
+                    'player2_moves': user_pfc_history_instance.player2_moves,
+                    'player1_score': user_pfc_history_instance.player1_score,
+                    'player2_score': user_pfc_history_instance.player2_score,
+                    'player1_penalties': user_pfc_history_instance.player1_penalties,
+                    'player2_penalties': user_pfc_history_instance.player2_penalties,
+                    'timestamp': user_pfc_history_instance.timestamp.strftime('%d-%m-%y %H:%M'),
                 })
         except GameHistory.DoesNotExist:
             status = 'history error'
@@ -333,7 +333,7 @@ def UserProfile(request):
         context['total_spr_los_tie'] = user_stats.total_spr_los_tie
         
         if status != "history error":
-            context['user_history'] = user_history
+            context['user_pfc_history'] = user_pfc_history
     
     user_profile_html = render_to_string('user_profile.html', context, request=request)
     return JsonResponse({'user_profile_html': user_profile_html, 'status': status})

@@ -4,11 +4,11 @@
 	<button class="a-btn -orange" data-bs-toggle="modal" data-bs-target="#edit-profile-modal" id="profile_edit-btn">Editer mon profil</button>
 </div>
 
-<div class="modal fade" id="edit-profile-modal" tabindex="-1" aria-labelledby="edit-profile-modal" aria-hidden="true">
+<div class="modal fade" id="edit-profile-modal" tabindex="-1" aria-labelledby="edit-profile-modal" aria-hide="true">
 	<div class="modal-dialog modal-lg">
 		<div class="modal-content">
 			<form method="post" id="edit-profile-form">
-				<input type="hidden" name="form_type" value="edit">
+				<input type="hidden" name="form_type" value="edit" readonly>
 				<div class="modal-header">
 					<h5 class="modal-title">Editer mon profil</h5>
 					<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -50,12 +50,20 @@
 					</path>
 				</svg><svg class="bi bi-dash" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
 					<path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8"></path>
-				</svg></button>
-			<ul class="o-collapsible__content profile_toggle_list">
-				<li class="m-collapsible__item js-collapsible__item">Item1</li>
-				<li class="m-collapsible__item js-collapsible__item">Item2</li>
-				<li class="m-collapsible__item js-collapsible__item">Item3</li>
-			</ul>
+				</svg></button>	
+				<h1 class="o-collapsible__content profile_toggle_pong hide">Stats</h1>
+				<ul class="o-collapsible__content profile_toggle_pong hide">
+					<li>Nombre de partie gagnée: {{total_pong_win}}</li>
+					<li>Nombre de partie perdue: {{total_pong_los}}</li>
+					<li>Nombre de point gagné: {{total_pong_win_tie}}</li>
+					<li>Nombre de point perdu: {{total_pong_los_tie}}</li>
+				</ul>
+				<h1 class="o-collapsible__content profile_toggle_pong hide">Historique</h1>
+				<ul class="o-collapsible__content profile_toggle_pong hide">
+					
+				</ul>
+				</div>
+			</div>
 		</div>
 
 		<div class="js-collapsible">
@@ -67,11 +75,20 @@
 				</svg><svg class="bi bi-dash" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
 					<path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8"></path>
 				</svg></button>
-			<ul class="o-collapsible__content profile_toggle_list">
-				<li class="m-collapsible__item js-collapsible__item">Item1</li>
-				<li class="m-collapsible__item js-collapsible__item">Item2</li>
-				<li class="m-collapsible__item js-collapsible__item">Item3</li>
-			</ul>
+			
+			<h1 class="o-collapsible__content profile_toggle_pfc hide">Stats</h1>
+				<ul class="o-collapsible__content profile_toggle_pfc hide">
+					<li>Nombre de partie gagnée: {{total_spr_win}}</li>
+					<li>Nombre de partie perdue: {{total_spr_los}}</li>
+					<li>Nombre de point gagné: {{total_spr_win_tie}}</li>
+					<li>Nombre de point perdu: {{total_spr_los_tie}}</li>
+					<li>Nombre de ciseaux utilisé: {{total_scissors}}</li>
+					<li>Nombre de feuille utilisée: {{total_paper}}</li>
+					<li>Nombre de pierre utilisée: {{total_rock}}</li>
+				</ul>
+			<h1 class="o-collapsible__content profile_toggle_pfc hide">Historique</h1>
+				<ul class="o-collapsible__content profile_toggle_pfc hide">
+				</ul>
 		</div>		
 	</div>
 </div>

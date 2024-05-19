@@ -76,20 +76,50 @@ async function listen_update_btn()
 
 function listen_toggle_btn()
 {
-	let toggle_btn = Array.from(document.getElementsByClassName('profile_toggle_btn'));
-	let toggle_lists = Array.from(document.getElementsByClassName('profile_toggle_list'));
+    let btns = document.getElementsByClassName('profile_toggle_btn');
+	let pong_things = document.getElementsByClassName('profile_toggle_pong');
+	let pfc_things = document.getElementsByClassName('profile_toggle_pfc');
 
-	for (let i = 0; i < toggle_lists.length; i++)
-		toggle_lists[i].style.display = 'none';
-
-	for (let i = 0; i < toggle_btn.length; i++)
+	for (let i = 0; i < btns.length; i++)
 	{
-		toggle_btn[i].addEventListener('click', function ()
+		if (i === 0)
 		{
-			if (toggle_lists[i].style.display === 'none')
-				toggle_lists[i].style.display = 'block';
-			else
-				toggle_lists[i].style.display = 'none';
-		});
+			btns[i].addEventListener('click', function ()
+			{
+				for (let j = 0; j < pong_things.length; j++)
+				{
+					if (pong_things[j].classList.contains('hide'))
+					{
+						pong_things[j].classList.remove('hide');
+						pong_things[j].classList.add('unhide');
+					}
+					else if (pong_things[j].classList.contains('unhide'))
+					{
+						pong_things[j].classList.add('hide');
+						pong_things[j].classList.remove('unhide');
+					}
+				}
+					
+			});
+		}
+		else if (i === 1)
+		{
+			btns[i].addEventListener('click', function ()
+			{
+				for (let j = 0; j < pfc_things.length; j++)
+				{
+					if (pfc_things[j].classList.contains('hide'))
+					{
+						pfc_things[j].classList.remove('hide');
+						pfc_things[j].classList.add('unhide');
+					}
+					else if (pfc_things[j].classList.contains('unhide'))
+					{
+						pfc_things[j].classList.add('hide');
+						pfc_things[j].classList.remove('unhide');
+					}
+				}
+			});
+		}
 	}
 }
