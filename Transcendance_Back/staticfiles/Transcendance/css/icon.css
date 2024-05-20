@@ -73,3 +73,18 @@
   height: 22px;
   width: 22px;
 }
+
+.icon_scissor,
+.icon_rock
+{
+  height: 40px;
+  width: 40px;
+}
+
+.icon_paper
+{
+
+  height: 44px;
+  width: 44px;
+  padding-right: 4px;
+}

@@ -154,21 +154,37 @@
             let ciseaux_div = document.getElementById('scissors');
             if (pierre_div && feuille_div && ciseaux_div)
                 return;
-            var pierre = document.createElement('button');
-            pierre.id = 'rock';
-            pierre.textContent = 'Pierre';
-            body_div.appendChild(pierre);
+            // var pierre = document.createElement('button');
+            // pierre.id = 'rock';
+            // pierre.textContent = 'Pierre';
+            // body_div.appendChild(pierre);
 
-            var feuille = document.createElement('button');
-            feuille.id = 'paper';
-            feuille.textContent = 'Feuille';
-            body_div.appendChild(feuille);
+            // var feuille = document.createElement('button');
+            // feuille.id = 'paper';
+            // feuille.textContent = 'Feuille';
+            // body_div.appendChild(feuille);
 
-            var ciseaux = document.createElement('button');
-            ciseaux.id = 'scissors';
-            ciseaux.textContent = 'Ciseaux';
-            body_div.appendChild(ciseaux);
+            // var ciseaux = document.createElement('button');
+            // ciseaux.id = 'scissors';
+            // ciseaux.textContent = 'Ciseaux';
+            // body_div.appendChild(ciseaux);
 
+            let rock = create_btn(['a-btn', '-pfc'], "");
+            rock.id = 'rock';
+            let svg_rock = create_svg_rock();
+            rock.append(svg_rock);
+            
+            let paper = create_btn(['a-btn', '-pfc'], "");
+            paper.id = 'paper';
+            let svg_paper = create_svg_paper();
+            paper.append(svg_paper);
+
+            let scissor = create_btn(['a-btn', '-pfc'], "");
+            scissor.id = 'scissors';
+            let svg_scissor = create_svg_scissor();
+            scissor.append(svg_scissor);
+
+            body_div.append(rock, paper, scissor);
 
             var timeleft = 15;
             document.getElementById('time').textContent = timeleft;
