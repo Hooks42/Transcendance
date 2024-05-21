@@ -88,6 +88,47 @@
 				</ul>
 			<h1 class="o-collapsible__content profile_toggle_pfc hide">Historique</h1>
 				<ul class="o-collapsible__content profile_toggle_pfc hide">
+					{% if user_pfc_history %}
+						{% for history in user_pfc_history %}
+						<li>
+							<h2>
+								{% if history.victory == True %}
+									Victoire VS {{history.opponent_userame}}
+								{% else %}
+									Défaite VS {{history.opponent_userame}}
+								{% endif %}
+							</h2>
+							<p>Score: {{history.current_player_score}} - {{history.opponent_score}}</p>
+							<p>Nombre de pénalitées: {{history.current_player_penalties}} - {{history.opponent_penalties}}</p>
+							<p>Nombre de round: {{history.round_count}}</p>
+							<p>Move joueur: [
+								{% for move in history.current_player_moves %}
+									{{move}}
+									{% if not forloop.last %}
+										, 
+									{% else %}
+										]
+									{% endif %}
+								{% endfor %}
+							</p>
+							<p>Move adversaire: [
+								{% for move in history.opponent_moves %}
+									{{move}}
+									{% if not forloop.last %}
+										, 
+									{% else %}
+										]
+									{% endif %}
+								{% endfor %}
+							</p>
+							<p>Date: {{history.timestamp}}</p>
+						</li>
+						{% endfor %}
+					{% else %}
+						<li>
+							<h1>Aucun historique</h1>
+						</li>
+					{% endif %}
 				</ul>
 		</div>		
 	</div>

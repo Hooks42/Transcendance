@@ -275,18 +275,52 @@ def UserProfile(request):
             user_pfc_history_list = GameHistory.get_games_for_user(user)
             user_pfc_history = []
             for user_pfc_history_instance in user_pfc_history_list:
+                current_player_username = None
+                current_player_score = None
+                current_player_penalties = None
+                current_player_moves = None
+                opponent_username = None
+                opponent_score = None
+                opponent_penalties = None
+                opponent_moves = None
+                victory = None
+                if user.username == user_pfc_history_instance.player1.username:
+                    current_player_username = user.username
+                    current_player_score = user_pfc_history_instance.player1_score
+                    current_player_penalties = user_pfc_history_instance.player1_penalties
+                    current_player_moves = user_pfc_history_instance.player1_moves
+                    opponent_username = user_pfc_history_instance.player2.username
+                    opponent_score = user_pfc_history_instance.player2_score
+                    opponent_penalties = user_pfc_history_instance.player2_penalties
+                    opponent_moves = user_pfc_history_instance.player2_moves
+                elif user.username == user_pfc_history_instance.player2.username:
+                    current_player_username = user.username
+                    current_player_score = user_pfc_history_instance.player2_score
+                    current_player_penalties = user_pfc_history_instance.player2_penalties
+                    current_player_moves = user_pfc_history_instance.player2_moves
+                    opponent_username = user_pfc_history_instance.player1.username
+                    opponent_score = user_pfc_history_instance.player1_score
+                    opponent_penalties = user_pfc_history_instance.player1_penalties
+                    opponent_moves = user_pfc_history_instance.player1_moves
+                
+                if current_player_score == 7 or opponent_penalties == 3:
+                    victory = True
+                elif opponent_score == 7 or current_player_penalties == 3:
+                    victory = False
+                
                 user_pfc_history.append({
                     'game_id': user_pfc_history_instance.game_id,
-                    'player1': user_pfc_history_instance.player1.username,
-                    'player2': user_pfc_history_instance.player2.username,
+                    'current_player_username': current_player_username,
+                    'opponent_userame': opponent_username,
                     'round_count': user_pfc_history_instance.round_count,
-                    'player1_moves': user_pfc_history_instance.player1_moves,
-                    'player2_moves': user_pfc_history_instance.player2_moves,
-                    'player1_score': user_pfc_history_instance.player1_score,
-                    'player2_score': user_pfc_history_instance.player2_score,
-                    'player1_penalties': user_pfc_history_instance.player1_penalties,
-                    'player2_penalties': user_pfc_history_instance.player2_penalties,
+                    'current_player_moves': current_player_moves,
+                    'opponent_moves': opponent_moves,
+                    'current_player_score': current_player_score,
+                    'opponent_score': opponent_score,
+                    'current_player_penalties': current_player_penalties,
+                    'opponent_penalties': opponent_penalties,
                     'timestamp': user_pfc_history_instance.timestamp.strftime('%d-%m-%y %H:%M'),
+                    'victory': victory,
                 })
         except GameHistory.DoesNotExist:
             status = 'history error'
