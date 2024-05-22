@@ -985,3 +985,14 @@ function update_friend_list_pannel(user_to_edit, new_username)
     if (friend_block_to_update)
         friend_block_to_update.setAttribute('id', 'friend_list-' + new_username);
 }
+
+async function display_game_button()
+{
+    fetch('/home/')
+        .then(response => response.json())
+        .then(data => {
+            let game_button_html = data.home_page_html;
+            let main_div = document.getElementById('main-div');
+            main_div.innerHTML = game_button_html;
+        });
+}

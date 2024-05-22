@@ -15,6 +15,7 @@ const socket = {
 			chat.load();
 			navbar.create();
 			navbar.load();
+			display_game_button();
 			centerZone.listen();
 		};
 

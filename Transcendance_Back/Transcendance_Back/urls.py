@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, re_path
-from Transcendance.views import Hello, Logout
+from Transcendance.views import Hello, Logout, Home
 from Transcendance.views import callback_view, AccountUpdate, Fullsite, LoginPage
 from Transcendance.views import Successfully_Connected_42, get_general_conv_history
 from Transcendance.views import get_friends_list, get_friends_request, get_user_lists
@@ -40,5 +40,6 @@ urlpatterns = [
     path('get-friends-request/', get_friends_request, name='get-friends-request'),
     path('get-user-lists/', get_user_lists, name='get-user-lists'),
     path('fullsite/', Fullsite, name='fullsite'),
+    path('home/', Home, name='home'),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

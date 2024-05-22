@@ -3,9 +3,13 @@ navbar.listener = {
     {
         event.preventDefault();
 
-        let page = navbar.btn_home.getAttribute("href").substring(1);
-        console.log("click on " + page);
-        navigateCenterZone(page);
+        let main_div = document.getElementById('main-div');
+        if (main_div.children.length > 0)
+        {
+            for (let i = 0; i < main_div.children.length; i++)
+                main_div.children[i].remove();
+            display_game_button();
+        }
     },
 
     // this trigger the modal for a successful connection

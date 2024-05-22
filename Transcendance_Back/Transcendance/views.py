@@ -372,5 +372,9 @@ def UserProfile(request):
     user_profile_html = render_to_string('user_profile.html', context, request=request)
     return JsonResponse({'user_profile_html': user_profile_html, 'status': status})
             
-        
+    
+@login_required
+def Home(request):
+    home_page_html = render_to_string('home.html', {'request': request}, request=request)
+    return JsonResponse({'home_page_html': home_page_html})
         
