@@ -36,7 +36,7 @@
 				</nav>
 				<div class="centerZone">
 					<div class="container h-100 w-100" id="main-div">
-
+					{% if not user.is_authenticated %}
 						<div class="m-wrapperHello" id="log-div">
 							<button type="button" class="a-btn -orange -lg" data-bs-toggle="modal"
 								data-bs-target="#create-account-modal" id="signup-btn">
@@ -136,9 +136,11 @@
 
 						<!-- Connexion 42 Modal -->
 						<div id="connexion-ft-modal" tabindex="-1"></div>
+						{% endif %}
 					</div>
 				</div>
 			</div>
+			
 			<!-- THE chat -->
 			<div class="col-md-12 col-lg-4 col-xl-3 h-100 d-flex flex-column order-lg-1 " id="the-chat">
 				<nav class="navbar" id="navbar">
@@ -176,9 +178,15 @@
 	<script src="/static/Transcendance/js/pong.code.js"></script>
 	<script src="/static/Transcendance/js/pong.display.js"></script>
 	<script src="/static/Transcendance/js/pong.control.js"></script>
-	<script>
-		listen_log_btn();
-	</script>
+	{% if not user.is_authenticated %}
+		<script>
+			listen_log_btn();
+		</script>
+	{% else %}
+		<script>
+			clear_connexion_page();
+		</script>
+	{% endif %}
 	<!-- Bootstrap JS (just before body closing tag) -->
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
 		integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">

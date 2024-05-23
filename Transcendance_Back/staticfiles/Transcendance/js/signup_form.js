@@ -23,7 +23,6 @@ function listen_signup_btn()
                     let bootstrapModal = bootstrap.Modal.getInstance(signup_modal);
                     bootstrapModal.hide();
                     signup_modal.remove();
-
                     clear_connexion_page();
                     connected = true;
                 }
