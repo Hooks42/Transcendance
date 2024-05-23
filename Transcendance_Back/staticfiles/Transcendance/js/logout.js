@@ -53,6 +53,7 @@ async function display_login_page()
 
 
 			let main_div = document.getElementById('main-div');
+			has_loaded = false;
 			main_div.innerHTML = login_page_html;
 			listen_log_btn();
 		})
