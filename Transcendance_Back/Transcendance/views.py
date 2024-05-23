@@ -97,7 +97,6 @@ def Logout(request):
 
 
 def callback_view(request):
-    print("🔥" + os.environ)
     code = request.GET.get("code")
     data = {
         'grant_type': 'authorization_code',
