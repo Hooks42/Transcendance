@@ -30,6 +30,18 @@ centerZone.listener =
                 svgs[1].style.display = "block";
             }
         }
+        else if (event.target.closet("#game_pfc"))
+        {
+            target = event.target.closest("#game_pfc");
+            if (!target)
+                return;
+            if (document.getElementById("game_pfc") === null)
+                return;
+            console.log("click on pfc");
+            history.pushState({page: 'pierre_feuille_ciseaux'}, '', '/pierre_feuille_ciseaux/');
+            centerZone.inner.innerHTML = "";
+            fetch()
+        }
         else if (event.target.closest("#game_pong")) {
             target = event.target.closest("#game_pong");
             if (!target)
