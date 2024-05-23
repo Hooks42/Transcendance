@@ -1,3 +1,5 @@
+var checkClosingPopup = null;
+
 function listen_42_btn()
 {
 	document.getElementById('signin-42-btn').addEventListener('click', function ()

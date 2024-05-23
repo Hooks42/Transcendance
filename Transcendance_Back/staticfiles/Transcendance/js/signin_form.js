@@ -25,7 +25,6 @@ function listen_signin_btn()
 						bootstrapModal.hide();
 						signin_modal.remove();
 					}
-
 					clear_connexion_page();
 					connected = true;
 				}

@@ -1,3 +1,5 @@
+has_loaded = false;
+
 const socket = {
 
 	chat_socket: null,
@@ -226,8 +228,12 @@ const socket = {
 
 	launch_socket: function ()
     {
-		this.launch_chat_socket();
-		this.launch_system_socket();
+		if (!has_loaded)
+		{
+			this.launch_chat_socket();
+			this.launch_system_socket();
+			has_loaded = true;
+		}
     },
 
 	sendMessage: function (message)

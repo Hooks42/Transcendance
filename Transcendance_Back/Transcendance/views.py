@@ -97,7 +97,7 @@ def Logout(request):
 
 
 def callback_view(request):
-    load_dotenv()
+    print("🔥" + os.environ)
     code = request.GET.get("code")
     data = {
         'grant_type': 'authorization_code',
@@ -110,7 +110,12 @@ def callback_view(request):
     error = request.GET.get("error")
     response_data = response.json()
     if error or not 'access_token' in response_data:
-        return HttpResponse(f"Failed to authenticate with 42: {error}\n{response_data}", status=400)
+        data['client_secret'] = os.getenv("NEXT_CLIENT_SECRET")
+        reponse = requests.post('https://api.intra.42.fr/oauth/token', data=data)
+        error = request.GET.get("error")
+        response_data = response.json()
+        if error or not 'access_token' in response_data:
+            return HttpResponse(f"Failed to authenticate with 42: {error}\n{response_data}", status=400)
     else:
         access_token = response_data['access_token']
         user = register_user(access_token)
