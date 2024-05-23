@@ -37,6 +37,7 @@ centerZone.listener =
             if (document.getElementById("game_pong") === null)
                 return;
             console.log("click on pong");
+            history.pushState({page: 'pong'}, 'pong', '/pong/');
             centerZone.inner.innerHTML = "";
             (function () {
 					// let requestAnimId;

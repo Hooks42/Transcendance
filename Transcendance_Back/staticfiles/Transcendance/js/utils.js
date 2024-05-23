@@ -996,3 +996,42 @@ async function display_game_button()
             main_div.innerHTML = game_button_html;
         });
 }
+
+
+window.onpopstate = function(event)
+{
+    let main_div = document.getElementById('main-div');
+    main_div.innerHTML = "";
+    
+    switch (event.state.page)
+    {
+        case 'hello':
+            display_game_button();
+            break;
+        
+        case 'profile':
+            display_profile_page();
+            break;
+        
+        case 'pong':
+            centerZone.inner.innerHTML = "";
+            (function () {
+            let initialisation = function() {
+                if (intervalId) {
+                pong.scorePlayer1 = 0;
+                pong.scorePlayer2 = 0;
+                clearInterval(intervalId);
+                }
+                pong.init(centerZone.inner);
+                intervalId = setInterval(run_game, 1000 / 60); // 60 FPS
+            };
+
+            const run_game = function() {
+                pong.currentState();
+            }
+
+            initialisation(); 
+            })();
+            break;
+    }
+}

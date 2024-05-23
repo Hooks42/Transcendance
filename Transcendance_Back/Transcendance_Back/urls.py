@@ -41,5 +41,7 @@ urlpatterns = [
     path('get-user-lists/', get_user_lists, name='get-user-lists'),
     path('fullsite/', Fullsite, name='fullsite'),
     path('home/', Home, name='home'),
+    path('profile/', Hello, name='profile'),
+    path('pong/', Hello, name='pong'),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

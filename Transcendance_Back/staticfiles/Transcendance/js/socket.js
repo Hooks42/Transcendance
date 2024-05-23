@@ -19,6 +19,7 @@ const socket = {
 			navbar.load();
 			display_game_button();
 			centerZone.listen();
+			history.pushState({page: 'hello'}, 'hello', '/hello/');
 		};
 
 		this.chat_socket.onclose = function (e)

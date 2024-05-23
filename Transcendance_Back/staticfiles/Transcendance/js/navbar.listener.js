@@ -43,5 +43,7 @@ navbar.listener = {
             for (let i = 0; i < main_div.children.length; i++)
                 main_div.children[i].remove();
         display_profile_page();
+        history.pushState({page: 'profile'}, 'profile', '/profile/');
+
     }
 }
