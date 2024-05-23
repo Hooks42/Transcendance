@@ -245,6 +245,13 @@ const pong = {
 	winLoseSystem: function () {
 		// game ends when one player gets 11 points
 		if (this.scorePlayer1 >= 11 || this.scorePlayer2 >= 11) {
+			let winner;
+			let Player2 = 'player2';
+			if (this.scorePlayer1 > this.scorePlayer2)
+				winner = currentUser;
+			else
+				winner = Player2;
+			send_msg.pong_finished(Player2, winner, this.scorePlayer1, this.scorePlayer2);
 			pong.currentState = pong.end;
 		}
 		// left player gagne 1 point

@@ -73,6 +73,12 @@ class GameStats(models.Model):
     total_spr_win_tie = models.IntegerField(default=0)
     total_spr_los_tie = models.IntegerField(default=0)
     
+class PongHistory(models.Model):
+    player1 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='games_as_player1_pong')
+    player2 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='games_as_player2_pong')
+    winner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='games_as_winner_pong')
+    player1_score = models.IntegerField(default=0)
+    player2_score = models.IntegerField(default=0)
 
 class GameHistory(models.Model):
     game_id = models.BigIntegerField(default=0)

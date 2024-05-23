@@ -142,4 +142,19 @@ send_msg = {
 		socket.system_socket.send(messageJson);
 	},
 
+	pong_finished: function(player2, winner, player1Score, player2Score)
+	{
+		var message = {
+			'command': 'pong_finished',
+			'player1': currentUser,
+			'player2': player2,
+			'winner': winner,
+			'loser': 'player2',
+			'player1Score': player1Score,
+			'player2Score': player2Score,
+		}
+
+		var messageJson = JSON.stringify(message);
+		socket.system_socket.send(messageJson);
+	},
 }
