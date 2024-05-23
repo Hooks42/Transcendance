@@ -1,7 +1,7 @@
 import json  # Importe le module json pour manipuler les données JSON
 from channels.db import database_sync_to_async  # Importe l'utilitaire pour exécuter du code synchrone dans un contexte asynchrone
 from channels.generic.websocket import AsyncWebsocketConsumer  # Importe la classe de base pour les consommateurs WebSocket asynchrones
-from Transcendance.models import Message, User, Conversation, GameHistory, GameStats, PFC_Game_ID  # Importe le modèle Message de votre application
+from Transcendance.models import Message, User, Conversation, GameHistory, GameStats, PFC_Game_ID, PongHistory  # Importe le modèle Message de votre application
 from datetime import datetime
 from django.core.exceptions import ObjectDoesNotExist
 from Transcendance.serializers import GameHistorySerializer
@@ -1095,3 +1095,159 @@ class PFCConsumer(AsyncWebsocketConsumer): # Définit une nouvelle classe de con
             if game.player1_penalties < 3 and game.player2_penalties < 3:
                 game.player2_penalties += 1
         game.save()
+        
+class PongConsumer(AsyncWebsocketConsumer):
+    async def connect(self):  # Méthode appelée lorsqu'un §client se connecte
+        self.room_name = 'pong_room'  # Définit le nom de la salle
+        self.room_group_name = self.room_name # Utilise le nom de la salle comme nom du groupe
+        await self.channel_layer.group_add(  # Ajoute le canal du client au groupe
+            self.room_group_name, self.channel_name
+        )
+        await self.accept()  # Accepte la connexion WebSocket
+    
+    async def disconnect(self, code):  # Méthode appelée lorsqu'un client se déconnecte
+        await self.channel_layer.group_discard(  # Retire le canal du client du groupe
+            self.room_group_name, self.channel_name
+        )
+
+    async def receive(self, text_data):  # Méthode appelée lorsqu'un message est reçu du client
+        json_text = json.loads(text_data)  # Convertit le texte en JSON
+
+        command = None
+        player1 = None
+        player2 = None
+        winner = None
+        player1_score = None
+        player2_score = None
+
+        current_user = self.scope['user']
+
+        if not current_user.is_authenticated:
+            return
+        
+        current_user = current_user.username
+
+        if "command" in json_text:
+            command = json_text["command"]
+            print(f"🔱 command : {command}")
+        
+        if "player1" in json_text:
+            player1 = json_text["player1"]
+            print(f"🔱 player1 : {player1}")
+        
+        if "player2" in json_text:
+            player2 = json_text["player2"]
+            print(f"🔱 player2 : {player2}")
+        
+        if "winner" in json_text:
+            winner = json_text["winner"]
+            print(f"🔱 winner : {winner}")
+        
+        if "player1Score" in json_text:
+            player1_score = json_text["player1Score"]
+            print(f"🔱 player1_score : {player1_score}")
+            
+        if "player2Score" in json_text:
+            player2_score = json_text["player2Score"]
+            print(f"🔱 player2_score : {player2_score}")
+            
+        
+        print('\n')
+    
+        if command is not None and player1 is not None and player2 is not None and winner is not None and player1_score is not None and player2_score is not None and current_user == player1 or current_user == player2:
+            await self.command_handler(command, current_user, player1, player2, winner, player1_score, player2_score)
+        else:
+            print(f"❌ {current_user.username} tried to cheat ❌ due to these parameters : {command} - {player1} - {player2} - {winner} - {player1_score} - {player2_score}")
+        
+    async def command_handler(self, command, current_user, player1, player2, winner, player1_score, player2_score):
+        if command == 'pong_finished':
+            print(f"🔥 {current_user} finished the game 🔥 player1 --> {player1}")
+            if player1 == current_user:
+                await self.save_pong_game(player1, player2, winner, player1_score, player2_score)
+                status = await self.update_pong_stats(player1, player2, winner, player1_score, player2_score)
+                if status is not None:
+                    await self.channel_layer.group_send(
+                        self.room_group_name,
+                        {
+                            "type": "Pong_message",
+                            'message': {
+                                'command': "pong_game_saved",
+                            }
+                        }
+                    )
+        else:
+            print(f"❌ {current_user} rentre pas dans le if command --> {command} ❌")
+                    
+                    
+    async def Pong_message(self, event):
+        # Extract the message from the event
+        message = event['message']
+
+        # Send the message to the WebSocket
+        await self.send(text_data=json.dumps({
+            'message': message
+        }))
+                
+                
+                
+                
+    
+    @database_sync_to_async
+    def save_pong_game(self, player1, player2, winner, player1_score, player2_score):
+        print("🔥 Je passe dans le save_pong_game")
+        game = PongHistory()
+        try:
+            player1_instance = User.objects.get(username=player1)
+        except User.DoesNotExist:
+            return None
+        game.player1 = player1_instance
+        try:
+            player2_instance = User.objects.get(username=player2)
+        except User.DoesNotExist:
+            player2_instance = None
+        game.player2 = player2_instance
+        try:
+            winner_instance = User.objects.get(username=winner)
+        except User.DoesNotExist:
+            winner_instance = None
+        game.winner = winner_instance
+        game.player1_score = player1_score
+        game.player2_score = player2_score
+        timestamp = datetime.now()  # Récupère le timestamp actuel
+        formatted_timestamp = timestamp.strftime('%b. %d, %Y, %I:%M %p')  # Format the timestamp
+        formatted_timestamp = formatted_timestamp.replace("AM", "a.m.").replace("PM", "p.m.")
+        game.timestamp = formatted_timestamp
+        game.save()
+        
+    @database_sync_to_async
+    def update_pong_stats(self, player1, player2, winner, player1_score, player2_score):
+        try:
+            player1_instance = User.objects.get(username=player1)
+            try:
+                stats = GameStats.objects.get(user=player1_instance)
+            except GameStats.DoesNotExist:
+                stats = GameStats()
+                stats.user = player1_instance
+            if winner == player1:
+                stats.total_pong_win += 1
+            else:
+                stats.total_pong_los += 1
+            stats.total_pong_win_tie += player1_score
+            stats.total_pong_los_tie += player2_score
+            stats.save()
+        except User.DoesNotExist:
+            return None
+        try:
+            player2_instance = User.objects.get(username=player2)
+            stats = GameStats.objects.get(user=player2_instance)
+            if winner == player2:
+                stats.total_pong_win += 1
+            else:
+                stats.total_pong_los += 1
+            stats.total_pong_win_tie += player2_score
+            stats.total_pong_los_tie += player1_score
+            stats.save()
+        except User.DoesNotExist:
+            return None
+        
+        

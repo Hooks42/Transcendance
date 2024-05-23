@@ -60,7 +60,24 @@
 				</ul>
 				<h1 class="o-collapsible__content profile_toggle_pong hide">Historique</h1>
 				<ul class="o-collapsible__content profile_toggle_pong hide">
-					
+					{% if user_pong_history %}
+						{% for history in user_pong_history %}
+						<li>
+							<h2>
+								{% if history.winner == username %}
+									Victoire VS {{history.opponent_username}}
+								{% else %}
+									Défaite VS {{history.opponent_username}}
+								{% endif %}
+							</h2>
+							<p>Score: {{history.current_player_score}} - {{history.opponent_score}}</p>
+						</li>
+						{% endfor %}
+					{% else %}
+						<li>
+							<h2>Aucun historique</h2>
+						</li>
+					{% endif %}
 				</ul>
 				</div>
 			</div>

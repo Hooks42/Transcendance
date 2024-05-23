@@ -6,7 +6,7 @@ from django import forms
 from django.contrib import messages
 from django.contrib.auth import login, logout, update_session_auth_hash, authenticate
 from django.contrib.auth.hashers import make_password
-from .models import Message, User, Conversation, GameStats, GameHistory
+from .models import Message, User, Conversation, GameStats, GameHistory, PongHistory
 from dotenv import load_dotenv
 from django.http import HttpResponseRedirect, JsonResponse, HttpResponse
 from urllib.parse import urlencode
@@ -328,6 +328,38 @@ def UserProfile(request):
                 })
         except GameHistory.DoesNotExist:
             status = 'history error'
+        
+        try:
+            user_pong_history_list = PongHistory.get_games_for_user(user)
+            user_pong_history = []
+            for user_pong_history_instance in user_pong_history_list:
+                current_player_username = user_pong_history_instance.player1.username
+                current_player_score = user_pong_history_instance.player1_score
+                if user_pong_history_instance.winner is None:
+                    winner = "Unknown Player"
+                else:
+                    winner = user_pong_history_instance.winner.username
+                if user_pong_history_instance.player2 is not None:
+                    opponent_username = user_pong_history_instance.player2.username
+                else:
+                    opponent_username = "Unknown Player"
+                opponent_score = user_pong_history_instance.player2_score
+                print(f"🔱 Current_Player --> {current_player_username} - {current_player_score}")
+                print(f"🔱 Opponent --> {opponent_username} - {opponent_score}")
+                print(f"🔱 Winner --> {winner}")
+                user_pong_history.append({
+                    'current_player_username': current_player_username,
+                    'current_player_score': current_player_score,
+                    'opponent_username': opponent_username,
+                    'opponent_score': opponent_score,
+                    'winner': winner,
+                    'timestamp': user_pong_history_instance.timestamp.strftime('%d-%m-%y %H:%M'),
+                });
+        except PongHistory.DoesNotExist:
+            status = 'pong history error'
+                
+            
+            
     except GameStats.DoesNotExist:
         status = 'No stats'
         
@@ -372,6 +404,8 @@ def UserProfile(request):
         
         if status != "history error":
             context['user_pfc_history'] = user_pfc_history
+        if status != "pong history error":
+            context['user_pong_history'] = user_pong_history
     
     user_profile_html = render_to_string('user_profile.html', context, request=request)
     return JsonResponse({'user_profile_html': user_profile_html, 'status': status})

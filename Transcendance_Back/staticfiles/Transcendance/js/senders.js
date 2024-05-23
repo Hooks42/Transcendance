@@ -155,6 +155,6 @@ send_msg = {
 		}
 
 		var messageJson = JSON.stringify(message);
-		socket.system_socket.send(messageJson);
+		socket.pong_socket.send(messageJson);
 	},
 }

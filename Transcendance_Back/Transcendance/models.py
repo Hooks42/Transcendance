@@ -75,10 +75,16 @@ class GameStats(models.Model):
     
 class PongHistory(models.Model):
     player1 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='games_as_player1_pong')
-    player2 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='games_as_player2_pong')
-    winner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='games_as_winner_pong')
+    player2 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='games_as_player2_pong', null=True, blank=True)
+    winner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='games_as_winner_pong', null=True, blank=True)
     player1_score = models.IntegerField(default=0)
     player2_score = models.IntegerField(default=0)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    
+    @classmethod
+    def get_games_for_user(cls, user):
+        return cls.objects.filter(models.Q(player1=user) | models.Q(player2=user)).order_by('-timestamp')
+    
 
 class GameHistory(models.Model):
     game_id = models.BigIntegerField(default=0)

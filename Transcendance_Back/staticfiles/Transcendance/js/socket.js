@@ -227,12 +227,59 @@ const socket = {
 		};
 	},
 
+	launch_pong_socket: function ()
+	{
+		this.pong_socket = new WebSocket('wss://localhost/ws/pong/');
+		this.pong_socket.onopen = function (e)
+		{
+			console.log('Pong Socket opened');
+		};
+
+		this.pong_socket.onclose = function (e)
+		{
+			console.error('Pong Socket closed');
+		}
+
+		this.pong_socket.onmessage = (event) => 
+		{
+			let data = JSON.parse(event.data);
+			console.log("message recieved ---> " + data.message);
+			if (data.message.command === "pong_game_saved")
+				centerZone.inner.innerHTML = "";
+            (function () {
+					// let requestAnimId;
+					/* const framePerSecond = 60; */
+					let initialisation = function()
+					{
+                                if (intervalId) {
+                                    pong.scorePlayer1 = 0;
+                                    pong.scorePlayer2 = 0;
+                                    clearInterval(intervalId);
+                                }
+								pong.init(centerZone.inner);
+								intervalId = setInterval(run_game, 1000 / 60); // 60 FPS
+					};
+					// un cycle d'affichage = un passage dans main()
+					const run_game = function() {
+								/* setInterval(pong.animate(), 1000 / framePerSecond); */
+								pong.currentState();
+							}
+
+					// appel de la fonction initialisation au chargement de la page
+					initialisation(); 
+
+				})();
+				
+			};
+	},
+		
 	launch_socket: function ()
     {
 		if (!has_loaded)
 		{
 			this.launch_chat_socket();
 			this.launch_system_socket();
+			this.launch_pong_socket();
 			has_loaded = true;
 		}
     },

@@ -8,6 +8,7 @@ websocket_urlpatterns = [
     re_path(r'ws/system/$', consumers.SystemConsumer.as_asgi()),
     re_path(r'ws/private_chat/(?P<room_name>[a-zA-Z0-9@.+_-]+_[a-zA-Z0-9@.+_-]+)/$', consumers.PrivateChatConsumer.as_asgi()),
     re_path(r'ws/pfc/(?P<room_name>[a-zA-Z0-9@.+_-]+_[a-zA-Z0-9@.+_-]+)/$', consumers.PFCConsumer.as_asgi()),
+    re_path(r'ws/pong/$', consumers.PongConsumer.as_asgi()),
 ]
 
 application = ProtocolTypeRouter({
