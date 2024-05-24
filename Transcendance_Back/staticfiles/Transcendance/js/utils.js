@@ -439,7 +439,36 @@ function create_msg(name_text, time_text, profile_picture)
     msg.appendChild(senderDiv);
     senderDiv.append(btn_img, sender_part, timestamp);
     btn_img.appendChild(img);
-    return (msg);
+    // Création du menu déroulant
+    const dropdownDiv = document.createElement('div');
+    dropdownDiv.classList.add('dropdown');
+
+    // Ajout du bouton qui déclenche le menu déroulant
+    const dropdownButton = btn_img.cloneNode(true);
+    dropdownButton.setAttribute('data-bs-toggle', 'dropdown');
+    dropdownButton.setAttribute('aria-expanded', 'false');
+    dropdownButton.style.position = 'absolute';
+    dropdownDiv.appendChild(dropdownButton);
+
+    // Création du menu déroulant
+    const dropdownMenu = document.createElement('ul');
+    dropdownMenu.classList.add('dropdown-menu');
+    dropdownDiv.appendChild(dropdownMenu);
+
+    // Ajout des éléments du menu déroulant
+    const dropdownItems = ['Voir le profil', 'Inviter à jouer à PFC', 'Envoyer un message privé'];
+    dropdownItems.forEach(item => {
+        const dropdownItem = document.createElement('li');
+        const dropdownBtn = document.createElement('button');
+        dropdownBtn.classList.add('dropdown-item');
+        dropdownBtn.textContent = item;
+        dropdownItem.appendChild(dropdownBtn);
+        dropdownMenu.appendChild(dropdownItem);
+    });
+
+    // Remplacement du bouton original par le menu déroulant
+    senderDiv.replaceChild(dropdownDiv, btn_img);
+    return msg;
 }
 
 function create_msg_text()

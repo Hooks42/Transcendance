@@ -42,6 +42,7 @@
     --bs-dropdown-border-color: var(--white);
     --bs-dropdown-border-width: 1px;
     --bs-dropdown-border-radius: 0%;
+    position:fixed;
 }
 
 /* --------------------------------------------------------------------------- 
