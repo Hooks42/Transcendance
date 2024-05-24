@@ -439,6 +439,9 @@ function create_msg(name_text, time_text, profile_picture)
     msg.appendChild(senderDiv);
     senderDiv.append(btn_img, sender_part, timestamp);
     btn_img.appendChild(img);
+
+    if (currentUser === name_text)
+        return msg;
     // Création du menu déroulant
     const dropdownDiv = document.createElement('div');
     dropdownDiv.classList.add('dropdown');
@@ -462,6 +465,24 @@ function create_msg(name_text, time_text, profile_picture)
         const dropdownBtn = document.createElement('button');
         dropdownBtn.classList.add('dropdown-item');
         dropdownBtn.textContent = item;
+        dropdownBtn.dataset.username = name_text;
+        if (item === 'Voir le profil')
+        {
+            dropdownBtn.classList.add('view_profile_btn-' + name_text);
+        }
+        if (item === 'Inviter à jouer à PFC')
+        {
+            dropdownBtn.classList.add('pfc_request_btn-' + name_text);
+            dropdownBtn.addEventListener('click', function (event)
+            {
+                send_msg.pfc_request(this.dataset.username, currentUser);
+            });
+        }
+        if (item === 'Envoyer un message privé')
+        {
+            dropdownBtn.classList.add('private_msg_btn-' + name_text);
+        }
+            
         dropdownItem.appendChild(dropdownBtn);
         dropdownMenu.appendChild(dropdownItem);
     });
@@ -592,7 +613,7 @@ function create_svg_bell()
     return (bell_svg);
 }
 
-function create_notif(username, action, game = null)
+function create_notif(username, action)
 {
     let bell_menu = document.getElementById('notif-menu');
     if (bell_menu.children.length > 0 && bell_menu.children[0].textContent === "Aucune notification")
@@ -610,7 +631,7 @@ function create_notif(username, action, game = null)
     const span_username = document.createElement('span');
     span_username.classList.add('a-notif__username');
     span_username.classList.add('js_username');
-    span_username.setAttribute("id", "username_notif-" + username);
+    span_username.classList.add("username_notif-" + username);
     span_username.textContent = username;
     notif_id = 'notif-' + username;
 
@@ -620,27 +641,14 @@ function create_notif(username, action, game = null)
     {
         span_action.textContent = ' vous demande en ami !';
         notif_id += '-add_friend';
+        bell_menu_li.setAttribute('id', notif_id);
     }
     else if (action === "challenge")
     {
-        span_action.textContent = ' vous défie au ';
+        span_action.textContent = ' vous défie au pfc !';
         notif_id += '-challenge';
+        bell_menu_li.setAttribute('class', notif_id);
     }
-
-    const span_game = document.createElement('span');
-    span_game.classList.add('a-notif__game');
-    span_game.classList.add('js_game');
-    if (game === "pong")
-    {
-        span_game.textContent = 'pong';
-        id += '-pong';
-    }
-    else if (game === "pfc")
-    {
-        span_game.textContent = 'pierre feuille ciseaux';
-        id += '-pfc';
-    }
-    bell_menu_li.setAttribute('id', notif_id);
 
     const wrapper = document.createElement('div');
     wrapper.classList.add('m-wrapperNotif');
@@ -650,13 +658,26 @@ function create_notif(username, action, game = null)
 
     btn_accepter.addEventListener('click', function (event)
     {
-        console.log("Accepter la demande d'ami de " + username);
-        send_msg.accept_friend_request(span_username.textContent, currentUser);
+        if (action === "add_friend")
+        {
+            console.log("Accepter la demande d'ami de " + username);
+            send_msg.accept_friend_request(span_username.textContent, currentUser);
+        }
+        else if (action === "challenge")
+        {
+            console.log("Accepter le défi de " + username);
+            send_msg.accept_pfc_request(span_username.textContent, currentUser);
+        }
     });
     btn_refuser.addEventListener('click', function (event)
     {
-        console.log("Refuser la demande d'ami de " + username);
-        send_msg.reject_friend_request(span_username.textContent, currentUser);
+        if (action === "add_friend")
+        {
+            console.log("Refuser la demande d'ami de " + username);
+            send_msg.reject_friend_request(span_username.textContent, currentUser);
+        }
+        else if (action === "challenge")
+            clear_notif(span_username.textContent);
     });
 
     const btn_three_dots = document.createElement('button');
@@ -666,13 +687,29 @@ function create_notif(username, action, game = null)
     // Construction de l'arborescence des éléments
     wrapper.append(btn_refuser, btn_accepter, btn_three_dots);
 
-    notif.appendChild(circle);
-    notif.appendChild(span_username);
-    notif.appendChild(span_action);
-    notif.appendChild(span_game);
-    notif.appendChild(wrapper);
-    bell_menu_li.appendChild(notif);
-    bell_menu.appendChild(bell_menu_li);
+    let notif_menu_div = document.getElementById('notif-menu');
+    let cpt = 0;
+    for (let i = 0; i < notif_menu_div.children.length; i++)
+    {
+        if (notif_menu_div.children[i].classList.contains('notif-' + username + "-challenge"))
+            cpt++;
+    }
+    if (cpt < 1)
+    {
+        notif.appendChild(circle);
+        notif.appendChild(span_username);
+        notif.appendChild(span_action);
+        notif.appendChild(wrapper);
+        bell_menu_li.appendChild(notif);
+        bell_menu.appendChild(bell_menu_li);
+    }
+
+    // notif.appendChild(circle);
+    // notif.appendChild(span_username);
+    // notif.appendChild(span_action);
+    // notif.appendChild(wrapper);
+    // bell_menu_li.appendChild(notif);
+    // bell_menu.appendChild(bell_menu_li);
 }
 
 function load_notif()
@@ -953,12 +990,28 @@ function update_msg_names(user_to_edit, new_username, new_avatar)
 function update_notif(user_to_edit, new_username)
 {
     let notif = document.getElementById('notif-' + user_to_edit + '-add_friend');
-    let element = document.getElementById('username_notif-' + user_to_edit);
-    if (element)
+    let element = Array.from(document.getElementsByClassName('username_notif-' + user_to_edit));
+    let pfc_notif = Array.from(document.getElementsByClassName('notif-' + user_to_edit + '-challenge'));
+    
+    if (element.length > 0)
     {
-        element.textContent = new_username;
-        element.setAttribute('id', 'username_notif-' + new_username);
+        for (let i = 0; i < element.length; i++)
+        {
+            element[i].textContent = new_username;
+            element[i].classList.add('username_notif-' + new_username);
+            element[i].classList.remove('username_notif-' + user_to_edit);
+        }
     }
+
+    if (pfc_notif.length > 0)
+    {
+        for (let i = 0; i < pfc_notif.length; i++)
+        {
+            pfc_notif[i].classList.add('notif-' + new_username + '-challenge');
+            pfc_notif[i].classList.remove('notif-' + user_to_edit + '-challenge');
+        }
+    }
+
     if (notif)
         notif.setAttribute('id', 'notif-' + new_username + '-add_friend');
         
@@ -970,6 +1023,9 @@ function update_buttons(user_to_edit, new_username)
     let block_btns = Array.from(document.getElementsByClassName('block_friend_btn-' + user_to_edit));
     let unfriend_btns = Array.from(document.getElementsByClassName('delete_friend_btn-' + user_to_edit));
     let unblock_btns = Array.from(document.getElementsByClassName('unblock_friend_btn-' + user_to_edit));
+    let view_profile_btns = Array.from(document.getElementsByClassName('view_profile_btn-' + user_to_edit));
+    let pfc_request_btns = Array.from(document.getElementsByClassName('pfc_request_btn-' + user_to_edit));
+    let private_msg_btns = Array.from(document.getElementsByClassName('private_msg_btn-' + user_to_edit));
 
     for (let i = 0; i < friend_btns.length; i++)
     {
@@ -997,6 +1053,27 @@ function update_buttons(user_to_edit, new_username)
         unblock_btns[i].dataset.username = new_username;
         unblock_btns[i].classList.add('unblock_friend_btn-' + new_username);
         unblock_btns[i].classList.remove('unblock_friend_btn-' + user_to_edit);
+    }
+
+    for (let i = 0; i < view_profile_btns.length; i++)
+    {
+        view_profile_btns[i].dataset.username = new_username;
+        view_profile_btns[i].classList.add('view_profile_btn-' + new_username);
+        view_profile_btns[i].classList.remove('view_profile_btn-' + user_to_edit);
+    }
+
+    for (let i = 0; i < pfc_request_btns.length; i++)
+    {
+        pfc_request_btns[i].dataset.username = new_username;
+        pfc_request_btns[i].classList.add('pfc_request_btn-' + new_username);
+        pfc_request_btns[i].classList.remove('pfc_request_btn-' + user_to_edit);
+    }
+
+    for (let i = 0; i < private_msg_btns.length; i++)
+    {
+        private_msg_btns[i].dataset.username = new_username;
+        private_msg_btns[i].classList.add('private_msg_btn-' + new_username);
+        private_msg_btns[i].classList.remove('private_msg_btn-' + user_to_edit);
     }
 }
 
@@ -1100,4 +1177,14 @@ window.onpopstate = function(event)
             })();
             break;
     }
+}
+
+function clear_notif(username)
+{
+    let notif_to_remove = document.getElementsByClassName("notif-" + username + "-challenge");
+    if (notif_to_remove)
+        notif_to_remove[0].remove();
+    notif_menu = document.getElementById('notif-menu');
+    if (notif_menu.childElementCount == 0)
+        show_no_notif();
 }

@@ -4,7 +4,28 @@ const socket = {
 
 	chat_socket: null,
 	system_socket: null,
+	pong_socket: null,
+	pfc_socket: null,
 
+	launch_pfc_socket: function (room_name)
+	{
+		this.pfc_socket = new WebSocket('wss://localhost/ws/pfc/' + room_name + '/');
+
+		this.pfc_socket.onopen = function (e)
+		{
+			console.log('PFC Socket opened');
+		}
+
+		this.pfc_socket.onclose = function (e)
+		{
+			console.log('PFC Socket closed');
+		}
+
+		this.pfc_socket.onmessage = function(e)
+		{
+
+		}
+	},
 
 	launch_chat_socket: function ()
 	{
@@ -24,7 +45,7 @@ const socket = {
 
 		this.chat_socket.onclose = function (e)
 		{
-			console.error('Chat Socket closed');
+			console.log('Chat Socket closed');
 		}
 
 		this.chat_socket.onmessage = (event) => 
@@ -47,7 +68,7 @@ const socket = {
 
 		this.system_socket.onclose = function (e)
 		{
-			console.error('System Socket closed');
+			console.log('System Socket closed');
 		}
 
 		this.system_socket.onmessage = (event) => 
@@ -222,8 +243,34 @@ const socket = {
 				update_when_user_edit(user_to_edit, new_username, new_avatar);
 			}
 			
-			if (data.message.command === 'friend_request_and_block_list_updated')
-				console.log("✅ modification de la liste d'amis et de bloqués ! status --> " + data.message.is_updated);
+			// if (data.message.command === 'friend_request_and_block_list_updated')
+			// 	console.log("✅ modification de la liste d'amis et de bloqués ! status --> " + data.message.is_updated);
+
+			if (data.message.command === 'pfc_asked' && data.message.user_to_add === currentUser)
+			{
+				original_user = data.message.original_user;
+				create_notif(original_user, 'challenge');
+			}
+
+			if (data.message.command === 'pfc_accepted')
+			{
+				original_user = data.message.original_user;
+				user_to_add = data.message.user_to_add;
+				if (user_to_add === currentUser || original_user === currentUser)
+				{
+					let room_name = original_user + "_" + user_to_add;
+					this.launch_pfc_socket(room_name);
+					launch_pfc();
+					if (original_user === currentUser)
+					{
+						;
+					}
+					if (user_to_add === currentUser)
+					{
+						clear_notif(original_user);
+					}
+				}
+			}
 		};
 	},
 
@@ -237,7 +284,7 @@ const socket = {
 
 		this.pong_socket.onclose = function (e)
 		{
-			console.error('Pong Socket closed');
+			console.log('Pong Socket closed');
 		}
 
 		this.pong_socket.onmessage = (event) => 

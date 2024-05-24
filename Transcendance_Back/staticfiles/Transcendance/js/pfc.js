@@ -104,8 +104,39 @@ function clear_pfc_buttons()
 	}
 }
 
-
-function launch_pfc()
+function check_game_state(elementId)
 {
-	create_pfc_button();
+    // Créez un observer pour écouter les changements dans le DOM
+	var observer = new MutationObserver(function(mutations) {
+		// Pour chaque mutation
+		mutations.forEach(function(mutation) {
+			// Vérifiez si l'élément avec l'ID spécifié existe toujours
+			var titre = document.getElementById('pfc_title');
+			if (titre == null) {
+				// Si l'élément n'existe pas, affichez un message
+				socket.pfc_socket.close();
+				// Arrêtez d'observer les mutations
+				observer.disconnect();
+			}
+		});
+	});
+
+	// Configuration de l'observer
+	var config = { childList: true, subtree: true };
+
+	// Commencez à observer le document avec la configuration spécifiée
+	observer.observe(document, config);
+}
+
+async function launch_pfc()
+{
+    let main_div = document.getElementById('main-div');
+    main_div.innerHTML = "";
+    fetch(/pfc/)
+        .then(response => response.json())
+        .then(data => {
+            let pfc_html = data.pfc_html;
+            main_div.innerHTML = pfc_html;
+            check_game_state('pfc_title');
+        });
 }

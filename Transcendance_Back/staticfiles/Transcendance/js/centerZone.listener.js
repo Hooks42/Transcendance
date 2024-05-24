@@ -39,14 +39,7 @@ centerZone.listener =
                 return;
             console.log("click on pfc");
             history.pushState({page: 'pierre_feuille_ciseaux'}, '', '/pierre_feuille_ciseaux/');
-            centerZone.inner.innerHTML = "";
-            fetch(/pfc/)
-                .then(response => response.json())
-                .then(data => {
-                    let pfc_html = data.pfc_html;
-                    centerZone.inner.innerHTML = pfc_html;
-                    launch_pfc();
-                });
+            launch_pfc();
         }
         else if (event.target.closest("#game_pong")) {
             target = event.target.closest("#game_pong");

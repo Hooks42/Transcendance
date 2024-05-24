@@ -639,7 +639,6 @@ class PFCConsumer(AsyncWebsocketConsumer): # Définit une nouvelle classe de con
         )
         await self.accept()  # Accepte la connexion WebSocket
         self.current_user = self.scope['user']
-        await self.set_game_status(self.current_user, True)
         self.players = self.room_name.split('_')
         self.player1 = self.players[0]
         self.player2 = self.players[1]
@@ -648,44 +647,12 @@ class PFCConsumer(AsyncWebsocketConsumer): # Définit une nouvelle classe de con
 
     async def disconnect(self, code):  # Méthode appelée lorsqu'un client se déconnecte
         current_user = self.scope['user']
-        await self.set_game_status(current_user, False)
 
         user = None
         if current_user.username == self.player1:
             user = self.player2
         else:
             user = self.player1
-
-        await self.clean_db()
-
-        await self.channel_layer.group_discard(  # Retire le canal du client du groupe
-            self.room_group_name, self.channel_name
-        )
-
-        await self.add_penality_request(current_user)
-        winner = await self.check_if_game_is_finished()
-        if winner is None:
-            await self.channel_layer.group_send(
-                self.room_group_name,
-                {
-                    "type": "PFC_message",
-                    'message': {
-                        'command': "opponent_disconnected",
-                        'disconnected_player': user
-                    }
-                }
-            )
-        else:
-            await self.channel_layer.group_send(
-                self.room_group_name,
-                {
-                    "type": "PFC_message",
-                    'message': {
-                        'command': "game_finished",
-                        'winner': winner
-                    }
-                }
-            )
 
 
     async def receive(self, text_data):  # Méthode appelée lorsqu'un message est reçu du client
@@ -762,40 +729,16 @@ class PFCConsumer(AsyncWebsocketConsumer): # Définit une nouvelle classe de con
                     )
             
         if command == "generate_game_id":
-            is_game_in_progress = await self.check_if_game_is_in_progress()
-
-            if (is_game_in_progress is None and player == self.player1):
-                await self.generate_game_id()
-                await self.channel_layer.group_send(
-                    self.room_group_name,
-                    {
-                        "type": "PFC_message",
-                        'message': {
-                            'command': "game_id_generated",
-                        }
+            await self.generate_game_id()
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    "type": "PFC_message",
+                    'message': {
+                        'command': "game_id_generated",
                     }
-                )
-
-            elif is_game_in_progress is not None and player == self.current_user.username:
-                print(f"🔥 Game already in progress 🔥")
-                self.game_id = is_game_in_progress
-                updated_game = await self.get_updated_game()
-                await self.channel_layer.group_send(
-                    self.room_group_name,
-                    {
-                        "type": "PFC_message",
-                        'message': {
-                            'command': "game_restored",
-                            'player1_score': updated_game.player1_score,
-                            'player2_score': updated_game.player2_score,
-                            'round_count': updated_game.round_count,
-                            'player1_penalties': updated_game.player1_penalties,
-                            'player2_penalties': updated_game.player2_penalties,
-                            'user_to_update' : player
-                        }
-                    }
-                )
-
+                }
+            )
         
         if command == "get_game_id":
             await self.get_game_id()
@@ -1016,11 +959,6 @@ class PFCConsumer(AsyncWebsocketConsumer): # Définit une nouvelle classe de con
             loser_stats.total_spr_win_tie += game.player1_score
             loser_stats.total_spr_los_tie += game.player2_score
             loser_stats.save()
-
-    @database_sync_to_async
-    def set_game_status(self, current_user, status):
-        current_user.is_in_PFC = status
-        current_user.save()
 
     @database_sync_to_async
     def check_if_game_is_in_progress(self):
