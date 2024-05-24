@@ -20,7 +20,7 @@ from Transcendance.views import Hello, Logout, Home
 from Transcendance.views import callback_view, AccountUpdate, Fullsite, LoginPage
 from Transcendance.views import Successfully_Connected_42, get_general_conv_history
 from Transcendance.views import get_friends_list, get_friends_request, get_user_lists
-from Transcendance.views import get_user_infos, get_block_list, UserProfile
+from Transcendance.views import get_user_infos, get_block_list, UserProfile, pfc_game
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -43,5 +43,8 @@ urlpatterns = [
     path('home/', Home, name='home'),
     path('profile/', Hello, name='profile'),
     path('pong/', Hello, name='pong'),
+    path('pierre_feuille_ciseaux/', Hello, name='pierre_feuille_ciseaux'),
+    path('pfc/', pfc_game, name='pfc'),
+    
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

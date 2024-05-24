@@ -416,3 +416,8 @@ def Home(request):
     home_page_html = render_to_string('home.html', {'request': request}, request=request)
     return JsonResponse({'home_page_html': home_page_html})
         
+
+@login_required
+def pfc_game(request):
+    pfc_html = render_to_string('pfc.html', {'request': request}, request=request)
+    return JsonResponse({'pfc_html': pfc_html})

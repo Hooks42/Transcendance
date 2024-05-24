@@ -62,7 +62,7 @@ function create_pfc_button()
 	let svg_scissor = create_svg_scissor();
 	scissor.append(svg_scissor);
 
-	var timeleft = 5;
+	var timeleft = 500;
 	document.getElementById('time').textContent = timeleft;
 
 	game_timer_id = setInterval(function() {

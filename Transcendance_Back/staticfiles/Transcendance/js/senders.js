@@ -157,4 +157,50 @@ send_msg = {
 		var messageJson = JSON.stringify(message);
 		socket.pong_socket.send(messageJson);
 	},
+
+	get_game_id: function(player)
+	{
+		var message = {
+			'player': player,
+			'command': 'get_game_id'
+		};
+		socket.system_socket.send(JSON.stringify(message));
+	},
+
+    timeout: function(player)
+	{
+		var message = {
+			'player': player,
+			'command': 'timeout'
+		};
+		socket.system_socket.send(JSON.stringify(message));
+	},
+
+	generate_game_id: function(player)
+	{
+		var message = {
+			'player': player,
+			'command': 'generate_game_id'
+		};
+		socket.system_socket.send(JSON.stringify(message));
+	},
+
+	ready: function(player)
+	{
+		var message = {
+			'player': player,
+			'command': 'ready'
+		};
+		socket.system_socket.send(JSON.stringify(message));
+	},
+
+	have_played: function(action, player)
+	{
+		var message = {
+			'command': 'have_played',
+			'player': player,
+			'action': action
+		};
+		socket.system_socket.send(JSON.stringify(message));
+	}
 }
