@@ -5,26 +5,52 @@ const socket = {
 	chat_socket: null,
 	system_socket: null,
 	pong_socket: null,
-	pfc_socket: null,
 
-	launch_pfc_socket: function (room_name)
+	launch_pfc_socket: function (room_name, original_user, user_to_add)
 	{
-		this.pfc_socket = new WebSocket('wss://localhost/ws/pfc/' + room_name + '/');
+		let pfc_socket = new WebSocket('wss://localhost/ws/pfc/' + room_name + '/');
 
-		this.pfc_socket.onopen = function (e)
+		pfc_socket.onopen = function (e)
 		{
 			console.log('PFC Socket opened');
+			if (original_user === currentUser)
+			{
+				send_msg.generate_game_id(original_user, pfc_socket);
+			}
 		}
 
-		this.pfc_socket.onclose = function (e)
+		pfc_socket.onclose = function (e)
 		{
 			console.log('PFC Socket closed');
 		}
 
-		this.pfc_socket.onmessage = function(e)
+		pfc_socket.onmessage = (event) =>
 		{
+			let data = JSON.parse(event.data);
+			if (data.message.command)
+				console.log("command recieved ---> " + data.message.command);
+			if (data.message.player_to_inform)
+				console.log("player_to_inform ---> " + data.message.player_to_inform);
 
+			if (data.message.command === 'game_id_generated' && data.message.player_to_inform === currentUser)
+			{
+				send_msg.get_game_id(currentUser, pfc_socket);
+			}
+
+			if (data.message.command === 'start_game' || data.message.command === 'round_finished')
+			{
+				create_pfc_buttons(pfc_socket);
+			}
+
+			if (data.message.command === 'game_finished')
+			{
+				console.log(data.message.winner + " a gagné la partie");
+			}
+
+			
 		}
+
+		return pfc_socket;
 	},
 
 	launch_chat_socket: function ()
@@ -259,12 +285,8 @@ const socket = {
 				if (user_to_add === currentUser || original_user === currentUser)
 				{
 					let room_name = original_user + "_" + user_to_add;
-					this.launch_pfc_socket(room_name);
-					launch_pfc();
-					if (original_user === currentUser)
-					{
-						;
-					}
+					let pfc_socket = this.launch_pfc_socket(room_name, original_user, user_to_add);
+					display_pfc(pfc_socket);
 					if (user_to_add === currentUser)
 					{
 						clear_notif(original_user);

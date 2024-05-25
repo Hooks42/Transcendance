@@ -729,28 +729,31 @@ class PFCConsumer(AsyncWebsocketConsumer): # Définit une nouvelle classe de con
                     )
             
         if command == "generate_game_id":
-            await self.generate_game_id()
-            await self.channel_layer.group_send(
-                self.room_group_name,
-                {
-                    "type": "PFC_message",
-                    'message': {
-                        'command': "game_id_generated",
+            if self.game_id is None and self.player1 == self.current_user.username:
+                await self.generate_game_id()
+                await self.channel_layer.group_send(
+                    self.room_group_name,
+                    {
+                        "type": "PFC_message",
+                        'message': {
+                            'command': "game_id_generated",
+                            'player_to_inform': self.player2,
+                        }
                     }
-                }
-            )
+                )
         
         if command == "get_game_id":
-            await self.get_game_id()
-            await self.channel_layer.group_send(
-                self.room_group_name,
-                {
-                    "type": "PFC_message",
-                    'message': {
-                        'command': "start_game",
+            if self.game_id is None and self.player2 == self.current_user.username:
+                await self.get_game_id()
+                await self.channel_layer.group_send(
+                    self.room_group_name,
+                    {
+                        "type": "PFC_message",
+                        'message': {
+                            'command': "start_game",
+                        }
                     }
-                }
-            )
+                )
 
 
         if command == "clear_round":

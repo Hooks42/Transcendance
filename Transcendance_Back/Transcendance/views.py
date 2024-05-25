@@ -184,7 +184,6 @@ def get_general_conv_history(request):
     message_list = []
     for message in message_backup:
         profile_picture = message.user.avatar.url
-        print(f"🔱 profile_picture --> {profile_picture}")
         message_list.append({
             'username': message.user.username,
             'timestamp': message.timestamp.strftime('%d-%m-%y %H:%M'),
