@@ -66,7 +66,7 @@ const pfc = {
 		let svg_scissor = create_svg_scissor();
 		scissor.append(svg_scissor);
 
-		var timeleft = 10;
+		var timeleft = 5;
 		document.getElementById('time').textContent = timeleft;
 
 		pfc.timer_id = setInterval(function() {

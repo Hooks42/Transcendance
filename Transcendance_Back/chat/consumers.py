@@ -923,7 +923,7 @@ class PFCConsumer(AsyncWebsocketConsumer): # Définit une nouvelle classe de con
             loser_stats.total_spr_los_tie += game.player1_score
             loser_stats.save()
 
-        else:
+        elif winner == self.player2:
             winner = User.objects.get(username=winner)
             winner_stats, _ = GameStats.objects.get_or_create(user=winner)
             winner_stats.total_spr_win += 1
@@ -943,6 +943,26 @@ class PFCConsumer(AsyncWebsocketConsumer): # Définit une nouvelle classe de con
             loser_stats.total_spr_win_tie += game.player1_score
             loser_stats.total_spr_los_tie += game.player2_score
             loser_stats.save()
+        
+        elif winner == "null match":
+            player1 = User.objects.get(username=self.player1)
+            player2 = User.objects.get(username=self.player2)
+
+            player1_stats, _ = GameStats.objects.get_or_create(user=player1)
+            player1_stats.total_spr_win_tie += game.player1_score
+            player1_stats.total_spr_los_tie += game.player2_score
+            player1_stats.total_rock += game.player1_moves.count("rock")
+            player1_stats.total_paper += game.player1_moves.count("paper")
+            player1_stats.total_scissors += game.player1_moves.count("scissors")
+            player1_stats.save()
+
+            player2_stats, _ = GameStats.objects.get_or_create(user=player2)
+            player2_stats.total_spr_win_tie += game.player2_score
+            player2_stats.total_spr_los_tie += game.player1_score
+            player2_stats.total_rock += game.player2_moves.count("rock")
+            player2_stats.total_paper += game.player2_moves.count("paper")
+            player2_stats.total_scissors += game.player2_moves.count("scissors")
+            player2_stats.save()
 
     @database_sync_to_async
     def check_if_game_is_in_progress(self):

@@ -310,6 +310,8 @@ def UserProfile(request):
                     victory = True
                 elif opponent_score == 7 or current_player_penalties == 3:
                     victory = False
+                elif current_player_penalties == 3 and opponent_penalties == 3:
+                    victory = None
                 
                 user_pfc_history.append({
                     'game_id': user_pfc_history_instance.game_id,

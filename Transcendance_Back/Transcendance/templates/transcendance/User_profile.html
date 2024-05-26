@@ -111,6 +111,8 @@
 							<h2>
 								{% if history.victory == True %}
 									Victoire VS {{history.opponent_userame}}
+								{% elif history.winner == None %}
+									Match nul {{history.current_user_username}} VS {{history.opponent_username}}
 								{% else %}
 									Défaite VS {{history.opponent_userame}}
 								{% endif %}
