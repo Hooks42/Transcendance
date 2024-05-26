@@ -1,6 +1,7 @@
 const pfc = {
 
 	observer: null,
+	timer_id: null,
 
 	create_svg_scissor: function()
 	{
@@ -65,25 +66,25 @@ const pfc = {
 		let svg_scissor = create_svg_scissor();
 		scissor.append(svg_scissor);
 
-		var timeleft = 500;
+		var timeleft = 10;
 		document.getElementById('time').textContent = timeleft;
 
-		game_timer_id = setInterval(function() {
+		pfc.timer_id = setInterval(function() {
 			timeleft--;
 			document.getElementById('time').textContent = timeleft;
 
 			if (timeleft <= 0)
 			{
-				clearInterval(game_timer_id);
-				clear_pfc_buttons();
-				send_msg.have_played('timeout', currentUser);
+				clearInterval(pfc.timer_id);
+				pfc.clear_pfc_buttons();
+				send_msg.have_played('timeout', currentUser, pfc_socket);
 			}
 		}, 1000);
 
 		var buttonClicked = function() {
-			clearInterval(game_timer_id);
+			clearInterval(pfc.timer_id);
 			send_msg.have_played(this.id, currentUser, pfc_socket);
-			clear_pfc_buttons();
+			pfc.clear_pfc_buttons();
 		};
 
 		pfc_div.append(rock, paper, scissor);
@@ -110,16 +111,18 @@ const pfc = {
 	check_game_state: function(elementId, pfc_socket)
 	{
 		// Créez un observer pour écouter les changements dans le DOM
-		this.observer = new MutationObserver(function(mutations) {
+		pfc.observer = new MutationObserver(function(mutations) {
 			// Pour chaque mutation
 			mutations.forEach(function(mutation) {
 				// Vérifiez si l'élément avec l'ID spécifié existe toujours
 				var titre = document.getElementById('pfc_title');
 				if (titre == null) {
 					// Si l'élément n'existe pas, affichez un message
+					send_msg.stop_game(currentUser, pfc_socket);
+					clearInterval(pfc.timer_id);
 					pfc_socket.close();
 					// Arrêtez d'observer les mutations
-					this.observer.disconnect();
+					pfc.observer.disconnect();
 				}
 			});
 		});
@@ -128,7 +131,7 @@ const pfc = {
 		var config = { childList: true, subtree: true };
 
 		// Commencez à observer le document avec la configuration spécifiée
-		observer.observe(document, config);
+		pfc.observer.observe(document, config);
 	},
 
 	display_pfc: async function(pfc_socket)
@@ -140,8 +143,43 @@ const pfc = {
 			.then(data => {
 				let pfc_html = data.pfc_html;
 				main_div.innerHTML = pfc_html;
-				check_game_state('pfc_title', pfc_socket);
+				pfc.check_game_state('pfc_title', pfc_socket);
 			});
 
 	},
+
+	update_pfc: function(data, pfc_socket)
+	{
+		let pfc_title = document.getElementById('pfc_title');
+		let player1_score = document.getElementById('player1_score_main');
+		let player2_score = document.getElementById('player2_score_main');
+		let player1_penalties = document.getElementById('player1_penalties_main');
+		let player2_penalties = document.getElementById('player2_penalties_main');
+		let time = document.getElementById('time_main');
+		let round = document.getElementById('round_main');
+
+		if (data.message.winner)
+		{
+			pfc.observer.disconnect();
+			if (data.message.winner === 'null match')
+				pfc_title.textContent = 'Match nul';
+			else
+				pfc_title.textContent = data.message.winner + ' est le vainqueur';
+			player1_score.remove();
+			player2_score.remove();
+			player1_penalties.remove();
+			player2_penalties.remove();
+			time.remove();
+			round.remove();
+			pfc_socket.close();
+		}
+		else
+		{
+			document.getElementById('player1_score').textContent = data.message.player1_score;
+			document.getElementById('player2_score').textContent = data.message.player2_score;
+			document.getElementById('player1_penalties').textContent = data.message.player1_penalties;
+			document.getElementById('player2_penalties').textContent = data.message.player2_penalties;
+			document.getElementById('round').textContent = data.message.round_count;
+		}
+	}
 };

@@ -39,12 +39,24 @@ const socket = {
 
 			if (data.message.command === 'start_game' || data.message.command === 'round_finished')
 			{
-				create_pfc_buttons(pfc_socket);
+				if (data.message.command === 'round_finished')
+					pfc.update_pfc(data, pfc_socket);
+				pfc.create_pfc_buttons(pfc_socket);
 			}
 
 			if (data.message.command === 'game_finished')
 			{
-				console.log(data.message.winner + " a gagné la partie");
+				pfc.update_pfc(data, pfc_socket);
+			}
+
+			if (data.message.command === 'game_stopped')
+			{
+				pfc.observer.disconnect();
+				clearInterval(pfc.timer_id);
+				pfc_socket.close();
+				let main_div = document.getElementById('main-div');
+				main_div.innerHTML = "";
+				display_game_button();
 			}
 
 			
@@ -286,7 +298,7 @@ const socket = {
 				{
 					let room_name = original_user + "_" + user_to_add;
 					let pfc_socket = this.launch_pfc_socket(room_name, original_user, user_to_add);
-					display_pfc(pfc_socket);
+					pfc.display_pfc(pfc_socket);
 					if (user_to_add === currentUser)
 					{
 						clear_notif(original_user);

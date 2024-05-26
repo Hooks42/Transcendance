@@ -202,5 +202,14 @@ send_msg = {
 			'action': action
 		};
 		pfc_socket.send(JSON.stringify(message));
+	},
+
+	stop_game: function(player, pfc_socket)
+	{
+		var message = {
+			'command': 'stop_game',
+			'player': player
+		};
+		pfc_socket.send(JSON.stringify(message));
 	}
 }

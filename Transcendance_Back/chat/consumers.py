@@ -646,13 +646,12 @@ class PFCConsumer(AsyncWebsocketConsumer): # Définit une nouvelle classe de con
 
 
     async def disconnect(self, code):  # Méthode appelée lorsqu'un client se déconnecte
-        current_user = self.scope['user']
+        if self.game_id is not None:
+            await self.clear_pfc_game_id()
 
-        user = None
-        if current_user.username == self.player1:
-            user = self.player2
-        else:
-            user = self.player1
+        
+        
+        
 
 
     async def receive(self, text_data):  # Méthode appelée lorsqu'un message est reçu du client
@@ -692,41 +691,42 @@ class PFCConsumer(AsyncWebsocketConsumer): # Définit une nouvelle classe de con
     async def commandHandler(self, command, action, player):
         
         if command == "have_played":
-            await self.add_action(player, action)
-            if await self.attribute_point():
-                updated_game = await self.get_updated_game()
-                print(f"💬 SCORE --> {updated_game.player1_score} - {updated_game.player2_score}")
-                print(f"💬 PENALTIES --> {updated_game.player1_penalties} - {updated_game.player2_penalties}")
-                print(f"💬 ROUND --> {updated_game.round_count}")
-                print('\n')
-                winner = await self.check_if_game_is_finished()
-                if winner is not None:
-                    await self.update_user_pfc_stats(winner)
-                    await self.channel_layer.group_send(
-                        self.room_group_name,
-                        {
-                            "type": "PFC_message",
-                            'message': {
-                                'command': "game_finished",
-                                'winner': winner
+            if self.game_id is not None and player == self.current_user.username:
+                await self.add_action(player, action)
+                if await self.attribute_point():
+                    updated_game = await self.get_updated_game()
+                    print(f"💬 SCORE --> {updated_game.player1_score} - {updated_game.player2_score}")
+                    print(f"💬 PENALTIES --> {updated_game.player1_penalties} - {updated_game.player2_penalties}")
+                    print(f"💬 ROUND --> {updated_game.round_count}")
+                    print('\n')
+                    winner = await self.check_if_game_is_finished()
+                    if winner is not None:
+                        await self.update_user_pfc_stats(winner)
+                        await self.channel_layer.group_send(
+                            self.room_group_name,
+                            {
+                                "type": "PFC_message",
+                                'message': {
+                                    'command': "game_finished",
+                                    'winner': winner
+                                }
                             }
-                        }
-                    )
-                else:
-                    await self.channel_layer.group_send(
-                        self.room_group_name,
-                        {
-                            "type": "PFC_message",
-                            'message': {
-                                'command': "round_finished",
-                                'player1_score': updated_game.player1_score,
-                                'player2_score': updated_game.player2_score,
-                                'round_count': updated_game.round_count,
-                                'player1_penalties': updated_game.player1_penalties,
-                                'player2_penalties': updated_game.player2_penalties
+                        )
+                    else:
+                        await self.channel_layer.group_send(
+                            self.room_group_name,
+                            {
+                                "type": "PFC_message",
+                                'message': {
+                                    'command': "round_finished",
+                                    'player1_score': updated_game.player1_score,
+                                    'player2_score': updated_game.player2_score,
+                                    'round_count': updated_game.round_count,
+                                    'player1_penalties': updated_game.player1_penalties,
+                                    'player2_penalties': updated_game.player2_penalties
+                                }
                             }
-                        }
-                    )
+                        )
             
         if command == "generate_game_id":
             if self.game_id is None and self.player1 == self.current_user.username:
@@ -755,36 +755,17 @@ class PFCConsumer(AsyncWebsocketConsumer): # Définit une nouvelle classe de con
                     }
                 )
 
-
-        if command == "clear_round":
-            await self.clear_round_request(player)
-            updated_data = await self.get_updated_game()
-            await self.channel_layer.group_send(
-                self.room_group_name,
-                {
-                    "type": "PFC_message",
-                    'message': {
-                        'command': "round_finished",
-                        'player1_score': updated_data.player1_score,
-                        'player2_score': updated_data.player2_score,
-                        'round_count': updated_data.round_count,
-                        'player1_penalties': updated_data.player1_penalties,
-                        'player2_penalties': updated_data.player2_penalties
-                    }
-                }
-            )
-
         if command == "stop_game":
-            await self.stop_game_request()
-            await self.channel_layer.group_send(
-                self.room_group_name,
-                {
-                    "type": "PFC_message",
-                    'message': {
-                        'command': "game_stopped",
+            if self.game_id is not None and self.player1 == self.current_user.username or self.player2 == self.current_user.username:
+                await self.channel_layer.group_send(
+                    self.room_group_name,
+                    {
+                        "type": "PFC_message",
+                        'message': {
+                            'command': "game_stopped",
+                        }
                     }
-                }
-            )
+                )
 
     async def PFC_message(self, event):
         # Extract the message from the event
@@ -1036,6 +1017,16 @@ class PFCConsumer(AsyncWebsocketConsumer): # Définit une nouvelle classe de con
             if game.player1_penalties < 3 and game.player2_penalties < 3:
                 game.player2_penalties += 1
         game.save()
+        
+    
+    @database_sync_to_async
+    def clear_pfc_game_id(self):
+        try:
+            game = PFC_Game_ID.objects.get(game_id=self.game_id)
+            print(f"🔥 game ==> {game} 🔥")
+            game.delete()
+        except PFC_Game_ID.DoesNotExist:
+            return None
         
 class PongConsumer(AsyncWebsocketConsumer):
     async def connect(self):  # Méthode appelée lorsqu'un §client se connecte
