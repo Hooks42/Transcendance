@@ -3,6 +3,7 @@ const pfc = {
 	observer: null,
 	queue_observer: null,
 	timer_id: null,
+	queue_timer_animation_id: null,
 	queue_timer_id: null,
 
 	create_svg_scissor: function()
@@ -199,7 +200,7 @@ const pfc = {
 		title.append(point_animation);
 		main_div.append(title);
 
-		pfc.queue_timer_id = setInterval(function() {
+		pfc.queue_timer_animation_id = setInterval(function() {
 			point_animation.textContent += ".";
 			if (point_animation.textContent.length > 3)
 				point_animation.textContent = "";
@@ -216,7 +217,11 @@ const pfc = {
 				var titre = document.getElementById('queue_title');
 				if (titre == null) {
 					// Si l'élément n'existe pas, affichez un message
+					clearInterval(pfc.queue_timer_animation_id);
 					clearInterval(pfc.queue_timer_id);
+					let array = [];
+					array.push(currentUser);
+					send_msg.kick_queue(array);
 					console.log("clear QUEUE");
 					// Arrêtez d'observer les mutations
 					pfc.queue_observer.disconnect();
@@ -231,10 +236,18 @@ const pfc = {
 		pfc.queue_observer.observe(document, config);
 	},
 
+	find_game()
+	{
+		pfc.queue_timer_id = setInterval(function() {
+			send_msg.find_match();
+		}, 15000);
+	},
+
 	launch_queue: function()
 	{
 		this.display_queue();
 		this.check_queue_state('queue_title');
 		send_msg.join_queue(currentUser);
+		this.find_game()
 	},
 };

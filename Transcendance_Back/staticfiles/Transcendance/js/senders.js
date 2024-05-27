@@ -229,5 +229,13 @@ send_msg = {
 			'players_to_kick': players
 		};
 		socket.system_socket.send(JSON.stringify(message));
+	},
+
+	find_match: function()
+	{
+		var message = {
+			'command': 'find_match'
+		};
+		socket.system_socket.send(JSON.stringify(message));
 	}
 }

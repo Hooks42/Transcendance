@@ -399,6 +399,7 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
         if command == 'find_match':
             player1, player2 = await self.find_match()
             if player1 is not None and player2 is not None:
+                print(f"🔱 {player1.username} and {player2.username} found a match 🔱")
                 await self.channel_layer.group_send(
                     self.room_group_name,
                     {
@@ -407,6 +408,17 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
                             'command': 'match_found',
                             'player1': player1.username,
                             'player2': player2.username
+                        }
+                    }
+                )
+            else:
+                print(f"🔱 No match found 🔱")
+                await self.channel_layer.group_send(
+                    self.room_group_name,
+                    {
+                        "type": "system_message",
+                        'message': {
+                            'command': 'no_match_found'
                         }
                     }
                 )
@@ -448,7 +460,7 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
             player1 = users_in_queue.pop(random.randint(0, len(users_in_queue) - 1))
             player2 = users_in_queue.pop(random.randint(0, len(users_in_queue) - 1))
             return player1, player2
-        return None
+        return None, None
         
     
     @database_sync_to_async
