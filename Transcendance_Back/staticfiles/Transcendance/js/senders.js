@@ -211,5 +211,23 @@ send_msg = {
 			'player': player
 		};
 		pfc_socket.send(JSON.stringify(message));
+	},
+
+	join_queue: function(player)
+	{
+		var message = {
+			'command': 'join_queue',
+			'player_to_add_in_queue': player
+		};
+		socket.system_socket.send(JSON.stringify(message));
+	},
+
+	kick_queue: function(players)
+	{
+		var message = {
+			'command': 'kick_queue',
+			'players_to_kick': players
+		};
+		socket.system_socket.send(JSON.stringify(message));
 	}
 }

@@ -1,7 +1,9 @@
 const pfc = {
 
 	observer: null,
+	queue_observer: null,
 	timer_id: null,
+	queue_timer_id: null,
 
 	create_svg_scissor: function()
 	{
@@ -181,5 +183,58 @@ const pfc = {
 			document.getElementById('player2_penalties').textContent = data.message.player2_penalties;
 			document.getElementById('round').textContent = data.message.round_count;
 		}
-	}
+	},
+
+	display_queue: function()
+	{
+		let main_div = document.getElementById('main-div');
+		let title = document.createElement('h1');
+		let point_animation = document.createElement('span');
+
+		title.textContent = "En recherche d'un adversaire";
+		title.id = 'queue_title';
+
+		point_animation.textContent = "";
+		point_animation.id = 'point_animation';
+		title.append(point_animation);
+		main_div.append(title);
+
+		pfc.queue_timer_id = setInterval(function() {
+			point_animation.textContent += ".";
+			if (point_animation.textContent.length > 3)
+				point_animation.textContent = "";
+		}, 1000);
+	},
+
+	check_queue_state: function(elementId)
+	{
+		// Créez un observer pour écouter les changements dans le DOM
+		pfc.queue_observer = new MutationObserver(function(mutations) {
+			// Pour chaque mutation
+			mutations.forEach(function(mutation) {
+				// Vérifiez si l'élément avec l'ID spécifié existe toujours
+				var titre = document.getElementById('queue_title');
+				if (titre == null) {
+					// Si l'élément n'existe pas, affichez un message
+					clearInterval(pfc.queue_timer_id);
+					console.log("clear QUEUE");
+					// Arrêtez d'observer les mutations
+					pfc.queue_observer.disconnect();
+				}
+			});
+		});
+
+		// Configuration de l'observer
+		var config = { childList: true, subtree: true };
+
+		// Commencez à observer le document avec la configuration spécifiée
+		pfc.queue_observer.observe(document, config);
+	},
+
+	launch_queue: function()
+	{
+		this.display_queue();
+		this.check_queue_state('queue_title');
+		send_msg.join_queue(currentUser);
+	},
 };

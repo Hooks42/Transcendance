@@ -1,7 +1,7 @@
 import json  # Importe le module json pour manipuler les données JSON
 from channels.db import database_sync_to_async  # Importe l'utilitaire pour exécuter du code synchrone dans un contexte asynchrone
 from channels.generic.websocket import AsyncWebsocketConsumer  # Importe la classe de base pour les consommateurs WebSocket asynchrones
-from Transcendance.models import Message, User, Conversation, GameHistory, GameStats, PFC_Game_ID, PongHistory  # Importe le modèle Message de votre application
+from Transcendance.models import Message, User, Conversation, GameHistory, GameStats, PFC_Game_ID, PongHistory, Matchmaking_Queue  # Importe le modèle Message de votre application
 from datetime import datetime
 from django.core.exceptions import ObjectDoesNotExist
 from Transcendance.serializers import GameHistorySerializer
@@ -102,6 +102,8 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
         user_to_edit = None
         new_username = None
         new_avatar = None
+        player_to_add_in_queue = None
+        players_to_kick = None
 
         current_user = self.scope['user']
 
@@ -138,14 +140,24 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
         if "new_avatar" in json_text:
             new_avatar = json_text["new_avatar"]
             print(f"🔱 new_avatar : {new_avatar}")
+        
+        if "player_to_add_in_queue" in json_text:
+            player_to_add_in_queue = json_text["player_to_add_in_queue"]
+            player_to_add_in_queue = await self.get_user(player_to_add_in_queue)
+            print(f"🔱 player_to_add_in_queue : {player_to_add_in_queue}")
+        
+        if "players_to_kick" in json_text:
+            players_to_kick = json_text["players_to_kick"]
+            players_to_kick = [await self.get_user(player) for player in players_to_kick]
+            print(f"🔱 players_to_kick : {players_to_kick}")
 
         print('\n')
     
-        if original_user is not None and user_to_add is not None or "get" in command or friend_to_delete is not None or user_to_edit is not None and new_username is not None or new_avatar is not None:
-            await self.command_handler(command, original_user, user_to_add, current_user, friend_to_delete, user_to_edit, new_username, new_avatar)
+        if original_user is not None and user_to_add is not None or "get" in command or friend_to_delete is not None or user_to_edit is not None and new_username is not None or new_avatar is not None or player_to_add_in_queue is not None or players_to_kick is not None and len(players_to_kick) >= 1 or "find_match" in command:
+            await self.command_handler(command, original_user, user_to_add, current_user, friend_to_delete, user_to_edit, new_username, new_avatar, player_to_add_in_queue, players_to_kick)
         else:
-            print(f"❌ {current_user.username} tried to cheat ❌ due to these parameters : {original_user} - {user_to_add} - {friend_to_delete} - {user_to_edit} - {new_username} - {new_avatar}")
-    async def command_handler(self, command, original_user, user_to_add, current_user, friend_to_delete, user_to_edit, new_username, new_avatar):
+            print(f"❌ {current_user.username} tried to cheat ❌ due to these parameters : {original_user} - {user_to_add} - {friend_to_delete} - {user_to_edit} - {new_username} - {new_avatar} - {player_to_add_in_queue} - {players_to_kick}")
+    async def command_handler(self, command, original_user, user_to_add, current_user, friend_to_delete, user_to_edit, new_username, new_avatar, player_to_add_in_queue, players_to_kick):
         if command == 'add_friend':
             if current_user == original_user and user_to_add not in current_user.block_list and current_user.username not in user_to_add.block_list:
                 add_friend = await self.add_friend_request(original_user, user_to_add)
@@ -369,7 +381,39 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
                             }
                         }
                     )
-
+                    
+        
+        if command == 'join_queue':
+            if current_user == player_to_add_in_queue:
+                await self.add_to_queue(player_to_add_in_queue)
+                print(f"🔱 {player_to_add_in_queue.username} joined the queue 🔱")
+        
+        if command == 'kick_queue':
+            if current_user in players_to_kick:
+                await self.kick_to_queue(players_to_kick)
+                if len(players_to_kick) == 1:
+                    print(f"🔱 {players_to_kick[0].username} kicked from the queue 🔱")
+                else:
+                    print(f"🔱 {players_to_kick[0].username} and {players_to_kick[1].username} kicked from the queue 🔱")
+                
+        if command == 'find_match':
+            player1, player2 = await self.find_match()
+            if player1 is not None and player2 is not None:
+                await self.channel_layer.group_send(
+                    self.room_group_name,
+                    {
+                        "type": "system_message",
+                        'message': {
+                            'command': 'match_found',
+                            'player1': player1.username,
+                            'player2': player2.username
+                        }
+                    }
+                )
+                
+            
+            
+            
 
     async def system_message(self, event):
         # Extract the message from the event
@@ -379,6 +423,32 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
         await self.send(text_data=json.dumps({
             'message': message
         }))
+        
+        
+    @database_sync_to_async
+    def add_to_queue(self, player_to_add_in_queue):
+        if player_to_add_in_queue is not None:
+            queue, _ = Matchmaking_Queue.objects.get_or_create()
+            queue.add_user(player_to_add_in_queue)
+            
+    
+    @database_sync_to_async
+    def kick_to_queue(self, players_to_kick):
+        if players_to_kick is not None and len(players_to_kick) >= 1:
+            queue = Matchmaking_Queue.objects.first()
+            if queue is not None and queue.user_in_queue.count() >= 1:
+                for player in players_to_kick:
+                    queue.remove_user(player)
+    
+    @database_sync_to_async
+    def find_match(self):
+        queue = Matchmaking_Queue.objects.first()
+        if queue is not None and queue.user_in_queue.count() >= 2:
+            users_in_queue = list(queue.user_in_queue.all())
+            player1 = users_in_queue.pop(random.randint(0, len(users_in_queue) - 1))
+            player2 = users_in_queue.pop(random.randint(0, len(users_in_queue) - 1))
+            return player1, player2
+        return None
         
     
     @database_sync_to_async

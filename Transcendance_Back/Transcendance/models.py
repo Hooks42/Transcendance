@@ -123,4 +123,15 @@ class PFC_Game_ID(models.Model):
     room_id = models.CharField(max_length=200, default='')
     player1 = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='player1_PFC')
     player2 = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='player2_PFC')
+    
 
+class Matchmaking_Queue(models.Model):
+    user_in_queue = models.ManyToManyField(User)
+    
+    def add_user(self, user):
+        self.user_in_queue.add(user)
+        self.save()
+        
+    def remove_user(self, user):
+        self.user_in_queue.remove(user)
+        self.save()
