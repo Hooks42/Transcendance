@@ -134,6 +134,8 @@ const socket = {
 				console.log("new_avatar ---> " + data.message.new_avatar);
 			if (data.message.new_username)
 				console.log("new_username ---> " + data.message.new_username);
+			if (data.message.match_tab)
+				console.log("match_tab ---> " + JSON.stringify(data.message.match_tab));
 
 			console.log("current_user ---> " + currentUser);
 

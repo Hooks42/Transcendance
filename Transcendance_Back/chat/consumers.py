@@ -394,32 +394,21 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
                 await self.assign_main_queue(players_to_kick)
                 
         if command == 'find_match':
-            player1, player2 = await self.find_match()
-            if player1 is not None and player2 is not None:
-                print(f"🔱 {player1.username} and {player2.username} found a match 🔱")
+            match_tab = []
+            match_tab = await self.find_match()
+            if match_tab is not None and len(match_tab) >= 1:
                 await self.channel_layer.group_send(
                     self.room_group_name,
                     {
                         "type": "system_message",
                         'message': {
                             'command': 'match_found',
-                            'player1': player1.username,
-                            'player2': player2.username
+                            'match_tab': match_tab,
                         }
                     }
                 )
             else:
                 print(f"🔱 No match found 🔱")
-                await self.channel_layer.group_send(
-                    self.room_group_name,
-                    {
-                        "type": "system_message",
-                        'message': {
-                            'command': 'no_match_found'
-                        }
-                    }
-                )
-                
             
             
             
@@ -472,12 +461,23 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
     @database_sync_to_async
     def find_match(self):
         queue = Matchmaking_Queue.objects.first()
+        match_tab = []
         if queue is not None and queue.user_in_queue.count() >= 2:
             users_in_queue = list(queue.user_in_queue.all())
-            player1 = users_in_queue.pop(random.randint(0, len(users_in_queue) - 1))
-            player2 = users_in_queue.pop(random.randint(0, len(users_in_queue) - 1))
-            return player1, player2
-        return None, None
+            while len(users_in_queue) > 1:
+                dict_match = {}
+                player1 = random.choice(users_in_queue)
+                users_in_queue.remove(player1)
+                queue.remove_user(player1)
+                player2 = random.choice(users_in_queue)
+                users_in_queue.remove(player2)
+                queue.remove_user(player2)
+                dict_match["player1"] = player1.username
+                dict_match["player2"] = player2.username
+                match_tab.append(dict_match)
+            return match_tab
+        else:
+            return None
         
     
     @database_sync_to_async
