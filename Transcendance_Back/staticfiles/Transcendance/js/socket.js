@@ -310,7 +310,19 @@ const socket = {
 
 			if (data.message.command === 'match_found')
 			{
-				;
+				if (data.message.match_tab)
+				{
+					let match_tab = data.message.match_tab;
+					for (let i = 0;  i < match_tab.length; i++)
+					{
+						if (match_tab[i]["player1"] == currentUser || match_tab[i]["player2"] == currentUser)
+						{
+							let room_name = match_tab[i]["player1"] + "_" + match_tab[i]["player2"];
+							let pfc_socket = this.launch_pfc_socket(room_name, match_tab[i]["player1"], match_tab[i]["player2"]);
+							pfc.display_pfc(pfc_socket);
+						}
+					}
+				}
 			}
 		};
 	},
