@@ -391,13 +391,7 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
         if command == 'kick_queue':
             if current_user in players_to_kick:
                 await self.kick_to_queue(players_to_kick)
-                if len(players_to_kick) == 1:
-                    if players_to_kick[0].main_queue_player == True:
-                        players_to_kick[0].main_queue_player = False
-                    print(f"🔱 {players_to_kick[0].username} kicked from the queue 🔱 with main_queue --> {players_to_kick[0].main_queue_player}")
-                else:
-                    print(f"🔱 {players_to_kick[0].username} and {players_to_kick[1].username} kicked from the queue 🔱 with main_queue --> {players_to_kick[0].main_queue_player} | {players_to_kick[1].main_queue_player}")
-                await self.assign_main_queue()
+                await self.assign_main_queue(players_to_kick)
                 
         if command == 'find_match':
             player1, player2 = await self.find_match()
@@ -440,7 +434,13 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
         }))
 
     @database_sync_to_async
-    def assign_main_queue(self):
+    def assign_main_queue(self, players_to_kick):
+        if len(players_to_kick) == 1:
+            player = User.objects.get(username=players_to_kick[0])
+            if player.main_queue_player == True:
+                player.main_queue_player = False
+                player.save()
+            print(f"🔱 {player.username} kicked from the queue 🔱 with main_queue --> {player.main_queue_player}")
         first_queue = Matchmaking_Queue.objects.first()
         if first_queue is not None:
             user_in_queue = first_queue.user_in_queue.first()
@@ -448,6 +448,7 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
                 user_in_queue.main_queue_player = True
                 user_in_queue.save()
                 print(f"🔱 {user_in_queue.username} is now the main player in the queue --> {user_in_queue.main_queue_player} 🔱")
+                
         
     @database_sync_to_async
     def add_to_queue(self, player_to_add_in_queue):
@@ -457,6 +458,7 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
             len_queue = queue.user_in_queue.count()
             if len_queue == 1:
                 player_to_add_in_queue.main_queue_player = True
+                player_to_add_in_queue.save()
             
     
     @database_sync_to_async
