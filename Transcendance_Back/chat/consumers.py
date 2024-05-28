@@ -386,15 +386,18 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
         if command == 'join_queue':
             if current_user == player_to_add_in_queue:
                 await self.add_to_queue(player_to_add_in_queue)
-                print(f"🔱 {player_to_add_in_queue.username} joined the queue 🔱")
+                print(f"🔱 {player_to_add_in_queue.username} joined the queue 🔱 with main_queue --> {player_to_add_in_queue.main_queue_player}")
         
         if command == 'kick_queue':
             if current_user in players_to_kick:
                 await self.kick_to_queue(players_to_kick)
                 if len(players_to_kick) == 1:
-                    print(f"🔱 {players_to_kick[0].username} kicked from the queue 🔱")
+                    if players_to_kick[0].main_queue_player == True:
+                        players_to_kick[0].main_queue_player = False
+                    print(f"🔱 {players_to_kick[0].username} kicked from the queue 🔱 with main_queue --> {players_to_kick[0].main_queue_player}")
                 else:
-                    print(f"🔱 {players_to_kick[0].username} and {players_to_kick[1].username} kicked from the queue 🔱")
+                    print(f"🔱 {players_to_kick[0].username} and {players_to_kick[1].username} kicked from the queue 🔱 with main_queue --> {players_to_kick[0].main_queue_player} | {players_to_kick[1].main_queue_player}")
+                await self.assign_main_queue()
                 
         if command == 'find_match':
             player1, player2 = await self.find_match()
@@ -435,13 +438,25 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
         await self.send(text_data=json.dumps({
             'message': message
         }))
-        
+
+    @database_sync_to_async
+    def assign_main_queue(self):
+        first_queue = Matchmaking_Queue.objects.first()
+        if first_queue is not None:
+            user_in_queue = first_queue.user_in_queue.first()
+            if user_in_queue is not None and not user_in_queue.main_queue_player:
+                user_in_queue.main_queue_player = True
+                user_in_queue.save()
+                print(f"🔱 {user_in_queue.username} is now the main player in the queue --> {user_in_queue.main_queue_player} 🔱")
         
     @database_sync_to_async
     def add_to_queue(self, player_to_add_in_queue):
         if player_to_add_in_queue is not None:
-            queue, _ = Matchmaking_Queue.objects.get_or_create()
+            queue,_ = Matchmaking_Queue.objects.get_or_create()
             queue.add_user(player_to_add_in_queue)
+            len_queue = queue.user_in_queue.count()
+            if len_queue == 1:
+                player_to_add_in_queue.main_queue_player = True
             
     
     @database_sync_to_async

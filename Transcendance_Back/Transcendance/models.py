@@ -47,6 +47,7 @@ class User(AbstractUser):
     is_online = models.BooleanField(default=False)
     is_in_PFC = models.BooleanField(default=False)
     is_in_pong = models.BooleanField(default=False)
+    main_queue_player = models.BooleanField(default=False)
 
     friends = models.ManyToManyField('self', blank=True)
     friend_request = ArrayField(models.CharField(max_length=200), blank=True, default=list)
