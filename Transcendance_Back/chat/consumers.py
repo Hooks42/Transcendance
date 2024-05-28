@@ -88,6 +88,13 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
         await self.accept()  # Accepte la connexion WebSocket
     
     async def disconnect(self, code):  # Méthode appelée lorsqu'un client se déconnecte
+        
+        current_user = self.scope['user']
+        player_to_disconnect = []
+        player_to_disconnect.append(current_user)
+        await self.disconnect_player_in_queue(current_user)
+        await self.assign_main_queue(player_to_disconnect)
+        
         await self.channel_layer.group_discard(  # Retire le canal du client du groupe
             self.room_group_name, self.channel_name
         )
@@ -394,21 +401,26 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
                 await self.assign_main_queue(players_to_kick)
                 
         if command == 'find_match':
-            match_tab = []
-            match_tab = await self.find_match()
-            if match_tab is not None and len(match_tab) >= 1:
-                await self.channel_layer.group_send(
-                    self.room_group_name,
-                    {
-                        "type": "system_message",
-                        'message': {
-                            'command': 'match_found',
-                            'match_tab': match_tab,
+            if await self.check_if_main_queue(current_user) == True:
+                print (f"🌿 resultat du check --> True pour {current_user}")
+                match_tab = []
+                match_tab = await self.find_match()
+                print (f"🌿 match_tab --> {match_tab}")
+                if match_tab is not None and len(match_tab) >= 1:
+                    await self.channel_layer.group_send(
+                        self.room_group_name,
+                        {
+                            "type": "system_message",
+                            'message': {
+                                'command': 'match_found',
+                                'match_tab': match_tab,
+                            }
                         }
-                    }
-                )
+                    )
+                else:
+                    print(f"🔱 No match found 🔱")
             else:
-                print(f"🔱 No match found 🔱")
+                print (f"🌿 resultat du check --> False pour {current_user}")
             
             
             
@@ -422,6 +434,21 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
             'message': message
         }))
 
+
+
+    @database_sync_to_async
+    def disconnect_player_in_queue(self, current_user):
+        queue = Matchmaking_Queue.objects.first()
+        if current_user in queue.user_in_queue.all():
+            queue.remove_user(current_user)
+            print(f"🔱 {current_user.username} left the queue 🔱 with main_queue --> {current_user.main_queue_player}")
+        
+    @database_sync_to_async
+    def check_if_main_queue(self, current_user):
+        update_current_user = User.objects.get(username=current_user.username)
+        return update_current_user.main_queue_player
+        
+
     @database_sync_to_async
     def assign_main_queue(self, players_to_kick):
         if len(players_to_kick) == 1:
@@ -432,8 +459,9 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
             print(f"🔱 {player.username} kicked from the queue 🔱 with main_queue --> {player.main_queue_player}")
         first_queue = Matchmaking_Queue.objects.first()
         if first_queue is not None:
+            existing_token_user = first_queue.user_in_queue.filter(main_queue_player=True).first()
             user_in_queue = first_queue.user_in_queue.first()
-            if user_in_queue is not None and not user_in_queue.main_queue_player:
+            if user_in_queue is not None and existing_token_user is None:
                 user_in_queue.main_queue_player = True
                 user_in_queue.save()
                 print(f"🔱 {user_in_queue.username} is now the main player in the queue --> {user_in_queue.main_queue_player} 🔱")

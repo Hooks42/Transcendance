@@ -307,6 +307,11 @@ const socket = {
 					}
 				}
 			}
+
+			if (data.message.command === 'match_found')
+			{
+				;
+			}
 		};
 	},
 

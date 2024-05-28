@@ -240,7 +240,7 @@ const pfc = {
 	{
 		pfc.queue_timer_id = setInterval(function() {
 			send_msg.find_match();
-		}, 15000);
+		}, 5000);
 	},
 
 	launch_queue: function()
