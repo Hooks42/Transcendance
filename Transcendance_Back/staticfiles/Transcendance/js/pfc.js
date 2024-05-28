@@ -146,6 +146,7 @@ const pfc = {
 			.then(data => {
 				let pfc_html = data.pfc_html;
 				main_div.innerHTML = pfc_html;
+				history.pushState({page: 'pierre_feuille_ciseaux'}, '', '/pierre_feuille_ciseaux/');
 				pfc.check_game_state('pfc_title', pfc_socket);
 			});
 
@@ -240,7 +241,7 @@ const pfc = {
 	{
 		pfc.queue_timer_id = setInterval(function() {
 			send_msg.find_match();
-		}, 5000);
+		}, 15000);
 	},
 
 	launch_queue: function()
