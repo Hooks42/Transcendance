@@ -1,3 +1,4 @@
+
 pong.display = {
 	container : "",
 	layer :
@@ -71,11 +72,11 @@ pong.display = {
 		targetLayer.context2D.fillStyle = color;
 		targetLayer.context2D.fillText(text, x, y);
 	},
-	drawCenteredTextInLayer : function(targetLayer, text, font, color, groundWidth, y)
+	drawCenteredTextInLayer : function(targetLayer, text, font, color, x, y)
 	{
 		targetLayer.context2D.font = font;
 		targetLayer.context2D.textAlign = "center";
 		targetLayer.context2D.fillStyle = color;
-		targetLayer.context2D.fillText(text, groundWidth * 0.5, y);
+		targetLayer.context2D.fillText(text, x * 0.5, y);
 	}
 };

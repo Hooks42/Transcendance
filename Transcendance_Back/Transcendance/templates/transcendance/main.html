@@ -26,6 +26,7 @@
 	<link rel="stylesheet" type="text/css" href="{% static 'Transcendance/css/navbar.css' %}">
 	<link rel="stylesheet" type="text/css" href="{% static 'Transcendance/css/transcendance.css' %}">
 	<link rel="stylesheet" type="text/css" href="{% static 'Transcendance/css/collapsible.css' %}">
+	<link rel="stylesheet" type="text/css" href="{% static 'Transcendance/css/tournament.css' %}">
 </head>
 
 <body>
@@ -155,28 +156,38 @@
 			</div>
 		</div>
 	</div>
-	<script src="/static/Transcendance/js/chat.js"></script>
-	<script src="/static/Transcendance/js/chat.listener.js"></script>
+	<script src="/static/Transcendance/js/chat.js" ></script>
+	<script src="/static/Transcendance/js/chat.listener.js" ></script>
 
 	<script src="/static/Transcendance/js/get_actual_user.js"></script>
-	<script src="/static/Transcendance/js/listen_log_btn.js"></script>
-	<script src="/static/Transcendance/js/logout.js"></script>
+	<script src="/static/Transcendance/js/listen_log_btn.js" ></script>
+	<script src="/static/Transcendance/js/logout.js" ></script>
 
 	<script src="/static/Transcendance/js/navbar.js"></script>
 	<script src="/static/Transcendance/js/navbar.listener.js"></script>
 
-	<script src="/static/Transcendance/js/centerZone.js"></script>
-	<script src="/static/Transcendance/js/centerZone.listener.js"></script>
+	<!-- <script src="/static/Transcendance/js/pong/index.js" ></script> -->
+	<script src="/static/Transcendance/js/pong/pong.js" ></script>
+	<script src="/static/Transcendance/js/pong/Ball.js" ></script>
+	<script src="/static/Transcendance/js/pong/Paddles.js" ></script>
+	<!-- <script src="/static/Transcendance/js/pong/pong.code.js" ></script> -->
+	<script src="/static/Transcendance/js/pong/pong.display.js" ></script>
+	<!-- <script src="/static/Transcendance/js/pong/pong.control.js" ></script> -->
+	<script src="/static/Transcendance/js/pong/Tournament.js" ></script>
+
+	<script src="/static/Transcendance/js/centerZone.js" ></script>
+	<script src="/static/Transcendance/js/centerZone.listener.js" ></script>
 
 	<script src="/static/Transcendance/js/signin_form.js"></script>
-	<script src="/static/Transcendance/js/signin_with_42.js"></script>
+	<script src="/static/Transcendance/js/signin_with_42.js" ></script>
 	<script src="/static/Transcendance/js/signup_form.js"></script>
 
 	<script src="/static/Transcendance/js/utils.js"></script>
-	<script src="/static/Transcendance/js/socket.js"></script>
+	<script src="/static/Transcendance/js/socket.js" ></script>
 	<script src="/static/Transcendance/js/senders.js"></script>
-	<script src="/static/Transcendance/js/clear_connexion_page.js"></script>
+	<script src="/static/Transcendance/js/clear_connexion_page.js" ></script>
 	<script>
+	// import {listen_log_btn} from "/static/Transcendance/js/listen_log_btn.js";
 		listen_log_btn();
 	</script>
 	<!-- Bootstrap JS (just before body closing tag) -->
@@ -188,10 +199,4 @@
 
 </body>
 <!-- <script src="index.js"></script> -->
-	<script src="/static/Transcendance/js/pong.js"></script>
-	<script src="/static/Transcendance/js/pong.ball.js"></script>
-	<script src="/static/Transcendance/js/pong.paddles.js"></script>
-	<script src="/static/Transcendance/js/pong.code.js"></script>
-	<script src="/static/Transcendance/js/pong.display.js"></script>
-	<script src="/static/Transcendance/js/pong.control.js"></script>
 </html>

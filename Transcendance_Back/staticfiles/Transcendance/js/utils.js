@@ -1,4 +1,5 @@
-function create_wrapper_profile() {
+function create_wrapper_profile()
+{
     const wp = document.createElement('div');
     wp.classList.add('wrapper_profile');
     const profile_edit = create_profile_edit();
@@ -8,7 +9,8 @@ function create_wrapper_profile() {
     return (wp);
 }
 
-function create_profile_edit() {
+function create_profile_edit()
+{
     const pe = document.createElement('div');
     pe.classList.add('profile__edit');
 
@@ -44,7 +46,8 @@ function create_profile_edit() {
     return (pe);
 }
 
-function create_collapsible(name_coll, function_which_btn) {
+function create_collapsible(name_coll, function_which_btn)
+{
     const coll = document.createElement('div');
     coll.classList.add('js-collapsible');
 
@@ -71,7 +74,8 @@ function create_collapsible(name_coll, function_which_btn) {
     return (coll);
 }
 
-function create_collapsed_item(nameText, function_which_btn) {
+function create_collapsed_item(nameText, function_which_btn)
+{
     const li = document.createElement('li');
     li.classList.add('m-collapsible__item', 'js-collapsible__item');
 
@@ -80,14 +84,16 @@ function create_collapsed_item(nameText, function_which_btn) {
     name.appendChild(document.createTextNode(nameText));
 
     li.appendChild(name);
-    if (function_which_btn != 0) {
+    if (function_which_btn != 0)
+    {
         const wrapper_btn = function_which_btn();
         li.appendChild(wrapper_btn);
     }
     return (li);
 }
 
-function create_blocked_btns() {
+function create_blocked_btns()
+{
     const wrapper = document.createElement('div');
     wrapper.classList.add('wrapperBtn');
 
@@ -99,7 +105,8 @@ function create_blocked_btns() {
     return (wrapper);
 }
 
-function create_friend_btns() {
+function create_friend_btns()
+{
     const wrapper = document.createElement('div');
     wrapper.classList.add('wrapperBtn');
 
@@ -113,7 +120,8 @@ function create_friend_btns() {
     return (wrapper);
 }
 
-function create_svg_sword() {
+function create_svg_sword()
+{
     const svg = create_svg(['icon_sword', 'top']);
     svg.setAttribute('viewBox', '0 0 22 22');
 
@@ -133,7 +141,7 @@ function create_svg_scissor()
     svg.setAttribute('viewBox', "-32 0 512 512");
 
     const path = document.createElementNS(svgns, 'path');
-    path.setAttribute('d',"M362.146 191.976c-13.71-21.649-38.761-34.016-65.006-30.341V74c0-40.804-32.811-74-73.141-74-40.33 0-73.14 33.196-73.14 74L160 168l-18.679-78.85C126.578 50.843 83.85 32.11 46.209 47.208 8.735 62.238-9.571 104.963 5.008 142.85l55.757 144.927c-30.557 24.956-43.994 57.809-24.733 92.218l54.853 97.999C102.625 498.97 124.73 512 148.575 512h205.702c30.744 0 57.558-21.44 64.555-51.797l27.427-118.999a67.801 67.801 0 0 0 1.729-15.203L448 256c0-44.956-43.263-77.343-85.854-64.024zM399.987 326c0 1.488-.169 2.977-.502 4.423l-27.427 119.001c-1.978 8.582-9.29 14.576-17.782 14.576H148.575c-6.486 0-12.542-3.621-15.805-9.449l-54.854-98c-4.557-8.141-2.619-18.668 4.508-24.488l26.647-21.764a16 16 0 0 0 4.812-18.139l-64.09-166.549C37.226 92.956 84.37 74.837 96.51 106.389l59.784 155.357A16 16 0 0 0 171.227 272h11.632c8.837 0 16-7.163 16-16V74c0-34.375 50.281-34.43 50.281 0v182c0 8.837 7.163 16 16 16h6.856c8.837 0 16-7.163 16-16v-28c0-25.122 36.567-25.159 36.567 0v28c0 8.837 7.163 16 16 16h6.856c8.837 0 16-7.163 16-16 0-25.12 36.567-25.16 36.567 0v70z");
+    path.setAttribute('d', "M362.146 191.976c-13.71-21.649-38.761-34.016-65.006-30.341V74c0-40.804-32.811-74-73.141-74-40.33 0-73.14 33.196-73.14 74L160 168l-18.679-78.85C126.578 50.843 83.85 32.11 46.209 47.208 8.735 62.238-9.571 104.963 5.008 142.85l55.757 144.927c-30.557 24.956-43.994 57.809-24.733 92.218l54.853 97.999C102.625 498.97 124.73 512 148.575 512h205.702c30.744 0 57.558-21.44 64.555-51.797l27.427-118.999a67.801 67.801 0 0 0 1.729-15.203L448 256c0-44.956-43.263-77.343-85.854-64.024zM399.987 326c0 1.488-.169 2.977-.502 4.423l-27.427 119.001c-1.978 8.582-9.29 14.576-17.782 14.576H148.575c-6.486 0-12.542-3.621-15.805-9.449l-54.854-98c-4.557-8.141-2.619-18.668 4.508-24.488l26.647-21.764a16 16 0 0 0 4.812-18.139l-64.09-166.549C37.226 92.956 84.37 74.837 96.51 106.389l59.784 155.357A16 16 0 0 0 171.227 272h11.632c8.837 0 16-7.163 16-16V74c0-34.375 50.281-34.43 50.281 0v182c0 8.837 7.163 16 16 16h6.856c8.837 0 16-7.163 16-16v-28c0-25.122 36.567-25.159 36.567 0v28c0 8.837 7.163 16 16 16h6.856c8.837 0 16-7.163 16-16 0-25.12 36.567-25.16 36.567 0v70z");
     svg.append(path);
 
     return (svg);
@@ -167,7 +175,8 @@ function create_svg_rock()
     return (svg);
 }
 
-function create_btn_orange_w_heart_sword(game_name) {
+function create_btn_orange_w_heart_sword(game_name)
+{
     const btn = create_btn(['btn-orange'], "");
     const svg_heart = create_svg_heart();
     svg_heart.classList.add('bottom');
@@ -182,7 +191,8 @@ function create_btn_orange_w_heart_sword(game_name) {
     return (btn);
 }
 
-function create_accept_friend_btn(whichBtn, who) {
+function create_accept_friend_btn(whichBtn, who)
+{
     const btn_accept = create_btn([whichBtn], "");
     btn_accept.setAttribute("title", "Accepter l'ami");
     const svg_accept = create_svg(['bi', 'bi-accept']);
@@ -194,7 +204,8 @@ function create_accept_friend_btn(whichBtn, who) {
     return btn_accept;
 }
 
-function create_delete_friend_btn(whichBtn, who) {
+function create_delete_friend_btn(whichBtn, who)
+{
     const btn_delete_friend = create_btn([whichBtn], "");
     btn_delete_friend.setAttribute("title", "Supprimer l'ami");
     const svg_delete_friend = create_svg(['bi', 'bi-delete-friend']);
@@ -210,7 +221,8 @@ function create_delete_friend_btn(whichBtn, who) {
     return btn_delete_friend;
 }
 
-function create_block_friend_btn(whichBtn, who) {
+function create_block_friend_btn(whichBtn, who)
+{
     const btn_block_friend = create_btn([whichBtn], "");
     btn_block_friend.setAttribute("title", "Bloquer l'utilisateur");
     const svg_block_friend = create_svg(['bi', 'bi-block-friend']);
@@ -226,7 +238,8 @@ function create_block_friend_btn(whichBtn, who) {
     return btn_block_friend;
 }
 
-function create_add_friend_btn(whichBtn, who) {
+function create_add_friend_btn(whichBtn, who)
+{
     const btn_add_friend = create_btn([whichBtn], "");
     btn_add_friend.setAttribute("title", "Ajouter en ami");
     const svg_add_friend = create_svg(['bi', 'bi-add-friend']);
@@ -246,7 +259,8 @@ function create_add_friend_btn(whichBtn, who) {
     return btn_add_friend;
 }
 
-function create_btn_set(username, whichBtn) {
+function create_btn_set(username, whichBtn)
+{
     const btns = document.createElement('div');
     btns.classList.add('wrapperBtn');
 
@@ -259,7 +273,8 @@ function create_btn_set(username, whichBtn) {
     return btns;
 }
 
-function create_btn_setn(btn_class) {
+function create_btn_setn(btn_class)
+{
     const btns = document.createElement('div');
     btns.classList.add('wrapper');
 
@@ -303,7 +318,8 @@ function create_btn_setn(btn_class) {
 }
 
 
-function create_navtab(text) {
+function create_navtab(text)
+{
     const button = create_btn(['a-btn', '-nav'], text);
     button.setAttribute('data-bs-toggle', 'tab');
     button.setAttribute('role', 'tab');
@@ -311,7 +327,8 @@ function create_navtab(text) {
     return (button);
 }
 
-function create_btn_arrow(text) {
+function create_btn_arrow(text)
+{
     const button = create_btn(['a-btn', '-arrow', 'hide'], "");
     button.setAttribute("id", "arrow-btn");
 
@@ -327,7 +344,8 @@ function create_btn_arrow(text) {
     return (button);
 }
 
-function create_tab_pane() {
+function create_tab_pane()
+{
     const div = document.createElement('div');
     div.classList.add('tab-pane');
     div.setAttribute('role', 'tabpanel');
@@ -337,7 +355,8 @@ function create_tab_pane() {
     return (div);
 }
 
-function create_disc_li(title_text, info_text) {
+function create_disc_li(title_text, info_text)
+{
     const button = create_btn(['m-chat__li', '-heart'], "");
     button.setAttribute('id', 'disc_list-' + title_text);
     const title = document.createElement('span');
@@ -351,7 +370,8 @@ function create_disc_li(title_text, info_text) {
     return (button);
 }
 
-function create_btn_img(img_class, img_path) {
+function create_btn_img(img_class, img_path)
+{
 
     const btn_img = document.createElement('button');
     btn_img.setAttribute('type', 'button');
@@ -365,7 +385,8 @@ function create_btn_img(img_class, img_path) {
     btn_img.appendChild(img);
     return (btn_img);
 }
-function create_msg(name_text, time_text, profile_picture) {
+function create_msg(name_text, time_text, profile_picture)
+{
     const msg = document.createElement('div');
     msg.classList.add('m-message');
     const senderDiv = document.createElement('div');
@@ -396,9 +417,9 @@ function create_msg(name_text, time_text, profile_picture) {
             sender_name.appendChild(button_block_friend);
         }
     }
-    
 
-    
+
+
 
     const timestamp = document.createElement('p');
     timestamp.classList.add('a-user__info');
@@ -411,13 +432,15 @@ function create_msg(name_text, time_text, profile_picture) {
     return (msg);
 }
 
-function create_msg_text() {
+function create_msg_text()
+{
     const p = document.createElement('p');
     p.classList.add('a-message__content');
     return (p);
 }
 
-function create_user_in_pane(username, userstatus, profile_picture) {
+function create_user_in_pane(username, userstatus, profile_picture)
+{
     const button = create_btn(['m-chat__li'], "");
     button.setAttribute('id', 'friend_list-' + username);
 
@@ -438,9 +461,11 @@ function create_user_in_pane(username, userstatus, profile_picture) {
     return (button);
 }
 
-function create_svg(classes) {
+function create_svg(classes)
+{
     const svg = document.createElementNS(svgns, 'svg');
-    classes.forEach(element => {
+    classes.forEach(element =>
+    {
         svg.classList.add(element);
     });
     svg.setAttribute('xmlns', svgns);
@@ -448,10 +473,12 @@ function create_svg(classes) {
     return (svg);
 }
 
-function create_btn(classes, text) {
+function create_btn(classes, text)
+{
 
     const button = document.createElement('button');
-    classes.forEach(element => {
+    classes.forEach(element =>
+    {
         button.classList.add(element);
     });
     button.setAttribute('type', 'button');
@@ -459,14 +486,16 @@ function create_btn(classes, text) {
     return (button);
 }
 
-function create_dropdown_menu() {
+function create_dropdown_menu()
+{
     const dropdown_menu = document.createElement('ul');
     dropdown_menu.classList.add('dropdown-menu', 'dropdown-menu-end');
     dropdown_menu.setAttribute('aria-labelledby', 'navbarDropdownMenuLink');
     return (dropdown_menu);
 }
 
-function create_nav_link(id) {
+function create_nav_link(id)
+{
     const nav_link = document.createElement('a');
     nav_link.classList.add('nav-link', 'dropdown-toggle', 'caret-off');
     nav_link.setAttribute('href', '#');
@@ -477,7 +506,8 @@ function create_nav_link(id) {
     return (nav_link);
 }
 
-function create_svg_three_dots() {
+function create_svg_three_dots()
+{
     const three_dots_svg = create_svg(['bi', 'bi-three-dots-vertical']);
 
     const path = document.createElementNS(svgns, 'path');
@@ -487,7 +517,8 @@ function create_svg_three_dots() {
     return (three_dots_svg);
 }
 
-function create_svg_heart() {
+function create_svg_heart()
+{
     const heart_svg = create_svg(['bi', 'bi-heart-fill']);
 
     const path = document.createElementNS(svgns, 'path');
@@ -497,7 +528,8 @@ function create_svg_heart() {
     return (heart_svg);
 }
 
-function create_svg_person() {
+function create_svg_person()
+{
     const person_svg = create_svg(['bi', 'bi-person-fill']);
 
     const path = document.createElementNS(svgns, 'path');
@@ -506,7 +538,8 @@ function create_svg_person() {
     return (person_svg);
 }
 
-function create_svg_bell() {
+function create_svg_bell()
+{
     const bell_svg = create_svg(['bi', 'bi-bell-fill']);
 
     const path = document.createElementNS(svgns, 'path');
@@ -598,10 +631,12 @@ function create_notif(username, action, game = null)
     bell_menu.appendChild(bell_menu_li);
 }
 
-function load_notif() {
-    fetch ('/get-friends-request')
+function load_notif()
+{
+    fetch('/get-friends-request')
         .then(response => response.json())
-        .then(data => {
+        .then(data =>
+        {
             let friend_request = data.friends_request;
             if (friend_request.length > 0)
             {
@@ -631,7 +666,8 @@ function create_btn_heart_sm(text)
     return (button);
 }
 
-function create_svg_circle() {
+function create_svg_circle()
+{
     const circle_svg = document.createElementNS(svgns, 'svg');
     circle_svg.classList.add('bi', 'bi-circle-fill');
     circle_svg.setAttribute('xmlns', svgns);
@@ -644,7 +680,8 @@ function create_svg_circle() {
     return (circle_svg);
 }
 
-function navigateCenterZone(page) {
+function navigateCenterZone(page)
+{
     let container = document.getElementsByClassName("centerZone")[0].children[0];
 
     console.log("navigate to " + page);
@@ -657,12 +694,14 @@ function navigateCenterZone(page) {
     //     {
     //         console.error("Error fetching page: ", error);
     //     })
-    fetch('/' + page  )
+    fetch('/' + page)
         .then(response => response.text())
-        .then(html => {
+        .then(html =>
+        {
             container.innerHTML = html;
         })
-        .catch(error => {
+        .catch(error =>
+        {
             console.error("Error fetching page: ", error);
         })
 }
@@ -680,23 +719,45 @@ function clear_button_if_friend(username)
     }
 }
 
-function get_random_int(max) {
-  return Math.floor(Math.random() * max);
-}
-function shuffle_array (array)  {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    const temp = array[i];
-    array[i] = array[j];
-    array[j] = temp;
-  }
-}
-function print_array(args)
+function shuffle_array(array)
+{
+    for (let i = array.length - 1; i > 0; i--)
     {
-        let i = -1;
-        console.log("in print array");
-        while (++i <args.length)
-        {
-            console.log("P = " + args[i]);
-        }
+        const j = Math.floor(Math.random() * (i + 1));
+        const temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
     }
+}
+
+// create all the duos for a round roundNb
+function create_tournament_round( )
+{
+    const round = document.createElement('ul');
+    round.classList.add('round', 'js-round');
+
+    const player1 = document.createElement('li');
+    player1.classList.add('game', 'js-player');
+    player1.innerHTML = "xxxxx";
+
+    const vs= document.createElement('li');
+    vs.classList.add('game');
+    vs.innerHTML = "VS";
+
+    const player2 = document.createElement('li');
+    player2.classList.add('game', 'js-player');
+    player2.innerHTML = "xxxxx";
+
+    round.append(player1, vs, player2);
+    return (round);
+}
+
+function create_ranking()
+{
+
+    const text= document.createElement('li');
+    text.innerHTML = "1";
+
+    rank.append(player1, text);
+    return (rank);
+}

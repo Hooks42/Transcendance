@@ -31,6 +31,16 @@
     text-decoration: none;
 }
 
+.a-btn.-pfc
+{
+
+    border-radius: 50%;
+    border: 2px solid var(--white);
+    padding: 16px;
+    height: fit-content;
+    width: fit-content;
+    text-decoration: none;
+}
 
 .a-btn.-orange
 {

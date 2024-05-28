@@ -1,6 +1,6 @@
-
 <div class="m-wrapperHome">
-    <button class="a-btn -orange -twoSVGoneText" id="game_pong">
+    <button type="button" class="a-btn -orange -twoSVGoneText" data-bs-toggle="modal" data-bs-target="#pong-modal"
+        id="pong-modal-btn">
         <svg xmlns="http://www.w3.org/2000/svg" class="bi bi-heart-fill bottom" viewBox="0 0 16 16">
             <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314" />
         </svg>
@@ -10,7 +10,8 @@
         </svg>
         <span class="a-btn__text">PONG</span>
     </button>
-    <button class="a-btn -orange -twoSVGoneText" id="game_pfc">
+
+    <button type="button" class="a-btn -orange -twoSVGoneText" id="game-pfc">
         <svg xmlns="http://www.w3.org/2000/svg" class="bi bi-heart-fill bottom" viewBox="0 0 16 16">
             <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314" />
         </svg>
@@ -20,4 +21,55 @@
         </svg>
         <span class="a-btn__text">PFC</span>
     </button>
+
+    <!-- pong Modal -->
+    <div class="modal fade" id="pong-modal" tabindex="-1" aria-labelledby="pong-modal" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content ">
+
+                <!-- <form method="post" id="no-back-form"> -->
+                    <div class="modal-header">
+                        <h5 class="modal-title">Choisissez le nombre de joueur (1 a 4)</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <ul class="modal-ul">
+                            <li>
+                                <label for="pong-player1">Premier joueur :</label>
+                                <input disabled class="modal__input js-getCurrentUser" type="text" id="pong-player1"
+                                    name="pong-player1" value="my_username"><br>
+                            </li>
+                            <li>
+                                <label for="pong-player2">Deuxieme joueur :</label>
+                                <input class="modal__input" type="text" id="pong-player2" name="pong-player2"><br>
+                            </li>
+                            <li>
+                                <label for="pong-player3">Troisieme joueur :</label>
+                                <input class="modal__input" type="text" id="pong-player3" name="pong-player3"><br>
+                            </li>
+                            <li>
+                                <label for="pong-player4">Quatrieme joueur :</label>
+                                <input class="modal__input" type="text" id="pong-player4" name="pong-player4"><br>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="modal-footer">
+                        <button data-bs-dismiss="modal" type="button" class="a-btn -heart">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="bi bi-heart-fill " viewBox="0 0 16 16">
+                                <path fill-rule="evenodd"
+                                    d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314" />
+                            </svg>
+                            ANNULER</button>
+                        <button type="button" class="a-btn -heart" id="validate-pong-modal">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="bi bi-heart-fill " viewBox="0 0 16 16">
+                                <path fill-rule="evenodd"
+                                    d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314" />
+                            </svg>
+                            VALIDER</button>
+                    </div>
+                <!-- </form> -->
+            </div>
+        </div>
+    </div>
 </div>
