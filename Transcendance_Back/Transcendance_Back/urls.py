@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import path, re_path
 from Transcendance.views import Hello, Logout, Home
 from Transcendance.views import callback_view, AccountUpdate, Fullsite, LoginPage
-from Transcendance.views import Successfully_Connected_42, get_general_conv_history
+from Transcendance.views import Successfully_Connected_42, get_conv_history
 from Transcendance.views import get_friends_list, get_friends_request, get_user_lists
 from Transcendance.views import get_user_infos, get_block_list, UserProfile, pfc_game
 from django.conf import settings
@@ -34,7 +34,7 @@ urlpatterns = [
     path('update-account/', AccountUpdate, name='update-account'),
     path('successfully-connected-42/', Successfully_Connected_42, name='Successfully_Connected_42'),
     path('get-user-infos/', get_user_infos, name='get-actual-user'),
-    path('get-general-conv-history/', get_general_conv_history, name='get-general-conv-history'),
+    path('get-conv-history/', get_conv_history, name='get-conv-history'),
     path('get-friends-list/', get_friends_list, name='get-friends-list'),
     path('get-block-list/', get_block_list, name='get-block-list'),
     path('get-friends-request/', get_friends_request, name='get-friends-request'),

@@ -173,9 +173,11 @@ def get_user_infos(request):
             return JsonResponse({'username': None})
 
 @login_required
-def get_general_conv_history(request):
+def get_conv_history(request):
+    given_conversation = request.GET.get('conversation', None)
+    print(f"🌿 Given Conversation --> {given_conversation}")
     try:
-        conversation = Conversation.objects.get(conversation="General")
+        conversation = Conversation.objects.get(conversation=given_conversation)
         message_backup = conversation.messages.all().order_by('timestamp')
     except Conversation.DoesNotExist:
         message_backup = None

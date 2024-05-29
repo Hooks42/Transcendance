@@ -121,15 +121,39 @@ const chat = {
 		parent.append(li);
     },
 
-    create_chatroom: function ()
+    load_conversation: function ()
     {
-        this.chatroom = create_tab_pane();
-        this.chatroom.classList.add('chatroom');
-        this.chatroom.setAttribute('id', 'tabpanel');
+        let general_disc = document.getElementById('General-tabpanel');
+        if (general_disc == null)
+            this.create_chatroom("General");
+        fetch('/get-friends-list/')
+            .then(response => response.json())
+            .then(data => {
+                let friends = data.friends;
+                if (friends.length > 0)
+                {
+                    for (let i = 0; i < friends.length; i++)
+                    {
+                        var friend = friends[i];
+                        let friend_disc = document.getElementById(friend.username + 'tabpanel');
+                        if (frien_disc == null)
+                        {
+                            disc_friend_name[0] = currentUser;
+                            disc_friend_name[1] = friend.username;
+                            disc_friend_name.sort();
+                            this.create_chatroom(disc_friend_name[0] + '_' + disc_friend_name[1]);
+                        }
+                    }
+                }
+            });
 
-        const inbox = document.createElement('div');
-        inbox.setAttribute('id', 'inbox');
-        inbox.classList.add('o-inbox');
+    },
+
+    create_chatroom: function (chat_name)
+    {
+        let chatroom = create_tab_pane();
+        chatroom.classList.add('chatroom');
+        chatroom.setAttribute('id', chat_name + 'tabpanel');
 
         const textarea = document.createElement('div');
         textarea.setAttribute('id', 'text-area');
@@ -137,7 +161,7 @@ const chat = {
         const textarea_container = document.createElement('div');
         textarea_container.classList.add('container');
 
-        fetch('/get-general-conv-history')
+        fetch("/get-conv_history?conversation=" + chat_name)
             .then(response => response.json())
             .then(data => {
                 let messages = data.messages;
@@ -145,8 +169,8 @@ const chat = {
                 {
                     for (let i = 0; i < messages.length; i++)
                     {
-                        let message = messages[i];
-                        this.add_chat(message.username, message.timestamp, message.content, message.profile_picture, this.priority);
+                        var message = messages[i];
+                        this.add_chat(message.username, message.timestamp, message.content, message.profile_picture, chatroom);
                     }
                 }
             });
@@ -156,7 +180,7 @@ const chat = {
         typing_area.setAttribute('name', 'typing-area');
         typing_area.setAttribute('placeholder', 'Ecrire un message...');
 
-        this.chatroom.append(inbox, textarea);
+        chatroom(inbox, textarea);
 
         if (socket.chat_socket != null)
         {
@@ -182,7 +206,7 @@ const chat = {
         }
     },
 
-    add_chat: function(username, timestamp, content, profile_picture)
+    add_chat: function(username, timestamp, content, profile_picture, chatroom)
     {
         const msg = create_msg(username, timestamp, profile_picture);
         const msg_text = create_msg_text();
@@ -191,7 +215,7 @@ const chat = {
         if (block_list.includes(username))
             msg.classList.add('hide');
         msg.appendChild(msg_text);
-        this.chatroom.children[0].appendChild(msg);
+        chatroom.appendChild(msg);
     },
 
 
