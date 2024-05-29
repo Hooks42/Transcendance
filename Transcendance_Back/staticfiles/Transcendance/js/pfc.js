@@ -246,6 +246,7 @@ const pfc = {
 
 	launch_queue: function()
 	{
+		console.log("🌿 currentUser --> " + currentUser);
 		this.display_queue();
 		this.check_queue_state('queue_title');
 		send_msg.join_queue(currentUser);

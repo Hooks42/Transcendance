@@ -237,5 +237,15 @@ send_msg = {
 			'command': 'find_match'
 		};
 		socket.system_socket.send(JSON.stringify(message));
-	}
+	},
+
+	edit_profile: function(user_to_edit, new_username)
+	{
+		var message = {
+			'command': 'edit_profile',
+			'user_to_edit': user_to_edit,
+			'new_username': new_username,
+		}
+		socket.chat_socket.send(JSON.stringify(message));
+	},
 }

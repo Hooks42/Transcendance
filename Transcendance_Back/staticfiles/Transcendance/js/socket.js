@@ -264,9 +264,10 @@ const socket = {
 				if (user_to_edit === currentUser)
 				{
 					currentUser = new_username;
-					profile_picture = new_avatar;
+					profile_picture_tmp = new_avatar;
+					send_msg.edit_profile(user_to_edit, new_username);
 				}
-				else
+				if (user_to_edit != currentUser)
 				{
 					if (friend_list.includes(user_to_edit))
 					{
@@ -282,7 +283,6 @@ const socket = {
 				}
 				update_when_user_edit(user_to_edit, new_username, new_avatar);
 			}
-			
 			// if (data.message.command === 'friend_request_and_block_list_updated')
 			// 	console.log("✅ modification de la liste d'amis et de bloqués ! status --> " + data.message.is_updated);
 
@@ -392,7 +392,10 @@ const socket = {
             {
                 this.chat_socket.send(JSON.stringify({
                     'type': 'send_message',
-                    'message': message
+                    'message': message,
+					'username': currentUser,
+					'profile_picture': profile_picture,
+					'timestamp': new Date().toLocaleString(),
                 }));
             }
         }

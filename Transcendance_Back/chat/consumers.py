@@ -704,15 +704,30 @@ class ChatConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de c
 
     async def receive(self, text_data):  # Méthode appelée lorsqu'un message est reçu du client
         json_text = json.loads(text_data)  # Convertit le texte en JSON
-        message = json_text["message"].strip()  # Récupère le message du JSON and remove leading/trailing whitespaces
-
+        
+        message = None
+        command = json_text.get("command", None)
+        user_to_edit = json_text.get("user_to_edit", None)
+        new_username = json_text.get("new_username", None)
+        
+        user = self.scope['user']  # Récupère l'utilisateur de la portée
+        
+        print (f"❤️‍🔥 command --> {command} || user_to_edit --> {user_to_edit} || new_username --> {new_username} ❤️‍🔥")
+        if command == "edit_profile" and user_to_edit is not None and new_username is not None:
+            if user.username == user_to_edit:
+                print("❤️‍🔥 Je passe ici mon reuf")
+                self.scope['user'] = await self.get_user(new_username)
+        else:
+            message = json_text["message"].strip()
+                
         if not message: # Si le message est vide, ne rien faire
             return
         
         user = self.scope['user']  # Récupère l'utilisateur de la portée
         username = user.username if user.is_authenticated else "Anonyme"  # Récupère le nom d'utilisateur de l'utilisateur ou "Anonyme" si l'utilisateur n'est pas authentifié
+        
         profile_picture = await self.get_user_profile_picture(user)
-        print(f"🔥🔥🔥 profile_picture --> {profile_picture}")
+        print(f"🔥🔥🔥 profile_picture --> {profile_picture} || 🌿🌿🌿 user --> {user}")
 
         
         await self.save_message('General', user, message)  # Sauvegarde le message dans la base de données
@@ -755,6 +770,14 @@ class ChatConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de c
         except User.DoesNotExist:
             return None
         return user.avatar.url
+    
+    @database_sync_to_async
+    def get_user(self, username):
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return None
+        return user
 
 class PFCConsumer(AsyncWebsocketConsumer): # Définit une nouvelle classe de consommateur WebSocket
 
@@ -1205,6 +1228,7 @@ class PongConsumer(AsyncWebsocketConsumer):
             return
         
         current_user = current_user.username
+        print(f"🌿 current_user --> {current_user}")
 
         if "command" in json_text:
             command = json_text["command"]
