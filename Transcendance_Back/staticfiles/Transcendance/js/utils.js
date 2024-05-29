@@ -469,6 +469,11 @@ function create_msg(name_text, time_text, profile_picture)
         if (item === 'Voir le profil')
         {
             dropdownBtn.classList.add('view_profile_btn-' + name_text);
+            dropdownBtn.addEventListener('click', function (event)
+            {
+                display_profile_page(this.dataset.username);
+                history.pushState({page: 'profile'}, 'profile', '/profile/');
+            });
         }
         if (item === 'Inviter à jouer à PFC')
         {
@@ -860,7 +865,8 @@ async function display_profile_page(username = null)
             let user_profile_html = data.user_profile_html;
             let main_div = document.getElementById('main-div');
             main_div.innerHTML = user_profile_html;
-            listen_update_btn();
+            if (username == null)
+                listen_update_btn();
             listen_toggle_btn();
         });
 }
