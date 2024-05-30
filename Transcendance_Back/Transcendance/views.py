@@ -176,12 +176,16 @@ def get_user_infos(request):
 def get_conv_history(request):
     given_conversation = request.GET.get('conversation', None)
     print(f"🌿 Given Conversation --> {given_conversation}")
-    try:
-        conversation = Conversation.objects.get(conversation=given_conversation)
+    if given_conversation == "General":
+        conversation = Conversation.objects.get(is_general=True)
         message_backup = conversation.messages.all().order_by('timestamp')
-    except Conversation.DoesNotExist:
-        message_backup = None
-        return JsonResponse({'messages': []})
+    else:
+        # try:
+        #     conversation = Conversation.objects.get(conversation=given_conversation)
+        #     message_backup = conversation.messages.all().order_by('timestamp')
+        # except Conversation.DoesNotExist:
+        #     message_backup = None
+            return JsonResponse({'messages': []})
     
     message_list = []
     for message in message_backup:
@@ -193,6 +197,7 @@ def get_conv_history(request):
             'profile_picture': profile_picture,
         })
     return JsonResponse({'messages': message_list})
+    pass
 
 @login_required
 def get_friends_list(request):

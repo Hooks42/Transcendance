@@ -25,19 +25,16 @@ from django.conf import settings
 '''
 
 class Conversation(models.Model):
-    conversation = models.CharField(max_length=200)
+    is_general = models.BooleanField(default=False)
+    user1 = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=True, null=True, related_name='user1')
+    user2 = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=True, null=True, related_name='user2')
 
-    def __str__(self):
-        return self.conversation;
 
 class Message(models.Model):
     conversation = models.ForeignKey(Conversation, related_name='messages', on_delete=models.CASCADE, default=None)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     content = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f'{self.user.username} - {self.timestamp}'
 
 #! Install Pillow to use ImageField
 class User(AbstractUser):

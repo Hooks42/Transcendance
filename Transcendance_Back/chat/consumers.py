@@ -729,12 +729,12 @@ class ChatConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de c
         profile_picture = await self.get_user_profile_picture(user)
         print(f"🔥🔥🔥 profile_picture --> {profile_picture} || 🌿🌿🌿 user --> {user}")
 
-        
-        await self.save_message('General', user, message)  # Sauvegarde le message dans la base de données
-
         timestamp = datetime.now()  # Récupère le timestamp actuel
         formatted_timestamp = timestamp.strftime('%b. %d, %Y, %I:%M %p')  # Format the timestamp
         formatted_timestamp = formatted_timestamp.replace("AM", "a.m.").replace("PM", "p.m.")  # Change AM/PM to a.m./p.m.
+        
+        await self.save_message(user, message, timestamp)  # Sauvegarde le message dans la base de données
+
         await self.channel_layer.group_send(  # Envoie le message à tous les clients du groupe
             self.room_group_name, 
             {
@@ -754,13 +754,14 @@ class ChatConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de c
         await self.send(text_data=json.dumps({"message": message, "username" : username, "timestamp" : timestamp, "profile_picture" : profile_picture}))  # Envoie le message au client
 
     @database_sync_to_async
-    def save_message(self, room_name, user, message):  # Méthode pour sauvegarder un message dans la base de données
+    def save_message(self, user, message, timestamp):  # Méthode pour sauvegarder un message dans la base de données
         try:
-            conversation = Conversation.objects.get(conversation=room_name)  # Récupère la conversation générale
+            conversation = Conversation.objects.get(is_general=True)  # Récupère la conversation générale
         except Conversation.DoesNotExist:
-            print(f"❌ {room_name} conversation not found ❌")
-            return
-        new_message = Message(conversation=conversation, user=user, content=message)  # Crée un nouveau message
+            conversation = Conversation()
+            conversation.is_general = True
+            conversation.save()
+        new_message = Message(conversation=conversation, user=user, content=message, timestamp=timestamp)  # Crée un nouveau message
         new_message.save()  # Sauvegarde le message
         
     @database_sync_to_async
