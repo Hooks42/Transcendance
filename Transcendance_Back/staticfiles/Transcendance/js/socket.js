@@ -269,6 +269,7 @@ const socket = {
 					currentUser = new_username;
 					profile_picture_tmp = new_avatar;
 					send_msg.edit_profile(user_to_edit, new_username);
+					
 				}
 				if (user_to_edit != currentUser)
 				{

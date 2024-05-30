@@ -26,6 +26,11 @@ class PrivateChatConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle clas
     async def connect(self):  # Méthode appelée lorsqu'un client se connecte
         self.room_name = self.scope['url_route']['kwargs']['room_name']  # Récupère le nom de la salle à partir des paramètres de l'URL
         self.room_group_name = f'private_{self.room_name}'  # Utilise le nom de la salle comme nom du groupe
+        
+        self.current_user = self.scope['user']  # Récupère l'utilisateur de la portée
+        self.user1 = await self.get_user(self.room_name.split('_')[0])
+        self.user2 = await self.get_user(self.room_name.split('_')[1])
+        
         await self.channel_layer.group_add(  # Ajoute le canal du client au groupe
             self.room_group_name, self.channel_name
         )
@@ -77,6 +82,14 @@ class PrivateChatConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle clas
             return
         new_message = Message(conversation=conversation, user=user, content=message)  # Crée un nouveau message
         new_message.save()  # Sauvegarde le message
+        
+    @database_sync_to_async
+    def get_user(self, username):
+        try:
+            user = User.objects.get(username=username)  # Récupère l'utilisateur par nom d'utilisateur
+        except User.DoesNotExist:
+            return None
+        return user
 
 class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de consommateur WebSocket
     async def connect(self):  # Méthode appelée lorsqu'un §client se connecte
@@ -1353,5 +1366,3 @@ class PongConsumer(AsyncWebsocketConsumer):
             stats.save()
         except User.DoesNotExist:
             return None
-        
-        
