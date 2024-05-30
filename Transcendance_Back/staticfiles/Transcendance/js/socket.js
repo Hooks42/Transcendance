@@ -91,7 +91,10 @@ const socket = {
 			let data = JSON.parse(event.data);
 			console.log("message recieved ---> " + data.message);
 			console.log("profile_picture ---> " + data.profile_picture);
-			chat.add_chat(data.username, data.timestamp, data.message, data.profile_picture);
+			let inbox = document.getElementById('General_inbox');
+			if (!inbox)
+				console.log("⚠️ inbox not found");
+			chat.add_chat(data.username, data.timestamp, data.message, data.profile_picture, inbox);
 		};
 	},
 
