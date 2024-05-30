@@ -32,7 +32,8 @@ chat.listener = {
 
         chat.arrow_tab.classList.toggle("hide");
 
-        chat.chatroom.style.display = "none";
+        for (let i = 0; i < chat.chatroom.length; i++)
+            chat.chatroom[i].style.display = "none";
 
         chat.disc_tab.classList.toggle("hide");
         chat.user_tab.classList.toggle("hide");

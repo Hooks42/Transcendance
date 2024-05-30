@@ -359,9 +359,45 @@ function create_disc_li(title_text, info_text)
 {
     const button = create_btn(['m-chat__li', '-heart'], "");
     button.setAttribute('id', 'disc_btn-' + title_text);
+    if (title_text === 'Général')
+        button.dataset.username = 'General';
+    else
+    {
+        let tab = [];
+        tab[0] = currentUser;
+        tab[1] = title_text;
+        tab.sort();
+        button.dataset.username = tab[0] + '_' + tab[1];
+    }
+    
     const title = document.createElement('span');
     title.classList.add('a-li__title');
     title.setAttribute('id', 'disc_btn_username-' + title_text);
+
+    button.addEventListener('click', function (event)
+    {
+        let target = event.target.closest(".m-chat__li");
+        if (!target)
+            return;
+        if (!chat.disc_pane.contains(target))
+            return;
+        event.preventDefault();
+
+        chat.disc_tab.classList.toggle("hide");
+        chat.user_tab.classList.toggle("hide");
+
+        chat.current_pane = chat.get_active_pane();
+        chat.current_pane.classList.toggle("active");
+        chat.current_pane.classList.toggle("show");
+
+        chat.arrow_tab.children[1].textContent = target.children[1].textContent;
+        chat.arrow_tab.classList.toggle("hide");
+
+        let conv_to_show = document.getElementById(this.dataset.username + "-conv");
+        console.log("♻️", this.dataset.username + "-conv");
+        if (conv_to_show)
+            conv_to_show.style.display = "flex";
+    });
     title.appendChild(document.createTextNode(title_text));
 
     const info = document.createElement('span');
