@@ -44,6 +44,44 @@ const socket = {
 		}
 	},
 
+	update_socket: function (user_to_edit, new_username)
+	{
+		if (currentUser === new_username)
+		{
+			friend_list.forEach(element => {
+				let old_room_name = [];
+				old_room_name[0] = user_to_edit;
+				old_room_name[1] = element;
+				console.log("🌿 oldroom --> " + old_room_name[0] + "_" + old_room_name[1]);
+				old_room_name.sort();
+				socket.private_chat_sockets[old_room_name[0] + "_" + old_room_name[1]].close();
+				delete socket.private_chat_sockets[old_room_name[0] + "_" + old_room_name[1]];
+				let new_room_name = [];
+				new_room_name[0] = new_username;
+				new_room_name[1] = element;
+				new_room_name.sort();
+				socket.launch_private_chat_socket(new_room_name[0] + "_" + new_room_name[1]);
+			});
+		}
+		else if (friend_list.includes(new_username))
+		{
+			Object.keys(socket.private_chat_sockets).forEach(key => {
+				console.log("🔱 key --> ", key);
+			});
+			let old_room_name = [];
+			old_room_name[0] = user_to_edit;
+			old_room_name[1] = currentUser;
+			old_room_name.sort();
+			socket.private_chat_sockets[old_room_name[0] + "_" + old_room_name[1]].close();
+			delete socket.private_chat_sockets[old_room_name[0] + "_" + old_room_name[1]];
+			let new_room_name = [];
+			new_room_name[0] = currentUser;
+			new_room_name[1] = new_username;
+			new_room_name.sort();
+			socket.launch_private_chat_socket(new_room_name[0] + "_" + new_room_name[1]);
+		}
+	},
+
 	launch_pfc_socket: function (room_name, original_user, user_to_add)
 	{
 		let pfc_socket = new WebSocket('wss://localhost/ws/pfc/' + room_name + '/');
@@ -334,7 +372,9 @@ const socket = {
 					}
 					send_msg.update_friend_request_and_block_list(user_to_edit, new_username);
 				}
+				socket.update_socket(user_to_edit, new_username);
 				update_when_user_edit(user_to_edit, new_username, new_avatar);
+
 			}
 			// if (data.message.command === 'friend_request_and_block_list_updated')
 			// 	console.log("✅ modification de la liste d'amis et de bloqués ! status --> " + data.message.is_updated);
