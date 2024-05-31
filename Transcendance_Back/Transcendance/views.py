@@ -180,11 +180,13 @@ def get_conv_history(request):
         conversation = Conversation.objects.get(is_general=True)
         message_backup = conversation.messages.all().order_by('timestamp')
     else:
-        # try:
-        #     conversation = Conversation.objects.get(conversation=given_conversation)
-        #     message_backup = conversation.messages.all().order_by('timestamp')
-        # except Conversation.DoesNotExist:
-        #     message_backup = None
+        try:
+            user1 = given_conversation.split('_')[0]
+            user2 = given_conversation.split('_')[1]
+            conversation = Conversation.objects.get(user1=User.objects.get(username=user1), user2=User.objects.get(username=user2))
+            message_backup = conversation.messages.all().order_by('timestamp')
+        except Conversation.DoesNotExist:
+            message_backup = None
             return JsonResponse({'messages': []})
     
     message_list = []

@@ -27,7 +27,6 @@ class PrivateChatConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle clas
         self.room_name = self.scope['url_route']['kwargs']['room_name']  # Récupère le nom de la salle à partir des paramètres de l'URL
         self.room_group_name = f'private_{self.room_name}'  # Utilise le nom de la salle comme nom du groupe
         
-        self.current_user = self.scope['user']  # Récupère l'utilisateur de la portée
         self.user1 = await self.get_user(self.room_name.split('_')[0])
         self.user2 = await self.get_user(self.room_name.split('_')[1])
         
@@ -43,44 +42,65 @@ class PrivateChatConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle clas
     
     async def receive(self, text_data):  # Méthode appelée lorsqu'un message est reçu du client
         json_text = json.loads(text_data)  # Convertit le texte en JSON
-        message = json_text["message"].strip()  # Récupère le message du JSON and remove leading/trailing whitespaces
-
-        if not message:  # Si le message est vide, ne rien faire
-            return
-
+        
+        message = None
+        command = json_text.get("command", None)
+        user_to_edit = json_text.get("user_to_edit", None)
+        new_username = json_text.get("new_username", None)
+        
         user = self.scope['user']  # Récupère l'utilisateur de la portée
-        username = user.username if user.is_authenticated else  "Anonyme"  # Récupère le nom d'utilisateur de l'utilisateur ou "Anonyme" si l'utilisateur n'est pas authentifié
+        
+        print (f"❤️‍🔥 command --> {command} || user_to_edit --> {user_to_edit} || new_username --> {new_username} ❤️‍🔥")
+        if command == "edit_profile" and user_to_edit is not None and new_username is not None:
+            if user.username == user_to_edit:
+                self.scope['user'] = await self.get_user(new_username)
+        else:
+            message = json_text["message"].strip()
+                
+        if not message: # Si le message est vide, ne rien faire
+            return
+        
+        user = self.scope['user']  # Récupère l'utilisateur de la portée
+        username = user.username if user.is_authenticated else "Anonyme"  # Récupère le nom d'utilisateur de l'utilisateur ou "Anonyme" si l'utilisateur n'est pas authentifié
+        if username == self.user1.username or username == self.user2.username:
+            profile_picture = await self.get_user_profile_picture(self.user1)
+        
+            profile_picture = await self.get_user_profile_picture(user)
+            print(f"🔥🔥🔥 profile_picture --> {profile_picture} || 🌿🌿🌿 user --> {user}")
 
-        room_name = self.room_name  # Récupère le nom de la salle
-        await self.save_message(room_name, user, message)  # Sauvegarde le message dans la base de données
-
-        timestamp = datetime.now()  # Récupère le timestamp actuel
-        formatted_timestamp = timestamp.strftime('%b. %d, %Y, %I:%M %p')  # Format the timestamp
-        formatted_timestamp = formatted_timestamp.replace("AM", "a.m.").replace("PM", "p.m.")  # Change AM/PM to a.m./p.m.
-        await self.channel_layer.group_send(  # Envoie le message à tous les clients du groupe
-            self.room_group_name, 
-            {
-                "type": "chat_message", 
-                "message": message,
-                "username": username,
-                "timestamp": formatted_timestamp
-            }
-        )
+            timestamp = datetime.now()  # Récupère le timestamp actuel
+            formatted_timestamp = timestamp.strftime('%b. %d, %Y, %I:%M %p')  # Format the timestamp
+            formatted_timestamp = formatted_timestamp.replace("AM", "a.m.").replace("PM", "p.m.")  # Change AM/PM to a.m./p.m.
+            
+            await self.save_message(user, message, timestamp)  # Sauvegarde le message dans la base de données
+            await self.channel_layer.group_send(  # Envoie le message à tous les clients du groupe
+                self.room_group_name, 
+                {
+                    "type": "chat_message", 
+                    "message": message,
+                    "username": username,
+                    "timestamp": formatted_timestamp,
+                    "profile_picture": profile_picture
+                }
+            )
     
     async def chat_message(self, event):  # Méthode appelée lorsqu'un message de chat est reçu du groupe
         message = event['message']  # Récupère le message de l'événement
         timestamp = event.get("timestamp", "")  # Récupère le timestamp de l'événement
         username = event.get("username", "Anonyme")  # Récupère le nom d'utilisateur de l'événement
-        await self.send(text_data=json.dumps({"message": message, "username" : username, "timestamp" : timestamp}))  # Envoie le message au client
+        profile_picture = event.get("profile_picture", None)
+        await self.send(text_data=json.dumps({"message": message, "username" : username, "timestamp" : timestamp, "profile_picture" : profile_picture}))  # Envoie le message au client
     
     @database_sync_to_async
-    def save_message(self, room_name, user, message):  # Méthode pour sauvegarder un message dans la base de données
+    def save_message(self, user, message, timestamp):  # Méthode pour sauvegarder un message dans la base de données
         try:
-            conversation = Conversation.objects.get(conversation=room_name)  # Récupère la conversation générale
+            conversation = Conversation.objects.get(user1=self.user1, user2=self.user2)  # Récupère la conversation générale
         except Conversation.DoesNotExist:
-            print(f"❌ {room_name} conversation not found ❌")
-            return
-        new_message = Message(conversation=conversation, user=user, content=message)  # Crée un nouveau message
+            conversation = Conversation()
+            conversation.user1 = self.user1
+            conversation.user2 = self.user2
+            conversation.save()
+        new_message = Message(conversation=conversation, user=user, content=message, timestamp=timestamp)  # Crée un nouveau message
         new_message.save()  # Sauvegarde le message
         
     @database_sync_to_async
@@ -90,6 +110,14 @@ class PrivateChatConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle clas
         except User.DoesNotExist:
             return None
         return user
+
+    @database_sync_to_async
+    def get_user_profile_picture(self, user):
+        try:
+            user = User.objects.get(username=user.username)
+        except User.DoesNotExist:
+            return None
+        return user.avatar.url
 
 class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de consommateur WebSocket
     async def connect(self):  # Méthode appelée lorsqu'un §client se connecte

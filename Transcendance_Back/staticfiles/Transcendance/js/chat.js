@@ -124,7 +124,6 @@ const chat = {
     load_conversation: function ()
     {
         chat.create_chatroom('General');
-        console.log("❤️‍🔥 chatroom vaut --> " + chat.chatroom + "Et a pour taille --> " + chat.chatroom.length);
         fetch('/get-friends-list/')
             .then(response => response.json())
             .then(data => {
@@ -139,8 +138,6 @@ const chat = {
                         disc_friend_name[1] = friend.username;
                         disc_friend_name.sort();
                         chat.create_chatroom(disc_friend_name[0] + '_' + disc_friend_name[1]);
-                        console.log("🌿 chatroom vaut --> " + chat.chatroom[1]);
-                        console.log("🌿 i vaut --> " + chat.i);
                     }
                 }
             });
@@ -187,29 +184,26 @@ const chat = {
 
         chat.chatroom[chat.chatroom.length - 1].appendChild(inbox);
         chat.chatroom[chat.chatroom.length - 1].appendChild(textarea);
-
-        if (socket.chat_socket != null)
+            
+        const btn_send = create_btn(['a-btn', '-orange', '-sm'], "ENVOYER");
+        btn_send.addEventListener('click' , function ()
         {
-            const self = this;
-            const btn_send = create_btn(['a-btn', '-orange', '-sm'], "ENVOYER");
-            btn_send.addEventListener('click' , function ()
+            socket.sendMessage(typing_area.value, chat_name);
+            typing_area.value = '';
+
+        });
+
+        typing_area.addEventListener('keypress', function (e)
+        {
+            if (e.key === 'Enter')
             {
-                socket.sendMessage(typing_area.value, self.chat_socket);
+                console.log("🔥 Tu as appuyer sur entrer");
+                socket.sendMessage(typing_area.value, chat_name);
                 typing_area.value = '';
-
-            });
-
-            typing_area.addEventListener('keypress', function (e)
-            {
-                if (e.key === 'Enter')
-                {
-                    socket.sendMessage(typing_area.value, self.chat_socket);
-                    typing_area.value = '';
-                }
-            });
-            textarea.append(textarea_container, btn_send);
-            textarea_container.append(typing_area);
-        }
+            }
+        });
+        textarea.append(textarea_container, btn_send);
+        textarea_container.append(typing_area);
         existing_chatContent.appendChild(chat.chatroom[chat.chatroom.length - 1]);
     },
 

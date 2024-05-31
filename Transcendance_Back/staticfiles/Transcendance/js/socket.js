@@ -5,6 +5,44 @@ const socket = {
 	chat_socket: null,
 	system_socket: null,
 	pong_socket: null,
+	private_chat_sockets: {},
+
+
+	launch_private_chat_socket: function (room_name)
+	{
+		let private_chat_socket = new WebSocket('wss://localhost/ws/private_chat/' + room_name + '/');
+
+		private_chat_socket.onopen = function (e)
+		{
+			console.log('Private Chat Socket opened with room_name: ' + room_name);
+			socket.private_chat_sockets[room_name] = private_chat_socket;
+		};
+
+		private_chat_socket.onclose = function (e)
+		{
+			console.log('Private Chat Socket closed');
+		}
+
+		private_chat_socket.onmessage = (event) => 
+		{
+			let data = JSON.parse(event.data);
+			console.log("message recieved ---> " + data.message);
+			console.log("profile_picture ---> " + data.profile_picture);
+			let inbox = document.getElementById(room_name + '_inbox');
+			if (!inbox)
+				console.log("⚠️ inbox not found");
+			chat.add_chat(data.username, data.timestamp, data.message, data.profile_picture, inbox);
+		};
+	},
+
+	init_private_chat_sockets: function (room_names)
+	{
+		for (let i = 0; i < room_names.length; i++)
+		{
+			if (!this.private_chat_sockets[room_names[i]])
+				this.launch_private_chat_socket(room_names[i]);
+		}
+	},
 
 	launch_pfc_socket: function (room_name, original_user, user_to_add)
 	{
@@ -384,16 +422,35 @@ const socket = {
 			this.launch_chat_socket();
 			this.launch_system_socket();
 			this.launch_pong_socket();
+			let room_names = [];
+			fetch('/get-friends-list/')
+				.then(response => response.json())
+				.then(data =>
+				{
+					let friends = data.friends;
+					for (let i = 0; i < friends.length; i++)
+					{
+						let tab = [];
+						tab[0] = currentUser;
+						tab[1] = friends[i].username;
+						tab.sort();
+						room_names.push(tab[0] + "_" + tab[1]);
+					}
+					socket.init_private_chat_sockets(room_names);
+				});
 			has_loaded = true;
 		}
     },
 
-	sendMessage: function (message)
+	sendMessage: function (message, chatroom)
     {
-        if (this.chat_socket.readyState === this.chat_socket.OPEN)
+		console.log("🔥 chatroom vaut ---> " + chatroom);
+		console.log("🔥 message vaut ---> " + message);
+        if (chatroom === 'General' && this.chat_socket.readyState === this.chat_socket.OPEN)
         {
             if (message.length > 0)
             {
+				console.log("🔥 je suis dans le chat general et mon message est > 0");
                 this.chat_socket.send(JSON.stringify({
                     'type': 'send_message',
                     'message': message,
@@ -403,5 +460,20 @@ const socket = {
                 }));
             }
         }
+		console.log(socket.private_chat_sockets[chatroom]);
+		if (socket.private_chat_sockets[chatroom] && socket.private_chat_sockets[chatroom].readyState === this.private_chat_sockets[chatroom].OPEN)
+		{
+			if (message.length > 0)
+			{
+				console.log("🔥 je suis dans le chat privé et mon message est > 0");
+				this.private_chat_sockets[chatroom].send(JSON.stringify({
+					'type': 'send_message',
+					'message': message,
+					'username': currentUser,
+					'profile_picture': profile_picture,
+					'timestamp': new Date().toLocaleString(),
+				}));
+			}
+		}
     }
 }
