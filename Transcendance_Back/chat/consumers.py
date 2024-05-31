@@ -54,6 +54,10 @@ class PrivateChatConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle clas
         if command == "edit_profile" and user_to_edit is not None and new_username is not None:
             if user.username == user_to_edit:
                 self.scope['user'] = await self.get_user(new_username)
+                if self.user1.username == user_to_edit:
+                    self.user1 = await self.get_user(new_username)
+                elif self.user2.username == user_to_edit:
+                    self.user2 = await self.get_user(new_username)
         else:
             message = json_text["message"].strip()
                 

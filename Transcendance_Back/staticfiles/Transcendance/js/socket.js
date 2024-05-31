@@ -39,8 +39,8 @@ const socket = {
 	{
 		for (let i = 0; i < room_names.length; i++)
 		{
-			if (!this.private_chat_sockets[room_names[i]])
-				this.launch_private_chat_socket(room_names[i]);
+			if (!socket.private_chat_sockets[room_names[i]])
+				socket.launch_private_chat_socket(room_names[i]);
 		}
 	},
 
@@ -208,6 +208,12 @@ const socket = {
 						show_no_notif();
 					
 					clear_button_if_friend(original_user);
+					let room_name = [];
+					room_name[0] = user_to_add;
+					room_name[1] = original_user;
+					room_name.sort();
+					chat.create_chatroom(room_name[0] + "_" + room_name[1]);
+					socket.launch_private_chat_socket(room_name[0] + "_" + room_name[1]);
 				}
 				else if(data.message.original_user === currentUser)
 				{
@@ -215,6 +221,12 @@ const socket = {
 					chat.add_user_panel(data.message.user_to_add, data.message.user_to_add_status, data.message.user_to_add_avatar, "FRIEND");
 					chat.add_disc_panel(data.message.user_to_add);
 					clear_button_if_friend(data.message.user_to_add);
+					let room_name = [];
+					room_name[0] = original_user;
+					room_name[1] = user_to_add;
+					room_name.sort();
+					chat.create_chatroom(room_name[0] + "_" + room_name[1]);
+					socket.launch_private_chat_socket(room_name[0] + "_" + room_name[1]);
 				}
 			}
 			
@@ -307,7 +319,6 @@ const socket = {
 					currentUser = new_username;
 					profile_picture_tmp = new_avatar;
 					send_msg.edit_profile(user_to_edit, new_username);
-					
 				}
 				if (user_to_edit != currentUser)
 				{
@@ -444,13 +455,10 @@ const socket = {
 
 	sendMessage: function (message, chatroom)
     {
-		console.log("🔥 chatroom vaut ---> " + chatroom);
-		console.log("🔥 message vaut ---> " + message);
         if (chatroom === 'General' && this.chat_socket.readyState === this.chat_socket.OPEN)
         {
             if (message.length > 0)
             {
-				console.log("🔥 je suis dans le chat general et mon message est > 0");
                 this.chat_socket.send(JSON.stringify({
                     'type': 'send_message',
                     'message': message,
@@ -460,12 +468,10 @@ const socket = {
                 }));
             }
         }
-		console.log(socket.private_chat_sockets[chatroom]);
-		if (socket.private_chat_sockets[chatroom] && socket.private_chat_sockets[chatroom].readyState === this.private_chat_sockets[chatroom].OPEN)
+		else if (socket.private_chat_sockets[chatroom] && socket.private_chat_sockets[chatroom].readyState === this.private_chat_sockets[chatroom].OPEN)
 		{
 			if (message.length > 0)
 			{
-				console.log("🔥 je suis dans le chat privé et mon message est > 0");
 				this.private_chat_sockets[chatroom].send(JSON.stringify({
 					'type': 'send_message',
 					'message': message,

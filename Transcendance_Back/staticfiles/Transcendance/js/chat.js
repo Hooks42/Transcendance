@@ -197,7 +197,6 @@ const chat = {
         {
             if (e.key === 'Enter')
             {
-                console.log("🔥 Tu as appuyer sur entrer");
                 socket.sendMessage(typing_area.value, chat_name);
                 typing_area.value = '';
             }
