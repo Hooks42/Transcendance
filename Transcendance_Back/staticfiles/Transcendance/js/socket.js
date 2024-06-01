@@ -49,18 +49,12 @@ const socket = {
 		if (currentUser === new_username)
 		{
 			friend_list.forEach(element => {
-				let old_room_name = [];
-				old_room_name[0] = user_to_edit;
-				old_room_name[1] = element;
-				console.log("🌿 oldroom --> " + old_room_name[0] + "_" + old_room_name[1]);
-				old_room_name.sort();
-				socket.private_chat_sockets[old_room_name[0] + "_" + old_room_name[1]].close();
-				delete socket.private_chat_sockets[old_room_name[0] + "_" + old_room_name[1]];
-				let new_room_name = [];
-				new_room_name[0] = new_username;
-				new_room_name[1] = element;
-				new_room_name.sort();
-				socket.launch_private_chat_socket(new_room_name[0] + "_" + new_room_name[1]);
+				const old_room_name = get_room_name(user_to_edit, element);
+				socket.private_chat_sockets[old_room_name].close();
+				delete socket.private_chat_sockets[old_room_name];
+
+				const new_room_name = get_room_name(new_username, element);
+				socket.launch_private_chat_socket(new_room_name);
 			});
 		}
 		else if (friend_list.includes(new_username))
@@ -68,17 +62,12 @@ const socket = {
 			Object.keys(socket.private_chat_sockets).forEach(key => {
 				console.log("🔱 key --> ", key);
 			});
-			let old_room_name = [];
-			old_room_name[0] = user_to_edit;
-			old_room_name[1] = currentUser;
-			old_room_name.sort();
-			socket.private_chat_sockets[old_room_name[0] + "_" + old_room_name[1]].close();
-			delete socket.private_chat_sockets[old_room_name[0] + "_" + old_room_name[1]];
-			let new_room_name = [];
-			new_room_name[0] = currentUser;
-			new_room_name[1] = new_username;
-			new_room_name.sort();
-			socket.launch_private_chat_socket(new_room_name[0] + "_" + new_room_name[1]);
+			const old_room_name = get_room_name(user_to_edit, currentUser);
+			socket.private_chat_sockets[old_room_name].close();
+			delete socket.private_chat_sockets[old_room_name];
+			
+			const new_room_name = get_room_name(new_username, currentUser);
+			socket.launch_private_chat_socket(new_room_name);
 		}
 	},
 
@@ -246,12 +235,9 @@ const socket = {
 						show_no_notif();
 					
 					clear_button_if_friend(original_user);
-					let room_name = [];
-					room_name[0] = user_to_add;
-					room_name[1] = original_user;
-					room_name.sort();
-					chat.create_chatroom(room_name[0] + "_" + room_name[1]);
-					socket.launch_private_chat_socket(room_name[0] + "_" + room_name[1]);
+					const room_name = get_room_name(original_user, user_to_add);
+					chat.create_chatroom(room_name);
+					socket.launch_private_chat_socket(room_name);
 				}
 				else if(data.message.original_user === currentUser)
 				{
@@ -259,12 +245,9 @@ const socket = {
 					chat.add_user_panel(data.message.user_to_add, data.message.user_to_add_status, data.message.user_to_add_avatar, "FRIEND");
 					chat.add_disc_panel(data.message.user_to_add);
 					clear_button_if_friend(data.message.user_to_add);
-					let room_name = [];
-					room_name[0] = original_user;
-					room_name[1] = user_to_add;
-					room_name.sort();
-					chat.create_chatroom(room_name[0] + "_" + room_name[1]);
-					socket.launch_private_chat_socket(room_name[0] + "_" + room_name[1]);
+					const room_name = get_room_name(original_user, user_to_add);
+					chat.create_chatroom(room_name);
+					socket.launch_private_chat_socket(room_name);
 				}
 			}
 			
@@ -285,6 +268,9 @@ const socket = {
 				if (data.message.original_user === currentUser)
 				{
 					friend_list = friend_list.filter(e => e !== data.message.friend_to_delete);
+					const room_name = get_room_name(currentUser, data.message.friend_to_delete);
+					socket.private_chat_sockets[room_name].close();
+					delete socket.private_chat_sockets[room_name];
 					document.getElementById("disc_btn-" + data.message.friend_to_delete).remove();
 					document.getElementById("friend_list-" + data.message.friend_to_delete).remove();
 					let btns = document.getElementsByClassName("add_friend_btn-" + data.message.friend_to_delete);
@@ -294,6 +280,9 @@ const socket = {
 				else if(data.message.friend_to_delete === currentUser)
 				{
 					friend_list = friend_list.filter(e => e !== data.message.original_user);
+					const room_name = get_room_name(currentUser, data.message.original_user);
+					socket.private_chat_sockets[room_name].close();
+					delete socket.private_chat_sockets[room_name];
 					document.getElementById("disc_btn-" + data.message.original_user).remove();
 					document.getElementById("friend_list-" + data.message.original_user).remove();
 					let btns = document.getElementsByClassName("add_friend_btn-" + data.message.original_user);
@@ -480,13 +469,7 @@ const socket = {
 				{
 					let friends = data.friends;
 					for (let i = 0; i < friends.length; i++)
-					{
-						let tab = [];
-						tab[0] = currentUser;
-						tab[1] = friends[i].username;
-						tab.sort();
-						room_names.push(tab[0] + "_" + tab[1]);
-					}
+						room_names.push(get_room_name(currentUser, friends[i].username));
 					socket.init_private_chat_sockets(room_names);
 				});
 			has_loaded = true;

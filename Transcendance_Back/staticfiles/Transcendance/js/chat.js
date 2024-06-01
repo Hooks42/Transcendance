@@ -129,17 +129,8 @@ const chat = {
             .then(data => {
                 let friends = data.friends;
                 if (friends.length > 0)
-                {
                     for (let i = 0; i < friends.length; i++)
-                    {
-                        var friend = friends[i];
-                        let disc_friend_name = [];
-                        disc_friend_name[0] = currentUser;
-                        disc_friend_name[1] = friend.username;
-                        disc_friend_name.sort();
-                        chat.create_chatroom(disc_friend_name[0] + '_' + disc_friend_name[1]);
-                    }
-                }
+                        chat.create_chatroom(get_room_name(currentUser, friends[i].username));
             });
     },
 
@@ -162,6 +153,7 @@ const chat = {
         textarea.classList.add('o-textbox');
         const textarea_container = document.createElement('div');
         textarea_container.classList.add('container');
+        console.log("👊 chat_name vaut " + chat_name);
 
         fetch("/get-conv-history?conversation=" + chat_name)
             .then(response => response.json())

@@ -362,13 +362,7 @@ function create_disc_li(title_text, info_text)
     if (title_text === 'Général')
         button.dataset.username = 'General';
     else
-    {
-        let tab = [];
-        tab[0] = currentUser;
-        tab[1] = title_text;
-        tab.sort();
-        button.dataset.username = tab[0] + '_' + tab[1];
-    }
+        button.dataset.username = get_room_name(currentUser, title_text);
     
     const title = document.createElement('span');
     title.classList.add('a-li__title');
@@ -1229,4 +1223,13 @@ function clear_notif(username)
     notif_menu = document.getElementById('notif-menu');
     if (notif_menu.childElementCount == 0)
         show_no_notif();
+}
+
+function get_room_name(user1, user2)
+{
+    let room_name = [];
+    room_name.push(user1);
+    room_name.push(user2);
+    room_name.sort();
+    return (room_name[0] + "_" + room_name[1]);
 }
