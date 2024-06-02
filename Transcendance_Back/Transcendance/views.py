@@ -186,8 +186,12 @@ def get_conv_history(request):
             conversation = Conversation.objects.get(user1=User.objects.get(username=user1), user2=User.objects.get(username=user2))
             message_backup = conversation.messages.all().order_by('timestamp')
         except Conversation.DoesNotExist:
-            message_backup = None
-            return JsonResponse({'messages': []})
+            try:
+                conversation = Conversation.objects.get(user1=User.objects.get(username=user2), user2=User.objects.get(username=user1))
+                message_backup = conversation.messages.all().order_by('timestamp')
+            except Conversation.DoesNotExist:
+                message_backup = None
+                return JsonResponse({'messages': []})
     
     message_list = []
     for message in message_backup:
@@ -199,7 +203,6 @@ def get_conv_history(request):
             'profile_picture': profile_picture,
         })
     return JsonResponse({'messages': message_list})
-    pass
 
 @login_required
 def get_friends_list(request):

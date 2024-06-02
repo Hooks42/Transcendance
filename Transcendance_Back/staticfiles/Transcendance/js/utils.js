@@ -385,6 +385,7 @@ function create_disc_li(title_text, info_text)
         chat.current_pane.classList.toggle("show");
 
         chat.arrow_tab.children[1].textContent = target.children[1].textContent;
+        chat.arrow_tab.children[1].id = target.children[1].textContent + "-arrow-title";
         chat.arrow_tab.classList.toggle("hide");
 
         let conv_to_show = document.getElementById(this.dataset.username + "-conv");
@@ -966,11 +967,11 @@ function update_when_user_edit(user_to_edit, new_username, new_avatar)
     update_notif(user_to_edit, new_username);
     update_friend_list_pannel(user_to_edit, new_username);
     update_buttons(user_to_edit, new_username);
+    update_private_chat_div_ids(user_to_edit, new_username);
 }
 
 function update_self_profile(new_username, new_avatar)
 {
-    console.log('✅currentUser: ' + currentUser + ' new_username: ' + new_username);
     if (currentUser === new_username)
     {
         let avatar = document.getElementById('profile_edit-avatar');
@@ -1126,6 +1127,53 @@ function update_friend_list_pannel(user_to_edit, new_username)
 
     if (friend_block_to_update)
         friend_block_to_update.setAttribute('id', 'friend_list-' + new_username);
+}
+
+function update_private_chat_div_ids(user_to_edit, new_username)
+{
+    if (new_username === currentUser)
+    {
+        friend_list.forEach(friend =>
+        {
+            const big_div = document.getElementById(get_room_name(user_to_edit, friend) + "-conv");
+            const inbox_div = document.getElementById(get_room_name(user_to_edit, friend) + "_inbox");
+            const conv_name = document.getElementById(friend + "-arrow-title");
+            
+            if (big_div)
+                big_div.setAttribute('id', get_room_name(new_username, friend) + "-conv");
+            if (inbox_div)
+                inbox_div.setAttribute('id', get_room_name(new_username, friend) + "_inbox");
+            if (conv_name)
+                conv_name.textContent = friend;
+
+        });
+    }
+    else
+    {
+        const disc_btn = document.getElementById('disc_btn-' + new_username);
+        const big_div = document.getElementById(get_room_name(currentUser, user_to_edit) + "-conv");
+        const inbox_div = document.getElementById(get_room_name(currentUser, user_to_edit) + "_inbox");
+        const conv_name = document.getElementById(user_to_edit + "-arrow-title");
+
+        if (big_div)
+            big_div.setAttribute('id', get_room_name(currentUser, new_username) + "-conv");
+        if (inbox_div)
+            inbox_div.setAttribute('id', get_room_name(currentUser, new_username) + "_inbox");
+        if (conv_name)
+        {    
+            conv_name.textContent = new_username;
+            conv_name.setAttribute('id', new_username + "-arrow-title");
+        }
+        if (disc_btn)
+        {
+            console.log("🔥 old dataset --> ", disc_btn.dataset.username);
+            disc_btn.setAttribute('id', 'disc_btn-' + new_username);
+            disc_btn.dataset.username = get_room_name(currentUser, new_username);
+            console.log("🔥 new dataset --> ", disc_btn.dataset.username);
+        }
+
+
+    }
 }
 
 async function display_game_button()
