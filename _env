@@ -1,0 +1,21 @@
+#!  API
+#! installed with pip install python-dotenv
+#!------------------------------------------------
+
+CLIENT_ID = 'u-s4t2ud-8bb20f850854bdd9328693e91af550746179e66027373d8195e08e66afbd5e80'
+
+CLIENT_SECRET = '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'
+
+NEXT_CLIENT_SECRET = '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'
+
+DJANGO_SECRET_KEY = 'django-insecure-0(@7m&bp-@k%2qi&hqsj%dsn7_d=q&palk*6_uds50(^b*^01('
+
+DB_NAME = 'db.psql'
+
+DB_USER = 'hook'
+
+DB_PASSWORD = 'hook001'
+
+DB_HOST = '54342'
+
+LINK = 'https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-8bb20f850854bdd9328693e91af550746179e66027373d8195e08e66afbd5e80&redirect_uri=https%3A%2F%2Flocalhost%2Fcallback&response_type=code'

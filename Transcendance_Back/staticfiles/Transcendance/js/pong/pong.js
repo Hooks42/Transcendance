@@ -22,12 +22,12 @@ const pong = {
 	scorePlayer1: 10,
 	scorePlayer2: 10,
 
-	playerName1: null,
-	playerName2: null,
+	playerName1: "",
+	playerName2: "",
 	players: [],
 	tournament: null,
 
-	textStartGame: "touche Entree : commencer la partie\nBarre d'espace : mettre en pause la partie\n\nTouches de controle :\na q et p m (azerty) ou q a et p ; (qwerty)",
+	textControlsGame: "touche Entree : commencer la partie\nBarre d'espace : mettre en pause la partie\n\nTouches de controle :\na q et p m (azerty) ou q a et p ; (qwerty)",
 	textPausedGame: "PAUSE",
 	textNewGame: "touche Entree : suivant",
 	textWINLOSE: "WINLOSE",
@@ -63,7 +63,7 @@ const pong = {
 	{
 		if (pong.code[event.code])
 		{
-			pong.code[event.code].pressed = true
+			pong.code[event.code].pressed = true;
 		}
 	},
 
@@ -74,13 +74,8 @@ const pong = {
 			&& event.code != "Space"
 			&& event.code != "Enter")
 		{
-			pong.code[event.code].pressed = false
+			pong.code[event.code].pressed = false;
 		}
-	},
-
-	createTournament: function (nbOfRounds, container)
-	{
-		this.tournament = new Tournament(nbOfRounds, container);
 	},
 
 	initTournament: function (players)
@@ -125,10 +120,9 @@ const pong = {
 
 		this.initKeyboard(pong.onKeyDown, pong.onKeyUp);
 
-		// display key controls for the players
-		this.currentNotice = this.textStartGame;
-		this.displayNotice();
-
+		this.tournament = new Tournament(container);
+		this.tournament.bs_modalPage1.show();
+		// this.tournament.showTournamentNRankingPage();
 		this.currentState = pong.start;
 	},
 
@@ -137,24 +131,37 @@ const pong = {
 	{
 		// listen to key presses linked to the game state
 		pong.listenerGameState();
-		if (pong.tournament != null)
+		// display key controls on screen for the players
+		if (pong.currentNotice != pong.textControlsGame)
 		{
-			// check if reached the end of tournament
-			if (pong.tournament.currentRound == pong.tournament.maxRound)
+			this.clearLayer(this.noticeLayer);
+			this.currentNotice = this.textControlsGame;
+			this.displayNotice();
+		}
+		// do not do anything if a modal is open
+		if (document.getElementById("tournament-modal-page1").classList.contains("show")
+			// || document.getElementById("tournament-modal-page2").classList.contains("show")
+			|| pong.tournament.isOn == false)
+		{
+
+			console.log("not show");
+			return;
+		}
+		// check if reached the end of tournament
+		if (pong.tournament.currentRound == pong.tournament.maxRound)
+		{
+			console.log("fin tournois");
+			// show ranking
+			pong.tournament.rankingEl.classList.add('-highlight');
+		}
+		else // ongoing tournament
+		{
+			// show modal
+			if (this.playerName1 == "" && this.playerName2 == "")
 			{
-				console.log("fin tournois");
-				// show ranking
-				pong.tournament.rankingEl.classList.add('-highlight');
-			}
-			else
-			{
-				// show modal
-				if (this.playerName1 == null && this.playerName2 == null)
-				{
-					// highlight current round
-					pong.tournament.js_rounds[pong.tournament.currentRound].classList.add('-highlight');
-					pong.tournament.show();
-				}
+				// highlight current round
+				pong.tournament.js_rounds[pong.tournament.currentRound].classList.add('-highlight');
+				console.log("forbid");
 
 				// update usernames in layer
 				this.playerName1 = pong.tournament.players[pong.tournament.currentRound * 2];
@@ -164,22 +171,8 @@ const pong = {
 
 			}
 		}
-
-		// this.listenerGameState();
-		if (this.code["Enter"].pressed)
-		{
-			this.code["Enter"].pressed = false;
-			if (pong.tournament != null)
-			{
-				if (pong.tournament.currentRound == pong.tournament.maxRound)
-				{
-					// clear tournament and re init it
-				}
-			}
-			pong.clearLayer(this.noticeLayer);
-			pong.currentNotice = "";
-			pong.currentState = pong.game;
-		}
+		if (pong.tournament.isOn == true)
+			pong.tournament.bs_modalPage2.show();
 	},
 
 	// state
@@ -194,8 +187,8 @@ const pong = {
 		pong.clearLayer(this.noticeLayer);
 		pong.clearLayer(this.ballPaddlesLayer);
 
-		if (pong.tournament != null)
-			pong.tournament.bs_modal.hide();
+		if (pong.tournament.isOn != false)
+			pong.tournament.hide();
 
 		// update ball and paddles values (make them move)
 		pong.moveBall();
@@ -223,46 +216,51 @@ const pong = {
 	// state. End of a match of 2 people (not the end of a tournament)
 	end: function ()
 	{
-		this.currentNotice = this.textNewGame;
-		this.displayNotice();
-		this.currentNotice = this.textWINLOSE;
-		this.displayNotice();
-
 		pong.listenerGameState();
+		let winner;
+		let loser;
+		if (this.currentNotice != this.textWINLOSE)
+		{
+			this.currentNotice = this.textNewGame;
+			this.displayNotice();
+			this.currentNotice = this.textWINLOSE;
+			this.displayNotice();
+			// reset paddles and ball's positions
+			pong.centerPaddles();
+			pong.centerBall();
+			pong.clearLayer(pong.ballPaddlesLayer);
+			pong.displayBall();
+			pong.displayPaddles();
+		}
 
 		// remember who won the current round
-		if (pong.tournament != null
-			&& pong.playerName1 != null && pong.playerName2 != null)
+		if (pong.tournament.isOn != false
+			&& pong.playerName1 != "" && pong.playerName2 != "")
 		{
+			// init winner and loser
 			if (pong.scorePlayer1 > pong.scorePlayer2)
 			{
-				// final or semi final
-				if (pong.tournament.currentRound >= pong.tournament.maxRound / 2)
-				{
-					pong.tournament.ranking.push(pong.tournament.players[pong.tournament.currentRound * 2]);
-					pong.tournament.ranking.push(pong.tournament.players[pong.tournament.currentRound * 2 + 1]);
-
-				}
-				else
-				{
-					pong.tournament.players.push(pong.tournament.players[pong.tournament.currentRound * 2]);
-					pong.tournament.losers.push(pong.tournament.players[pong.tournament.currentRound * 2 + 1]);
-				}
+				winner = pong.tournament.players[pong.tournament.currentRound * 2];
+				loser = pong.tournament.players[pong.tournament.currentRound * 2 + 1];
+				pong.tournament.js_players[pong.tournament.currentRound * 2].classList.add("winner");
 			}
 			else
 			{
-				if (pong.tournament.currentRound >= pong.tournament.maxRound / 2)
-				{
-					pong.tournament.ranking.push(pong.tournament.players[pong.tournament.currentRound * 2 + 1]);
-					pong.tournament.ranking.push(pong.tournament.players[pong.tournament.currentRound * 2]);
-				}
-				else
-				{
-					pong.tournament.players.push(pong.tournament.players[pong.tournament.currentRound * 2 + 1]);
-					pong.tournament.losers.push(pong.tournament.players[pong.tournament.currentRound * 2]);
-				}
+				loser = pong.tournament.players[pong.tournament.currentRound * 2];
+				winner = pong.tournament.players[pong.tournament.currentRound * 2 + 1];
+				pong.tournament.js_players[pong.tournament.currentRound * 2 + 1].classList.add("winner");
 			}
 
+			if (pong.tournament.currentRound >= pong.tournament.maxRound / 2) // final or semi final
+			{
+				pong.tournament.ranking.push(winner);
+				pong.tournament.ranking.push(loser);
+			}
+			else
+			{
+				pong.tournament.players.push(winner);
+				pong.tournament.losers.push(loser);
+			}
 			// concat players[] and losers[] from the 2 previous rounds
 			if (pong.tournament.currentRound == 1)
 				pong.tournament.players = pong.tournament.players.concat(pong.tournament.losers);
@@ -271,46 +269,18 @@ const pong = {
 			for (let i = (pong.tournament.currentRound + 1) * 2; i < pong.tournament.js_players.length; i++)
 			{
 				if (pong.tournament.players[i])
+				{
 					pong.tournament.js_players[i].innerHTML = pong.tournament.players[i];
+				}
 			}
 			// update ranking
 			for (let i = 0; i < pong.tournament.ranking.length; i++)
 			{
 				pong.tournament.js_ranks[i].innerHTML = pong.tournament.ranking[i];
 			}
-			pong.playerName1 = null;
-			pong.playerName2 = null;
-		}
-
-		// reset paddles and ball's positions
-		pong.centerPaddles();
-		pong.centerBall();
-		pong.clearLayer(pong.ballPaddlesLayer);
-		pong.displayBall();
-		pong.displayPaddles();
-
-		if (pong.code["Enter"].pressed)
-		{
-			console.log("new game");
-			pong.code["Enter"].pressed = false;
-			// reset score
-			pong.scorePlayer1 = 10;
-			pong.scorePlayer2 = 10;
-			// randomize ball direction
-			if ((Math.floor(Math.random() * 2)) % 2)
-				pong.ball.velocityX *= -1;
-			pong.clearLayer(pong.scoreLayer);
-			pong.displayScore();
-
-			// resume game
-			if (pong.tournament != null && pong.tournament.currentRound < pong.tournament.maxRound)
-			{
-				pong.tournament.js_rounds[pong.tournament.currentRound].classList.remove('-highlight');
-				pong.tournament.currentRound++;
-				pong.currentState = pong.start;
-			}
-			else
-				pong.currentState = pong.game;
+			pong.playerName1 = "";
+			pong.playerName2 = "";
+			pong.tournament.bs_modalPage2.show();
 		}
 	},
 
@@ -342,7 +312,7 @@ const pong = {
 	},
 	displayNotice: function ()
 	{
-		if (this.currentNotice == this.textStartGame)
+		if (this.currentNotice == this.textControlsGame)
 		{
 			let lines = this.currentNotice.split('\n');
 			for (let i = 0; i < lines.length; i++)
@@ -473,27 +443,64 @@ const pong = {
 		{
 			if (key == "Space")
 			{
-				if (pong.code["Space"].pressed == true)
-				{
-					pong.code["Space"].pressed = false;
-					pong.toggleGameOrPause();
-				}
+				if (pong.code["Space"].pressed == false)
+					return;
+				pong.code["Space"].pressed = false;
+				pong.toggleGameOrPause();
 			}
 			else if (key == "KeyT")
 			{
-				if (pong.code["KeyT"].pressed == true)
+				if (pong.code["KeyT"].pressed == false)
+					return;
+				pong.code["KeyT"].pressed = false;
+				// always pause game
+				console.log("T pressed");
+				if (pong.currentState == pong.game)
 				{
-					pong.code["KeyT"].pressed = false;
-					// pause game
-					if (pong.currentState == pong.game)
-					{
-						pong.currentState = pong.pause;
-					}
-					if (pong.tournament != null)
-					{
-						pong.tournament.toggle();
-					}
+					pong.currentState = pong.pause;
 				}
+				// if tournament is ongoing
+				if (pong.tournament.isOn != false)
+				{
+					pong.tournament.bs_modalPage2.toggle();
+				}
+				if (pong.tournament.isOn == false && pong.currentState == pong.start)
+				{
+					pong.tournament.bs_modalPage1.toggle();
+				}
+			}
+			else if (key == "Enter")
+			{
+				if (pong.code["Enter"].pressed == false)
+					return;
+				pong.code["Enter"].pressed = false;
+				if (pong.currentState == pong.start)
+				{
+					this.sleep(1000);
+					pong.currentState = pong.game;
+				}
+				else if (pong.currentState == pong.end)
+				{
+					console.log("new game");
+					// reset score
+					pong.scorePlayer1 = 10;
+					pong.scorePlayer2 = 10;
+					// randomize ball direction
+					if ((Math.floor(Math.random() * 2)) % 2)
+						pong.ball.velocityX *= -1;
+					pong.clearLayer(pong.scoreLayer);
+					pong.displayScore();
+
+					// resume tournament 
+					if (pong.tournament.isOn != false && pong.tournament.currentRound < pong.tournament.maxRound)
+					{
+						pong.tournament.js_rounds[pong.tournament.currentRound].classList.remove('-highlight');
+						pong.tournament.currentRound++;
+						// pong.tournament.hide();
+					}
+					pong.currentState = pong.start;
+				}
+
 			}
 		});
 	},

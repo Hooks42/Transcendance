@@ -50,48 +50,9 @@ centerZone.listener =
             if (document.getElementById("pong-modal-btn") === null)
                 return;
             event.preventDefault();
-            console.log("pong modal opened");
-            // replace default-username to my actual username
-            document.querySelector(".js-getCurrentUser").setAttribute("value", currentUser);
-        }
-        else if (event.target.closest("#validate-pong-modal"))
-        {
-            target = event.target.closest("#validate-pong-modal");
-            if (document.getElementById("validate-pong-modal") !== target)
-                return;
-            event.preventDefault();
-            let isFormValid = false;
-
-            // get input (players usernames)
-            if (document.querySelector('input[name="pong-player1"]').value != "")
-            {
-                centerZone.players.push(document.querySelector('input[name="pong-player1"]').value);
-                isFormValid = true;
-            }
-            if (document.querySelector('input[name="pong-player2"]').value != "")
-                centerZone.players.push(document.querySelector('input[name="pong-player2"]').value);
-            if (document.querySelector('input[name="pong-player3"]').value != "")
-                centerZone.players.push(document.querySelector('input[name="pong-player3"]').value);
-            if (document.querySelector('input[name="pong-player4"]').value != "")
-                centerZone.players.push(document.querySelector('input[name="pong-player4"]').value);
-            // console.log(this.player1 + " " + this.player2 + " " + this.player3 + " " + this.player4);
-
-            console.log("isFormValid=" + isFormValid);
-            // hide nb of players modal
-            bootstrap.Modal.getInstance(document.getElementById("pong-modal")).hide();
-            // trigger modal matchmaking
-            if (centerZone.players.length > 1)
-                centerZone.suffle();
-
+            console.log("tournament modal opened");
             // clear center zone
             centerZone.inner.innerHTML = "";
-            // create a modal with js
-            if (centerZone.players.length > 1)
-            {
-                pong.createTournament(centerZone.inner);
-                // render pong game
-                pong.initTournament(centerZone.players);
-            }
             centerZone.display_pong();
         }
         else if (event.target.closest("#game-pfc"))
@@ -101,7 +62,6 @@ centerZone.listener =
                 return;
             event.preventDefault();
             console.log("click");
-            navigateCenterZone("tournament");
 
         }
     }
