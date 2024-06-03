@@ -156,8 +156,10 @@ const pong = {
 		if (pong.currentNotice != pong.textControlsGame)
 		{
 			this.clearLayer(this.noticeLayer);
+			this.clearLayer(this.playerNamesLayer);
 			this.currentNotice = this.textControlsGame;
 			this.displayNotice();
+			this.displayPlayerNames();
 		}
 		// do not do anything if a modal is open
 		if (document.getElementById("tournament-modal-page1").classList.contains("show")
@@ -174,6 +176,17 @@ const pong = {
 			console.log("fin tournois");
 			// show ranking
 			pong.tournament.rankingEl.classList.add('-highlight');
+			console.log(pong.tournament.ranking);
+			console.log(pong.tournament.players);
+			console.log(pong.tournament.losers);
+			if (pong.tournament.js_ranks.length == 3)
+				pong.tournament.ranking = pong.tournament.ranking.concat(pong.tournament.losers);
+			// let winnerList = document.querySelectorAll(".winner");
+			// update ranking
+			for (let i = 0; i < pong.tournament.ranking.length && i < pong.tournament.js_ranks.length; i++)
+			{
+				pong.tournament.js_ranks[i].innerHTML = pong.tournament.ranking[i];
+			}
 		}
 		else // ongoing tournament
 		{
@@ -201,6 +214,10 @@ const pong = {
 	{
 		if (pong.currentState == pong.pause)
 			return;
+		if (pong.tournament.footerEl2.querySelector("#btn_reset") != null)
+		{
+			pong.tournament.removeBtnReset();
+		}
 		// listen to key presses linked to the game state
 		pong.listenerGameState();
 
@@ -297,11 +314,6 @@ const pong = {
 				{
 					pong.tournament.js_players[i].innerHTML = pong.tournament.players[i];
 				}
-			}
-			// update ranking
-			for (let i = 0; i < pong.tournament.ranking.length; i++)
-			{
-				pong.tournament.js_ranks[i].innerHTML = pong.tournament.ranking[i];
 			}
 			pong.playerName1 = "";
 			pong.playerName2 = "";
@@ -504,6 +516,11 @@ const pong = {
 					this.sleep(1000);
 					pong.currentState = pong.game;
 				}
+				// else if (pong.currentState == pong.end && pong.tournament.currentRound == pong.tournament.maxRound)
+				// {
+				// console.log("reset tour");
+				// pong.tournament.reset();
+				// }
 				else if (pong.currentState == pong.end)
 				{
 					console.log("new game");

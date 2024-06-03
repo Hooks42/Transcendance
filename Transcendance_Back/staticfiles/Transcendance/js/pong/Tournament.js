@@ -228,6 +228,8 @@ class Tournament
         this.players = players;
         this.currentRound = 0;
 
+        if (players.length == 3)
+            this.maxRound = 2;
         //   create rounds and append them
         for (let i = 0; i < this.maxRound; i++)
         {
@@ -235,7 +237,7 @@ class Tournament
         }
         // modify the text in the modal to the user inputed usernames
         this.js_players = document.querySelectorAll(".js-player");
-        for (let i = 0; i < this.maxRound; i++)
+        for (let i = 0; i < this.players.length && i < this.js_players.length; i++)
         {
             this.js_players[i].innerHTML = players[i];
         }
