@@ -306,6 +306,7 @@ class Tournament
                 return;
             event.preventDefault();
 
+            this.reset();
             // get input (players usernames)
             if (document.querySelector('input[name="pong-player1"]').value != "")
                 this.players.push(document.querySelector('input[name="pong-player1"]').value);
@@ -331,7 +332,8 @@ class Tournament
 
             // hide modal
             this.bs_modalPage1.hide();
-            this.bs_modalPage2.show();
+            if (this.players.length > 2)
+                this.bs_modalPage2.show();
 
         }
         else if (event.target.closest(".btn-close"))
