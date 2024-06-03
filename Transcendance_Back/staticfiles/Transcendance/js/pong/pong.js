@@ -14,6 +14,7 @@ const pong = {
 	scoreLayer: null,
 	ballPaddlesLayer: null,
 	noticeLayer: null,
+	playerNamesLayer: null,
 
 	paddleL: null,
 	paddleR: null,
@@ -125,10 +126,30 @@ const pong = {
 		// this.tournament.showTournamentNRankingPage();
 		this.currentState = pong.start;
 	},
+	reset: function ()
+	{
+		pong.playerName1 = "";
+		pong.playerName2 = "";
+		pong.scorePlayer1 = 10;
+
+		pong.scorePlayer2 = 10;
+		this.centerBall();
+		this.centerPaddles();
+		pong.clearLayer(pong.playerNamesLayer);
+		pong.clearLayer(pong.scoreLayer);
+
+		this.displayScore(this.scorePlayer1, this.scorePlayer2);
+		this.displayPlayerNames();
+
+	},
 
 	// state
 	start: function ()
 	{
+		if (pong.tournament.footerEl2.querySelector("#btn_reset") == null)
+		{
+			pong.tournament.appendBtnReset();
+		}
 		// listen to key presses linked to the game state
 		pong.listenerGameState();
 		// display key controls on screen for the players
@@ -216,6 +237,10 @@ const pong = {
 	// state. End of a match of 2 people (not the end of a tournament)
 	end: function ()
 	{
+		if (pong.tournament.footerEl2.querySelector("#btn_reset") != null)
+		{
+			pong.tournament.removeBtnReset();
+		}
 		pong.listenerGameState();
 		let winner;
 		let loser;

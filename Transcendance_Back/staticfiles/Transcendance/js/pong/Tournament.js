@@ -9,9 +9,10 @@ class Tournament
 
     currentModal = null;
 
-tournamentEl = null;
-rankingEl = null;
+    tournamentEl = null;
+    rankingEl = null;
 
+    footerEl2 = null;
     btnCreate = null;
     btnCancel = null;
     btnReset = null;
@@ -29,7 +30,7 @@ rankingEl = null;
     players = []; // list of players for js_players
 
     currentRound = 0; // round 0 = p1 vs p2; r1 = p3 vs p4; r2 = winner r1 vs winner r2; r3 = loser r1 vs loser r2
-    maxRound = 1;
+    maxRound = 0;
     isOn = false;
 
 
@@ -131,19 +132,20 @@ rankingEl = null;
 
 
         // footer == tournament final ranking
-        const footerEl2 = document.createElement("div");
-        footerEl2.classList.add("modal-footer");
+        this.footerEl2 = document.createElement("div");
+        this.footerEl2.classList.add("modal-footer");
 
         this.btnReset = create_btn(['a-btn', '-heart'], "Reinitialiser");
+        this.btnReset.setAttribute("id", "btn_reset");
         this.btnReset.prepend(create_svg_heart());
 
         // Arborescence
         this.modalPage2.append(dialog2);
         dialog2.append(contentEl2);
-        contentEl2.append(headerEl2, bodyEl2, footerEl2);
+        contentEl2.append(headerEl2, bodyEl2, this.footerEl2);
         bodyEl2.append(this.tournamentEl, this.rankingEl);
         headerEl2.append(titleEl2, btn_close2);
-        footerEl2.append(this.btnReset);
+        // footerEl2.append(this.btnReset);
 
         container.append(this.modalPage1, this.modalPage2);
         this.bs_modalPage1 = bootstrap.Modal.getOrCreateInstance(document.getElementById('tournament-modal-page1'));
@@ -251,14 +253,46 @@ rankingEl = null;
         this.js_ranks = document.querySelectorAll(".js-rank");
     }
 
+    reset()
+    {
+        this.isOn = false;
+        this.players.splice(0, this.players.length);
+        this.ranking.splice(0, this.ranking.length);
+        this.losers.splice(0, this.losers.length);
+        this.maxRound = 0;
+        this.currentRound = 0;
+        this.tournamentEl.innerHTML = "";
+        this.rankingEl.innerHTML = "";
+        let hlEl = document.querySelectorAll(".-highlight");
+        for (let i = 0; i < hlEl.length; i++)
+        {
+            hlEl[i].classList.remove("-highlight");
+        }
+        let winnerEl = document.querySelectorAll(".winner");
+        for (let i = 0; i < winnerEl.length; i++)
+        {
+            winnerEl[i].classList.remove("winner");
+        }
+
+        pong.reset();
+    }
+
+    appendBtnReset()
+    {
+        this.footerEl2.append(this.btnReset);
+    }
+    removeBtnReset()
+    {
+        this.footerEl2.innerHTML = "";
+    }
     bindListener()
     {
         this.modalPage1.onclick = this.onClick.bind(this);
+        this.modalPage2.onclick = this.onClick.bind(this);
     }
 
     onClick(event)
     {
-
         console.log("click on class");
         let target;
         if (event.target.closest("#btn_create_tournament"))
@@ -290,15 +324,15 @@ rankingEl = null;
             }
             else
             {
-
                 this.isOn = false;
             }
 
-// hide modal
-this.bs_modalPage1.hide();
+            // hide modal
+            this.bs_modalPage1.hide();
+            this.bs_modalPage2.show();
 
         }
-        if (event.target.closest(".btn-close"))
+        else if (event.target.closest(".btn-close"))
         {
             target = event.target.closest(".btn-close");
             if (!target)
@@ -306,9 +340,28 @@ this.bs_modalPage1.hide();
             // if (document.getElements("btn-close") === null)
             //     return;
             event.preventDefault();
-            
+
             if (document.getElementById("tournament-modal-page1").classList.contains("show"))
                 this.isOn = false;
+        }
+        else if (event.target.closest("#btn_reset"))
+        {
+            target = event.target.closest("#btn_reset");
+            if (!target)
+                return;
+            if (document.getElementById("btn_reset") === null)
+                return;
+            event.preventDefault();
+            console.log("click on reset");
+            this.reset();
+
+            if (document.getElementById("tournament-modal-page2").classList.contains("show"))
+            {
+                console.log("hide page 2");
+                this.bs_modalPage2.hide();
+            }
+            // this.bs_modalPage1.show();
+            console.log("current round = " + this.currentRound);
         }
     }
 };
