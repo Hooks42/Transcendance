@@ -302,6 +302,9 @@ const socket = {
 						document.getElementById("disc_btn-" + data.message.user_to_add).remove();
 						document.getElementById("friend_list-" + data.message.user_to_add).remove();
 						friend_list = friend_list.filter(e => e !== data.message.user_to_add);
+						const room_name = get_room_name(currentUser, data.message.user_to_add);
+						socket.private_chat_sockets[room_name].close();
+						delete socket.private_chat_sockets[room_name];
 						let btns = document.getElementsByClassName("add_friend_btn-" + data.message.user_to_add);
 						for (let i = 0; i < btns.length; i++)
 							btns[i].style.display = "inline";
@@ -317,6 +320,9 @@ const socket = {
 						document.getElementById("disc_btn-" + data.message.original_user).remove();
 						document.getElementById("friend_list-" + data.message.original_user).remove();
 						friend_list = friend_list.filter(e => e !== data.message.original_user);
+						const room_name = get_room_name(currentUser, data.message.original_user);
+						socket.private_chat_sockets[room_name].close();
+						delete socket.private_chat_sockets[room_name];
 						let btns = document.getElementsByClassName("add_friend_btn-" + data.message.original_user);
 						for (let i = 0; i < btns.length; i++)
 							btns[i].style.display = "inline";

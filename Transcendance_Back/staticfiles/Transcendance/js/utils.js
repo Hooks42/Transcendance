@@ -1135,6 +1135,7 @@ function update_private_chat_div_ids(user_to_edit, new_username)
     {
         friend_list.forEach(friend =>
         {
+            const disc_btn = document.getElementById('disc_btn-' + friend);
             const big_div = document.getElementById(get_room_name(user_to_edit, friend) + "-conv");
             const inbox_div = document.getElementById(get_room_name(user_to_edit, friend) + "_inbox");
             const conv_name = document.getElementById(friend + "-arrow-title");
@@ -1145,6 +1146,12 @@ function update_private_chat_div_ids(user_to_edit, new_username)
                 inbox_div.setAttribute('id', get_room_name(new_username, friend) + "_inbox");
             if (conv_name)
                 conv_name.textContent = friend;
+            if (disc_btn)
+            {
+                console.log("🔥 old dataset --> ", disc_btn.dataset.username);
+                disc_btn.dataset.username = get_room_name(friend, new_username);
+                console.log("🔥 new dataset --> ", disc_btn.dataset.username);
+            }
 
         });
     }

@@ -172,6 +172,7 @@ def get_user_infos(request):
         except User.DoesNotExist:
             return JsonResponse({'username': None})
 
+
 @login_required
 def get_conv_history(request):
     given_conversation = request.GET.get('conversation', None)
@@ -183,14 +184,15 @@ def get_conv_history(request):
         try:
             user1 = given_conversation.split('_')[0]
             user2 = given_conversation.split('_')[1]
+            print(f"🌿 je recupere conversation --> {given_conversation} avec user1 --> {user1} et user2 --> {user2}")
             conversation = Conversation.objects.get(user1=User.objects.get(username=user1), user2=User.objects.get(username=user2))
             message_backup = conversation.messages.all().order_by('timestamp')
         except Conversation.DoesNotExist:
             try:
+                print(f"🌿 je passe dans le 2nd try avec user1 --> {user2} et user2 --> {user1}")
                 conversation = Conversation.objects.get(user1=User.objects.get(username=user2), user2=User.objects.get(username=user1))
                 message_backup = conversation.messages.all().order_by('timestamp')
             except Conversation.DoesNotExist:
-                message_backup = None
                 return JsonResponse({'messages': []})
     
     message_list = []
