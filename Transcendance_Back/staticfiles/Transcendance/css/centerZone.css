@@ -43,6 +43,14 @@
 //
 --------------------------------------------------------------------------- */
 
+.tournament__form
+{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
 .m-profile__edit
 {
   grid-template-columns: 200px 1fr;

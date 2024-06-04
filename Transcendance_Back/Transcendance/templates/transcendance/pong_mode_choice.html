@@ -1,0 +1,83 @@
+<div class="m-wrapperHome">
+    <button class="a-btn -orange -twoSVGoneText" data-bs-toggle="modal" data-bs-target="#tournament-pong-modal" id="pong_tournament">
+        <svg xmlns="http://www.w3.org/2000/svg" class="bi bi-heart-fill bottom" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314" />
+        </svg>
+        <svg class="icon_sword top" viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg">
+            <path
+                d="M8 3V4H9V5H10V6H11V7H12V8H13V9H14V10H15V11H16V12H17V11H19V13H18V14H17V15H18V16H19V17H20V19H19V20H17V19H16V18H15V17H14V18H13V19H11V17H12V16H11V15H10V14H9V13H8V12H7V11H6V10H5V9H4V8H3V7H2V2H7V3H8M7 5H6V4H4V5H5V6H6V7H7V8H8V9H9V10H10V11H11V12H12V13H14V12H13V11H12V10H11V9H10V8H9V7H8V6H7V5Z" />
+        </svg>
+        <span class="a-btn__text">Tournois</span>
+    </button>
+    <button class="a-btn -orange -twoSVGoneText" data-bs-toggle="modal" data-bs-target="#2-players-modal" id="2_players">
+        <svg xmlns="http://www.w3.org/2000/svg" class="bi bi-heart-fill bottom" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314" />
+        </svg>
+        <svg class="icon_sword top" viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg">
+            <path
+                d="M8 3V4H9V5H10V6H11V7H12V8H13V9H14V10H15V11H16V12H17V11H19V13H18V14H17V15H18V16H19V17H20V19H19V20H17V19H16V18H15V17H14V18H13V19H11V17H12V16H11V15H10V14H9V13H8V12H7V11H6V10H5V9H4V8H3V7H2V2H7V3H8M7 5H6V4H4V5H5V6H6V7H7V8H8V9H9V10H10V11H11V12H12V13H14V12H13V11H12V10H11V9H10V8H9V7H8V6H7V5Z" />
+        </svg>
+        <span class="a-btn__text">Jouer a 2</span>
+    </button>
+</div>
+
+<div class="modal fade" id="tournament-pong-modal" tabindex="-1" aria-labelledby="tournament-pong-modal aria-hide="true">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<form id="pong-tournament-form">
+				<div class"modal-header">
+					<h5 class="modal-title">s'inscrire au tournois</h5>
+					<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<br></br>
+				<input class="tournament__input" type="text" name="player1_name" id="pong-tournament-player1_name_field" placeholder="Nom du joueur 1">
+				<input class="tournament__input" type="text" name="player2_name" id="pong-tournament-player2_name_field" placeholder="Nom du joueur 2">
+				<input class="tournament__input" type="text" name="player3_name" id="pong-tournament-player3_name_field" placeholder="Nom du joueur 3">
+				<div class="modal-footer">
+					<button data-bs-dismiss="modal" type="button" class="a-btn -heart">
+						<svg xmlns="http://www.w3.org/2000/svg" class="bi bi-heart-fill " viewBox="0 0 16 16">
+							<path fill-rule="evenodd"
+								d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314" />
+						</svg>
+						ANNULER</button>
+					<button type="submit" class="a-btn -heart" id="start-tournament-btn">
+						<svg xmlns="http://www.w3.org/2000/svg" class="bi bi-heart-fill " viewBox="0 0 16 16">
+							<path fill-rule="evenodd"
+								d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314" />
+						</svg>
+						Lancer le tournois</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+
+<div class="modal fade" id="2-players-modal" tabindex="-1" aria-labelledby="2-players-modal aria-hide="true">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<form id="pong-tournament-form">
+				<div class"modal-header">
+					<h5 class="modal-title">Jouer a 2</h5>
+					<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<br></br>
+				<input class="tournament__input" type="text" name="player2_name" id="2-players-player2_name_field" placeholder="Nom du joueur 2">
+				<div class="modal-footer">
+					<button data-bs-dismiss="modal" type="button" class="a-btn -heart">
+						<svg xmlns="http://www.w3.org/2000/svg" class="bi bi-heart-fill " viewBox="0 0 16 16">
+							<path fill-rule="evenodd"
+								d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314" />
+						</svg>
+						ANNULER</button>
+					<button type="submit" class="a-btn -heart" id="edit-btn">
+						<svg xmlns="http://www.w3.org/2000/svg" class="bi bi-heart-fill " viewBox="0 0 16 16">
+							<path fill-rule="evenodd"
+								d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314" />
+						</svg>
+						Lancer la partie</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>

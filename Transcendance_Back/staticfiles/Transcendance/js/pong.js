@@ -23,7 +23,7 @@ const pong = {
 	currentNotice: "",
 	currentState: null, // states are: start, game, pause and end
 
-	init: function (container) {
+	init: function (container, match, is_tournament) {
 		let left = Math.floor(container.getBoundingClientRect().left);
 		let top = Math.floor(container.getBoundingClientRect().top);
 
@@ -49,7 +49,7 @@ const pong = {
 		this.centerPaddles();
 		this.randomizeBallDirection();
 		// render
-		this.displayScore(this.scorePlayer1, this.scorePlayer2);
+		this.displayScore(this.scorePlayer1, this.scorePlayer2, match);
 		this.displayBall();
 		this.displayPaddles();
 
@@ -88,7 +88,7 @@ const pong = {
 		pong.display.drawRecInLayer(pong.groundLayer, this.netWidth, this.groundHeight, this.netColor, this.groundWidth / 2 - this.netWidth / 2, 0);
 		pong.paddleL.init(this.distanceFromEdge);
 		pong.paddleR.init(this.distanceFromEdge);
-		pong.displayScore(pong.scorePlayer1, pong.scorePlayer2);
+		pong.displayScore(pong.scorePlayer1, pong.scorePlayer2, match);
 		pong.displayBall();
 		pong.displayPaddles();
 		pong.displayNotice();
@@ -180,15 +180,12 @@ const pong = {
 		window.onkeyup = onKeyUpFunction;
 	},
 
-	displayScore: function (scorePlayer1, scorePlayer2) {
-		let scoreP1 = this.scorePlayer1;
-		if (scoreP1 < 10)
-			scoreP1 = '0' + scoreP1;
-		let scoreP2 = this.scorePlayer2;
-		if (scoreP2 < 20)
-			scoreP2 = '0' + scoreP2;
-		pong.display.drawTextInLayer(this.scoreLayer, scoreP1, "30px mars", "#FF0000", this.groundWidth / 2 - 80, 30);
-		pong.display.drawTextInLayer(this.scoreLayer, scoreP2, "30px mars", "#FF0000", this.groundWidth / 2 + 40, 30);
+	displayScore: function (scorePlayer1, scorePlayer2, match) {
+		let scoreP1 = match["player1"] + " : " + this.scorePlayer1;
+		let scoreP2 = match["player2"] + " : " + this.scorePlayer2;
+		const padding = 30;
+		pong.display.drawTextInLayer(this.scoreLayer, scoreP1, "30px mars", "#FF0000", padding, 30);
+		pong.display.drawTextInLayer(this.scoreLayer, scoreP2, "30px mars", "#FF0000", this.groundWidth - (padding + (match["player2"].length) * 26), 30);
 	},
 	displayBall: function () {
 		pong.display.drawRecInLayer(this.ballPaddlesLayer, pong.ball.width, pong.ball.height, pong.ball.color, pong.ball.posX, pong.ball.posY);
@@ -297,7 +294,26 @@ const pong = {
 				&& key != "Enter")
 				pong.code[key].pressed && pong.code[key].func();
 		});
-	}
+	},
+
+
+	initialisation: function(match, is_tournament) {
+		const run_game = function() {
+			pong.currentState();
+		}
+		let modal = document.getElementById('tournament-pong-modal');
+		let modal_instance = bootstrap.Modal.getInstance(modal);
+		modal_instance.hide();
+		centerZone.inner.innerHTML = "";
+		if (intervalId) {
+			pong.scorePlayer1 = 0;
+			pong.scorePlayer2 = 0;
+			clearInterval(intervalId);
+		}
+		pong.init(centerZone.inner, match, is_tournament);
+		intervalId = setInterval(run_game, 1000 / 60); // 60 FPS
+	},
+
 	/* collisionWithBall : function() */
 	/* { */
 	/* 	if (pong.paddleL.detectCollision(pong.ball) */

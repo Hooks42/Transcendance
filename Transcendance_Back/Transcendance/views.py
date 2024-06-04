@@ -75,6 +75,11 @@ def Hello(request):
     print(f"✅ servor returned HTPP_RESPONSE")
     return render(request, 'main.html', {'signup_form': signup_form, 'signin_form': signin_form})
 
+@login_required
+def pong_mode_choice(request):
+    pong_mode_choice_html = render_to_string('pong_mode_choice.html', {'request': request}, request=request)
+    return JsonResponse({'pong_mode_choice_html': pong_mode_choice_html})
+
 def LoginPage(request):
     context = {
         'request': request,

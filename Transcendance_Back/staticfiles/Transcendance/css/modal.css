@@ -62,3 +62,12 @@
   margin: auto;
   padding: 32px;
 }
+
+.tournament__input
+{
+  width: 53%;
+  margin: 16px;
+  border: 1px solid var(--white);
+  padding: 16px;
+  margin-left: 189px;
+}
