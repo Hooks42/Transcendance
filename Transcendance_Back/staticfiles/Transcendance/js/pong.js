@@ -12,6 +12,8 @@ const pong = {
 	ballPaddlesLayer: null,
 	noticeLayer: null,
 
+	player1: null,
+	player2: null,
 	scorePlayer1: 0,
 	scorePlayer2: 0,
 
@@ -49,7 +51,7 @@ const pong = {
 		this.centerPaddles();
 		this.randomizeBallDirection();
 		// render
-		this.displayScore(this.scorePlayer1, this.scorePlayer2, match);
+		this.displayScore(this.scorePlayer1, this.scorePlayer2);
 		this.displayBall();
 		this.displayPaddles();
 
@@ -180,12 +182,12 @@ const pong = {
 		window.onkeyup = onKeyUpFunction;
 	},
 
-	displayScore: function (scorePlayer1, scorePlayer2, match) {
-		let scoreP1 = match["player1"] + " : " + this.scorePlayer1;
-		let scoreP2 = match["player2"] + " : " + this.scorePlayer2;
+	displayScore: function (scorePlayer1, scorePlayer2) {
+		let scoreP1 = pong.player1 +" : " + this.scorePlayer1;
+		let scoreP2 = pong.player2 + " : " + this.scorePlayer2;
 		const padding = 30;
 		pong.display.drawTextInLayer(this.scoreLayer, scoreP1, "30px mars", "#FF0000", padding, 30);
-		pong.display.drawTextInLayer(this.scoreLayer, scoreP2, "30px mars", "#FF0000", this.groundWidth - (padding + (match["player2"].length) * 26), 30);
+		pong.display.drawTextInLayer(this.scoreLayer, scoreP2, "30px mars", "#FF0000", this.groundWidth - (padding + (pong.player2.length) * 26), 30);
 	},
 	displayBall: function () {
 		pong.display.drawRecInLayer(this.ballPaddlesLayer, pong.ball.width, pong.ball.height, pong.ball.color, pong.ball.posX, pong.ball.posY);
@@ -306,11 +308,16 @@ const pong = {
 		modal_instance.hide();
 		centerZone.inner.innerHTML = "";
 		if (intervalId) {
+			pong.player1 = match["player1"];
+			pong.player2 = match["player2"];
+			console.log("player1: " + pong.player1, "player2: " + pong.player2);
 			pong.scorePlayer1 = 0;
 			pong.scorePlayer2 = 0;
 			clearInterval(intervalId);
 		}
-		pong.init(centerZone.inner, match, is_tournament);
+		pong.player1 = match["player1"];
+		pong.player2 = match["player2"];
+		pong.init(centerZone.inner, is_tournament);
 		intervalId = setInterval(run_game, 1000 / 60); // 60 FPS
 	},
 
