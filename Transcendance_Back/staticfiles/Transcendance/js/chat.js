@@ -178,9 +178,11 @@ const chat = {
         chat.chatroom[chat.chatroom.length - 1].appendChild(textarea);
             
         const btn_send = create_btn(['a-btn', '-orange', '-sm'], "ENVOYER");
+        btn_send.setAttribute('id', chat_name + "-send_btn");
+        btn_send.dataset.username = chat_name;
         btn_send.addEventListener('click' , function ()
         {
-            socket.sendMessage(typing_area.value, chat_name);
+            socket.sendMessage(typing_area.value, btn_send.dataset.username);
             typing_area.value = '';
 
         });
@@ -189,7 +191,7 @@ const chat = {
         {
             if (e.key === 'Enter')
             {
-                socket.sendMessage(typing_area.value, chat_name);
+                socket.sendMessage(typing_area.value, btn_send.dataset.username);
                 typing_area.value = '';
             }
         });

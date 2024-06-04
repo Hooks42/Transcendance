@@ -1135,6 +1135,7 @@ function update_private_chat_div_ids(user_to_edit, new_username)
     {
         friend_list.forEach(friend =>
         {
+            const btn_send = document.getElementById(get_room_name(user_to_edit, friend) + "-send_btn");
             const disc_btn = document.getElementById('disc_btn-' + friend);
             const big_div = document.getElementById(get_room_name(user_to_edit, friend) + "-conv");
             const inbox_div = document.getElementById(get_room_name(user_to_edit, friend) + "_inbox");
@@ -1152,11 +1153,14 @@ function update_private_chat_div_ids(user_to_edit, new_username)
                 disc_btn.dataset.username = get_room_name(friend, new_username);
                 console.log("🔥 new dataset --> ", disc_btn.dataset.username);
             }
+            if (btn_send)
+                btn_send.dataset.username = get_room_name(friend, new_username);
 
         });
     }
     else
     {
+        const btn_send = document.getElementById(get_room_name(currentUser, user_to_edit) + "-send_btn");
         const disc_btn = document.getElementById('disc_btn-' + new_username);
         const big_div = document.getElementById(get_room_name(currentUser, user_to_edit) + "-conv");
         const inbox_div = document.getElementById(get_room_name(currentUser, user_to_edit) + "_inbox");
@@ -1178,6 +1182,8 @@ function update_private_chat_div_ids(user_to_edit, new_username)
             disc_btn.dataset.username = get_room_name(currentUser, new_username);
             console.log("🔥 new dataset --> ", disc_btn.dataset.username);
         }
+        if (btn_send)
+            btn_send.dataset.username = get_room_name(currentUser, new_username);
 
 
     }
