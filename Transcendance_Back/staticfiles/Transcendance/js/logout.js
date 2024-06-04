@@ -55,6 +55,13 @@ async function display_login_page()
 			let main_div = document.getElementById('main-div');
 			has_loaded = false;
 			main_div.innerHTML = login_page_html;
+			socket.chat_socket.close();
+			socket.system_socket.close();
+			socket.pong_socket.close();
+			Object.entries(socket.private_chat_sockets).forEach(([key , value]) => {
+				value.close();
+				delete socket.private_chat_sockets[key];
+			});
 			listen_log_btn();
 		})
 		.catch(error => console.log('error', error));

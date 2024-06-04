@@ -5,6 +5,7 @@ import sys
 
 
 def main():
+    print("❌ ATTENTION PENSER A CLEAR LA DATABASE AVANT DE FAIRE LES MIGRATIONS ❌")
     """Run administrative tasks."""
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'Transcendance_Back.settings')
     try:

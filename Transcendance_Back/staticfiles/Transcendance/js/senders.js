@@ -247,5 +247,8 @@ send_msg = {
 			'new_username': new_username,
 		}
 		socket.chat_socket.send(JSON.stringify(message));
+		Object.entries(socket.private_chat_sockets).forEach(([ , value]) => {
+			value.send(JSON.stringify(message));
+		});
 	},
 }

@@ -5,6 +5,71 @@ const socket = {
 	chat_socket: null,
 	system_socket: null,
 	pong_socket: null,
+	private_chat_sockets: {},
+
+
+	launch_private_chat_socket: function (room_name)
+	{
+		let private_chat_socket = new WebSocket('wss://localhost/ws/private_chat/' + room_name + '/');
+
+		private_chat_socket.onopen = function (e)
+		{
+			console.log('Private Chat Socket opened with room_name: ' + room_name);
+			socket.private_chat_sockets[room_name] = private_chat_socket;
+		};
+
+		private_chat_socket.onclose = function (e)
+		{
+			console.log('Private Chat Socket closed');
+		}
+
+		private_chat_socket.onmessage = (event) => 
+		{
+			let data = JSON.parse(event.data);
+			console.log("message recieved ---> " + data.message);
+			console.log("profile_picture ---> " + data.profile_picture);
+			let inbox = document.getElementById(room_name + '_inbox');
+			if (!inbox)
+				console.log("⚠️ inbox not found");
+			chat.add_chat(data.username, data.timestamp, data.message, data.profile_picture, inbox);
+		};
+	},
+
+	init_private_chat_sockets: function (room_names)
+	{
+		for (let i = 0; i < room_names.length; i++)
+		{
+			if (!socket.private_chat_sockets[room_names[i]])
+				socket.launch_private_chat_socket(room_names[i]);
+		}
+	},
+
+	update_socket: function (user_to_edit, new_username)
+	{
+		if (currentUser === new_username)
+		{
+			friend_list.forEach(element => {
+				const old_room_name = get_room_name(user_to_edit, element);
+				socket.private_chat_sockets[old_room_name].close();
+				delete socket.private_chat_sockets[old_room_name];
+
+				const new_room_name = get_room_name(new_username, element);
+				socket.launch_private_chat_socket(new_room_name);
+			});
+		}
+		else if (friend_list.includes(new_username))
+		{
+			Object.keys(socket.private_chat_sockets).forEach(key => {
+				console.log("🔱 key --> ", key);
+			});
+			const old_room_name = get_room_name(user_to_edit, currentUser);
+			socket.private_chat_sockets[old_room_name].close();
+			delete socket.private_chat_sockets[old_room_name];
+			
+			const new_room_name = get_room_name(new_username, currentUser);
+			socket.launch_private_chat_socket(new_room_name);
+		}
+	},
 
 	launch_pfc_socket: function (room_name, original_user, user_to_add)
 	{
@@ -91,7 +156,10 @@ const socket = {
 			let data = JSON.parse(event.data);
 			console.log("message recieved ---> " + data.message);
 			console.log("profile_picture ---> " + data.profile_picture);
-			chat.add_chat(data.username, data.timestamp, data.message, data.profile_picture);
+			let inbox = document.getElementById('General_inbox');
+			if (!inbox)
+				console.log("⚠️ inbox not found");
+			chat.add_chat(data.username, data.timestamp, data.message, data.profile_picture, inbox);
 		};
 	},
 
@@ -167,6 +235,9 @@ const socket = {
 						show_no_notif();
 					
 					clear_button_if_friend(original_user);
+					const room_name = get_room_name(original_user, user_to_add);
+					chat.create_chatroom(room_name);
+					socket.launch_private_chat_socket(room_name);
 				}
 				else if(data.message.original_user === currentUser)
 				{
@@ -174,6 +245,9 @@ const socket = {
 					chat.add_user_panel(data.message.user_to_add, data.message.user_to_add_status, data.message.user_to_add_avatar, "FRIEND");
 					chat.add_disc_panel(data.message.user_to_add);
 					clear_button_if_friend(data.message.user_to_add);
+					const room_name = get_room_name(original_user, user_to_add);
+					chat.create_chatroom(room_name);
+					socket.launch_private_chat_socket(room_name);
 				}
 			}
 			
@@ -194,6 +268,9 @@ const socket = {
 				if (data.message.original_user === currentUser)
 				{
 					friend_list = friend_list.filter(e => e !== data.message.friend_to_delete);
+					const room_name = get_room_name(currentUser, data.message.friend_to_delete);
+					socket.private_chat_sockets[room_name].close();
+					delete socket.private_chat_sockets[room_name];
 					document.getElementById("disc_btn-" + data.message.friend_to_delete).remove();
 					document.getElementById("friend_list-" + data.message.friend_to_delete).remove();
 					let btns = document.getElementsByClassName("add_friend_btn-" + data.message.friend_to_delete);
@@ -203,6 +280,9 @@ const socket = {
 				else if(data.message.friend_to_delete === currentUser)
 				{
 					friend_list = friend_list.filter(e => e !== data.message.original_user);
+					const room_name = get_room_name(currentUser, data.message.original_user);
+					socket.private_chat_sockets[room_name].close();
+					delete socket.private_chat_sockets[room_name];
 					document.getElementById("disc_btn-" + data.message.original_user).remove();
 					document.getElementById("friend_list-" + data.message.original_user).remove();
 					let btns = document.getElementsByClassName("add_friend_btn-" + data.message.original_user);
@@ -222,6 +302,9 @@ const socket = {
 						document.getElementById("disc_btn-" + data.message.user_to_add).remove();
 						document.getElementById("friend_list-" + data.message.user_to_add).remove();
 						friend_list = friend_list.filter(e => e !== data.message.user_to_add);
+						const room_name = get_room_name(currentUser, data.message.user_to_add);
+						socket.private_chat_sockets[room_name].close();
+						delete socket.private_chat_sockets[room_name];
 						let btns = document.getElementsByClassName("add_friend_btn-" + data.message.user_to_add);
 						for (let i = 0; i < btns.length; i++)
 							btns[i].style.display = "inline";
@@ -237,6 +320,9 @@ const socket = {
 						document.getElementById("disc_btn-" + data.message.original_user).remove();
 						document.getElementById("friend_list-" + data.message.original_user).remove();
 						friend_list = friend_list.filter(e => e !== data.message.original_user);
+						const room_name = get_room_name(currentUser, data.message.original_user);
+						socket.private_chat_sockets[room_name].close();
+						delete socket.private_chat_sockets[room_name];
 						let btns = document.getElementsByClassName("add_friend_btn-" + data.message.original_user);
 						for (let i = 0; i < btns.length; i++)
 							btns[i].style.display = "inline";
@@ -281,7 +367,9 @@ const socket = {
 					}
 					send_msg.update_friend_request_and_block_list(user_to_edit, new_username);
 				}
+				socket.update_socket(user_to_edit, new_username);
 				update_when_user_edit(user_to_edit, new_username, new_avatar);
+
 			}
 			// if (data.message.command === 'friend_request_and_block_list_updated')
 			// 	console.log("✅ modification de la liste d'amis et de bloqués ! status --> " + data.message.is_updated);
@@ -380,13 +468,23 @@ const socket = {
 			this.launch_chat_socket();
 			this.launch_system_socket();
 			this.launch_pong_socket();
+			let room_names = [];
+			fetch('/get-friends-list/')
+				.then(response => response.json())
+				.then(data =>
+				{
+					let friends = data.friends;
+					for (let i = 0; i < friends.length; i++)
+						room_names.push(get_room_name(currentUser, friends[i].username));
+					socket.init_private_chat_sockets(room_names);
+				});
 			has_loaded = true;
 		}
     },
 
-	sendMessage: function (message)
+	sendMessage: function (message, chatroom)
     {
-        if (this.chat_socket.readyState === this.chat_socket.OPEN)
+        if (chatroom === 'General' && this.chat_socket.readyState === this.chat_socket.OPEN)
         {
             if (message.length > 0)
             {
@@ -399,5 +497,18 @@ const socket = {
                 }));
             }
         }
+		else if (socket.private_chat_sockets[chatroom] && socket.private_chat_sockets[chatroom].readyState === this.private_chat_sockets[chatroom].OPEN)
+		{
+			if (message.length > 0)
+			{
+				this.private_chat_sockets[chatroom].send(JSON.stringify({
+					'type': 'send_message',
+					'message': message,
+					'username': currentUser,
+					'profile_picture': profile_picture,
+					'timestamp': new Date().toLocaleString(),
+				}));
+			}
+		}
     }
 }

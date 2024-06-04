@@ -359,9 +359,40 @@ function create_disc_li(title_text, info_text)
 {
     const button = create_btn(['m-chat__li', '-heart'], "");
     button.setAttribute('id', 'disc_btn-' + title_text);
+    if (title_text === 'Général')
+        button.dataset.username = 'General';
+    else
+        button.dataset.username = get_room_name(currentUser, title_text);
+    
     const title = document.createElement('span');
     title.classList.add('a-li__title');
     title.setAttribute('id', 'disc_btn_username-' + title_text);
+
+    button.addEventListener('click', function (event)
+    {
+        let target = event.target.closest(".m-chat__li");
+        if (!target)
+            return;
+        if (!chat.disc_pane.contains(target))
+            return;
+        event.preventDefault();
+
+        chat.disc_tab.classList.toggle("hide");
+        chat.user_tab.classList.toggle("hide");
+
+        chat.current_pane = chat.get_active_pane();
+        chat.current_pane.classList.toggle("active");
+        chat.current_pane.classList.toggle("show");
+
+        chat.arrow_tab.children[1].textContent = target.children[1].textContent;
+        chat.arrow_tab.children[1].id = target.children[1].textContent + "-arrow-title";
+        chat.arrow_tab.classList.toggle("hide");
+
+        let conv_to_show = document.getElementById(this.dataset.username + "-conv");
+        console.log("♻️", this.dataset.username + "-conv");
+        if (conv_to_show)
+            conv_to_show.style.display = "flex";
+    });
     title.appendChild(document.createTextNode(title_text));
 
     const info = document.createElement('span');
@@ -936,11 +967,11 @@ function update_when_user_edit(user_to_edit, new_username, new_avatar)
     update_notif(user_to_edit, new_username);
     update_friend_list_pannel(user_to_edit, new_username);
     update_buttons(user_to_edit, new_username);
+    update_private_chat_div_ids(user_to_edit, new_username);
 }
 
 function update_self_profile(new_username, new_avatar)
 {
-    console.log('✅currentUser: ' + currentUser + ' new_username: ' + new_username);
     if (currentUser === new_username)
     {
         let avatar = document.getElementById('profile_edit-avatar');
@@ -1098,6 +1129,66 @@ function update_friend_list_pannel(user_to_edit, new_username)
         friend_block_to_update.setAttribute('id', 'friend_list-' + new_username);
 }
 
+function update_private_chat_div_ids(user_to_edit, new_username)
+{
+    if (new_username === currentUser)
+    {
+        friend_list.forEach(friend =>
+        {
+            const btn_send = document.getElementById(get_room_name(user_to_edit, friend) + "-send_btn");
+            const disc_btn = document.getElementById('disc_btn-' + friend);
+            const big_div = document.getElementById(get_room_name(user_to_edit, friend) + "-conv");
+            const inbox_div = document.getElementById(get_room_name(user_to_edit, friend) + "_inbox");
+            const conv_name = document.getElementById(friend + "-arrow-title");
+            
+            if (big_div)
+                big_div.setAttribute('id', get_room_name(new_username, friend) + "-conv");
+            if (inbox_div)
+                inbox_div.setAttribute('id', get_room_name(new_username, friend) + "_inbox");
+            if (conv_name)
+                conv_name.textContent = friend;
+            if (disc_btn)
+            {
+                console.log("🔥 old dataset --> ", disc_btn.dataset.username);
+                disc_btn.dataset.username = get_room_name(friend, new_username);
+                console.log("🔥 new dataset --> ", disc_btn.dataset.username);
+            }
+            if (btn_send)
+                btn_send.dataset.username = get_room_name(friend, new_username);
+
+        });
+    }
+    else
+    {
+        const btn_send = document.getElementById(get_room_name(currentUser, user_to_edit) + "-send_btn");
+        const disc_btn = document.getElementById('disc_btn-' + new_username);
+        const big_div = document.getElementById(get_room_name(currentUser, user_to_edit) + "-conv");
+        const inbox_div = document.getElementById(get_room_name(currentUser, user_to_edit) + "_inbox");
+        const conv_name = document.getElementById(user_to_edit + "-arrow-title");
+
+        if (big_div)
+            big_div.setAttribute('id', get_room_name(currentUser, new_username) + "-conv");
+        if (inbox_div)
+            inbox_div.setAttribute('id', get_room_name(currentUser, new_username) + "_inbox");
+        if (conv_name)
+        {    
+            conv_name.textContent = new_username;
+            conv_name.setAttribute('id', new_username + "-arrow-title");
+        }
+        if (disc_btn)
+        {
+            console.log("🔥 old dataset --> ", disc_btn.dataset.username);
+            disc_btn.setAttribute('id', 'disc_btn-' + new_username);
+            disc_btn.dataset.username = get_room_name(currentUser, new_username);
+            console.log("🔥 new dataset --> ", disc_btn.dataset.username);
+        }
+        if (btn_send)
+            btn_send.dataset.username = get_room_name(currentUser, new_username);
+
+
+    }
+}
+
 async function display_game_button()
 {
     fetch('/home/')
@@ -1193,4 +1284,13 @@ function clear_notif(username)
     notif_menu = document.getElementById('notif-menu');
     if (notif_menu.childElementCount == 0)
         show_no_notif();
+}
+
+function get_room_name(user1, user2)
+{
+    let room_name = [];
+    room_name.push(user1);
+    room_name.push(user2);
+    room_name.sort();
+    return (room_name[0] + "_" + room_name[1]);
 }
