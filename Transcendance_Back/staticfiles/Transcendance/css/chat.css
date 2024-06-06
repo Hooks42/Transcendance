@@ -8,8 +8,6 @@
     display: block;
 }
 
-
-
 /* ---------------------------------------------------------------------------
 //
 // CLASSES THAT COME FROM BOOTSTRAP
@@ -99,7 +97,7 @@
     margin: 0px;
     overflow: hidden;
     white-space: nowrap;
-    max-width: 150px;
+    width: 200px;
     top: 14px;
     left: 64px;
     position: absolute;
@@ -194,8 +192,6 @@
     left: 34px;
     position: absolute;
 }
-
-
 
 /* ---------------------------------------------------------------------------
 //
@@ -296,3 +292,23 @@
     }
 }
 
+.user-info
+{
+    display: flex;
+    width: 100%;
+    /* justify-content: space-between; */
+}
+
+.sender_name
+{
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.m-wrapper__btn-set4
+{
+    margin-right: 0px;
+    margin-left: auto;
+}

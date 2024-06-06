@@ -442,9 +442,12 @@ function create_msg(name_text, time_text, profile_picture)
     userInfo.classList.add('user-info');
 
     const sender_name = document.createElement('span');
-    sender_name.classList.add('sender_name-' + name_text);
+    sender_name.classList.add('sender_name', 'sender_name-' + name_text);
     sender_name.textContent = name_text;
     userInfo.appendChild(sender_name);
+
+    const btn_wrapper = document.createElement('div');
+    btn_wrapper.classList.add("m-wrapper__btn-set4");
 
     if (name_text != currentUser)
     {
@@ -453,12 +456,13 @@ function create_msg(name_text, time_text, profile_picture)
             const button_add_friend = create_add_friend_btn("btn-set4", sender_name.textContent);
             button_add_friend.classList.add('add_friend_btn-' + name_text);
             button_add_friend.style.marginLeft = "40px";
-            userInfo.appendChild(button_add_friend);
+            btn_wrapper.append(button_add_friend);
         }
         const button_block_friend = create_block_friend_btn("btn-set4", sender_name.textContent);
         button_block_friend.classList.add('block_friend_btn-' + name_text);
-        userInfo.appendChild(button_block_friend);
+        btn_wrapper.append(button_block_friend);
     }
+    userInfo.append(btn_wrapper);
 
     sender_part.appendChild(userInfo);
 
