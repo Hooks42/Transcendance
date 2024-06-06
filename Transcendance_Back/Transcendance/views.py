@@ -157,7 +157,7 @@ def AccountUpdate(request):
     return render(request, 'Update_account.html', {'form': form})
 
 def Successfully_Connected_42(request):
-    return render(request, 'Successfully_Connected_42.html')
+    return render(request, 'successfully_connected_42.html')
 
 def get_user_infos(request):
     user_username = request.GET.get('username', None)
@@ -178,8 +178,11 @@ def get_conv_history(request):
     given_conversation = request.GET.get('conversation', None)
     print(f"🌿 Given Conversation --> {given_conversation}")
     if given_conversation == "General":
-        conversation = Conversation.objects.get(is_general=True)
-        message_backup = conversation.messages.all().order_by('timestamp')
+        try:
+            conversation = Conversation.objects.get(is_general=True)
+            message_backup = conversation.messages.all().order_by('timestamp')
+        except Conversation.DoesNotExist:
+            return JsonResponse({'messages': []})
     else:
         try:
             user1 = given_conversation.split('_')[0]
