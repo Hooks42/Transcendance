@@ -442,9 +442,12 @@ function create_msg(name_text, time_text, profile_picture)
     userInfo.classList.add('user-info');
 
     const sender_name = document.createElement('span');
-    sender_name.classList.add('sender_name-' + name_text);
+    sender_name.classList.add('sender_name', 'sender_name-' + name_text);
     sender_name.textContent = name_text;
     userInfo.appendChild(sender_name);
+
+    const btn_wrapper = document.createElement('div');
+    btn_wrapper.classList.add("wrapperBtn");
 
     if (name_text != currentUser)
     {
@@ -453,12 +456,13 @@ function create_msg(name_text, time_text, profile_picture)
             const button_add_friend = create_add_friend_btn("btn-set4", sender_name.textContent);
             button_add_friend.classList.add('add_friend_btn-' + name_text);
             button_add_friend.style.marginLeft = "40px";
-            userInfo.appendChild(button_add_friend);
+            btn_wrapper.append(button_add_friend);
         }
         const button_block_friend = create_block_friend_btn("btn-set4", sender_name.textContent);
         button_block_friend.classList.add('block_friend_btn-' + name_text);
-        userInfo.appendChild(button_block_friend);
+        btn_wrapper.append(button_block_friend);
     }
+    userInfo.append(btn_wrapper);
 
     sender_part.appendChild(userInfo);
 
@@ -469,6 +473,7 @@ function create_msg(name_text, time_text, profile_picture)
     // Arborescence
     msg.appendChild(senderDiv);
     senderDiv.append(btn_img, sender_part, timestamp);
+    // senderDiv.append(btn_wrapper);
     btn_img.appendChild(img);
 
     if (currentUser === name_text)
@@ -537,18 +542,21 @@ function create_msg_text()
 
 function create_user_in_pane(username, userstatus, profile_picture, which_list)
 {
-    const button = create_btn(['m-chat__li'], "");
-    button.setAttribute('id', 'friend_list-' + username);
+    const li = document.createElement('div');
+    li.classList.add('m-chat__li');
+    li.setAttribute('id', 'friend_list-' + username);
 
 
     const btn_img = create_btn_img(['a-user__img'], "https://localhost" + profile_picture);
 
-    const title = document.createElement('span');
-    title.classList.add('a-user__name');
-    title.setAttribute('id', 'friend_list_username-' + username);
-    title.appendChild(document.createTextNode(username));
+    const titleNBtns = document.createElement('div');
+    titleNBtns.classList.add('a-user__name');
+    const name = document.createElement('div');
+    name.classList.add('sender_name');
+    name.setAttribute('id', 'friend_list_username-' + username);
+    name.appendChild(document.createTextNode(username));
 
-    const info = document.createElement('span');
+    const info = document.createElement('div');
     info.classList.add('a-user__info');
     info.setAttribute('id', 'friend_list_status-' + userstatus);
     info.appendChild(document.createTextNode(userstatus));
@@ -558,8 +566,9 @@ function create_user_in_pane(username, userstatus, profile_picture, which_list)
         btns = create_btn_set(username, "btn-set4");
     else if (which_list === "BLOCKED")
         btns = create_block_btn_set(username, "btn-set4");
-    button.append(btn_img, title, info, btns);
-    return (button);
+    li.append(btn_img, titleNBtns, info);
+    titleNBtns.append(name, btns);
+    return (li);
 }
 
 function create_svg(classes)

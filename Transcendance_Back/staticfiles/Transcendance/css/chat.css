@@ -1,4 +1,9 @@
+#the-chat
+{
+    min-width: 400px;
+}
 .hide
+
 {
     display: none;
 }
@@ -7,8 +12,6 @@
 {
     display: block;
 }
-
-
 
 /* ---------------------------------------------------------------------------
 //
@@ -99,9 +102,10 @@
     margin: 0px;
     overflow: hidden;
     white-space: nowrap;
-    max-width: 150px;
+    width: 200px;
     top: 14px;
     left: 64px;
+    display: flex;
     position: absolute;
 }
 
@@ -195,21 +199,12 @@
     position: absolute;
 }
 
-
-
 /* ---------------------------------------------------------------------------
 //
 // ORIGINAL CLASSES - content - user pane
 //
 --------------------------------------------------------------------------- */
 
-.m-chat__li .wrapperBtn
-{
-    right: 4px;
-    top: 50%;
-    transform: translateY(-50%);
-    position: absolute;
-}
 
 /* ---------------------------------------------------------------------------
 //
@@ -296,3 +291,31 @@
     }
 }
 
+.user-info
+{
+    display: flex;
+    width: 100%;
+    /* justify-content: space-between; */
+}
+
+.sender_name
+{
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.wrapperBtn
+{
+    margin-right: 0px;
+    margin-left: auto;
+}
+/* .m-chat__li .wrapperBtn */
+/* .wrapperBtn
+{
+    right: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    position: absolute;
+} */

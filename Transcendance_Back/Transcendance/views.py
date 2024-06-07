@@ -162,7 +162,7 @@ def AccountUpdate(request):
     return render(request, 'Update_account.html', {'form': form})
 
 def Successfully_Connected_42(request):
-    return render(request, 'Successfully_Connected_42.html')
+    return render(request, 'successfully_connected_42.html')
 
 def get_user_infos(request):
     user_username = request.GET.get('username', None)
