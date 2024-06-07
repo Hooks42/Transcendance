@@ -68,12 +68,35 @@ p
 // CLASSES THAT COME FROM BOOTSTRAP
 //
 --------------------------------------------------------------------------- */
+
+
+.dropdown-menu
+{
+  --bs-dropdown-bg: var(--black);
+  --bs-dropdown-color: var(--white);
+  --bs-dropdown-border-color: var(--white);
+  --bs-dropdown-border-width: 1px;
+  --bs-dropdown-border-radius: 0%;
+  position: fixed;
+}
+
+.dropdown-item
+{
+  --bs-dropdown-link-color: var(--white);
+}
+
 /* ---------------------------------------------------------------------------
 //
 // ORIGINAL CLASSES
 //
 --------------------------------------------------------------------------- */
 
+/* to wrap around all of the dropdown-menu content */
+.dropdown-menu>li
+{
+  width: max-content;
+  width: 100%;
+}
 
 .btn-set4
 {

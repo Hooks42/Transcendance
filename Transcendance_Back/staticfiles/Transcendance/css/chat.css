@@ -120,9 +120,9 @@
     border-radius: 50%;
     height: 40px;
     width: 40px;
-    top: 12px;
-    left: 16px;
-    position: absolute;
+    /* top: 12px;
+    left: 16px; */
+    /* position: absolute; */
     z-index: 1000;
 }
 
@@ -254,6 +254,7 @@
     width: 100%;
     position: relative;
 }
+
 
 .a-message__content
 {

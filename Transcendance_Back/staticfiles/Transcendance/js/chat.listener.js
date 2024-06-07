@@ -66,22 +66,22 @@ chat.listener = {
             event.preventDefault();
             alert("USER btn click, do action on that user");
         }
-    },
-
-    onClickChat: function (event)
-    {
-        if (event.target.closest(".-img"))
-        {
-            console.log("click on img");
-            let target = event.target.closest(".-img");
-            if (!target)
-                return;
-            event.preventDefault();
-            navigateCenterZone("profile");
-            event.stopPropagation();
-            // alert("IMG click, go to that user's profile page");
-        }
     }
+
+    // onClickChat: function (event)
+    // {
+    //     if (event.target.closest(".-img"))
+    //     {
+    //         console.log("click on img");
+    //         let target = event.target.closest(".-img");
+    //         if (!target)
+    //             return;
+    //         event.preventDefault();
+    //         // navigateCenterZone("profile");
+    //         event.stopPropagation();
+    //         // alert("IMG click, go to that user's profile page");
+    //     }
+    // }
 }
 
 

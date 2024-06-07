@@ -36,31 +36,11 @@
     margin-right: 8px;
 }
 
-.dropdown-menu
-{
-    --bs-dropdown-bg: var(--black);
-    --bs-dropdown-border-color: var(--white);
-    --bs-dropdown-border-width: 1px;
-    --bs-dropdown-border-radius: 0%;
-    position:fixed;
-}
-
 /* --------------------------------------------------------------------------- 
 //
 // ORIGINAL CLASSES
 //
 --------------------------------------------------------------------------- */
-
-/* hide caret */
-.caret-off::before
-{
-    display: none !important;
-}
-
-.caret-off::after
-{
-    display: none !important;
-}
 
 .dropdown-menu.-lg
 {
@@ -71,11 +51,6 @@
     scrollbar-width: thin;
 }
 
-/* to wrap around all of the dropdown-menu content */
-.dropdown-menu>li
-{
-    width: max-content;
-}
 
 .m-notif
 {
