@@ -142,7 +142,7 @@ send_msg = {
 		socket.system_socket.send(messageJson);
 	},
 
-	pong_finished: function(player1, player2, winner, loser, player1Score, player2Score)
+	pong_finished: function(player1, player2, winner, player1Score, player2Score)
 	{
 		if (winner == currentUser)
 			loser = player2;
@@ -153,7 +153,6 @@ send_msg = {
 			'player1': player1,
 			'player2': player2,
 			'winner': winner,
-			'loser': loser,
 			'player1Score': player1Score,
 			'player2Score': player2Score,
 		}

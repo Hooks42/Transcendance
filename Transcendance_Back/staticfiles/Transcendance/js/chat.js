@@ -200,9 +200,9 @@ const chat = {
         existing_chatContent.appendChild(chat.chatroom[chat.chatroom.length - 1]);
     },
 
-    add_chat: function(username, timestamp, content, profile_picture, inbox)
+    add_chat: function(username, timestamp, content, profile_picture, inbox, is_bot = false)
     {
-        const msg = create_msg(username, timestamp, profile_picture);
+        const msg = create_msg(username, timestamp, profile_picture, is_bot);
         const msg_text = create_msg_text();
         msg_text.appendChild(document.createTextNode(content));
         msg.classList.add('msg_div-' + username);

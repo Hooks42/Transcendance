@@ -419,7 +419,7 @@ function create_btn_img(img_class, img_path)
 }
 
 
-function create_msg(name_text, time_text, profile_picture)
+function create_msg(name_text, time_text, profile_picture, is_bot = false)
 {
     const msg = document.createElement('div');
     msg.classList.add('m-message');
@@ -449,7 +449,7 @@ function create_msg(name_text, time_text, profile_picture)
     const btn_wrapper = document.createElement('div');
     btn_wrapper.classList.add("wrapperBtn");
 
-    if (name_text != currentUser)
+    if (name_text != currentUser && !is_bot)
     {
         if (!friend_list.includes(name_text))
         {
@@ -476,7 +476,7 @@ function create_msg(name_text, time_text, profile_picture)
     // senderDiv.append(btn_wrapper);
     btn_img.appendChild(img);
 
-    if (currentUser === name_text)
+    if (currentUser === name_text || is_bot)
         return msg;
     // Création du menu déroulant
     const dropdownDiv = document.createElement('div');
@@ -1332,7 +1332,7 @@ function handle_pong_btns()
         let player2 = document.getElementById('pong-tournament-player2_name_field').value;
         let player3 = document.getElementById('pong-tournament-player3_name_field').value;
         let error_msg = null;
-        for (let i = 0; i < 5; i++)
+        for (let i = 0; i < 5 ; i++)
         {
             let error = document.getElementById('error-msg_pong_tournament#' + i);
             if (error)
@@ -1378,6 +1378,15 @@ function handle_pong_btns()
             pong_tournament_form.appendChild(error_msg);
             i++;
         }
+
+        if (player1 === player2 || player1 === player3 || player2 === player3)
+        {
+            error_msg = document.createElement('p');
+            error_msg.textContent = "❌ Les pseudos ne peuvent pas être identiques";
+            error_msg.id = "error-msg_pong_tournament#" + i;
+            pong_tournament_form.appendChild(error_msg);
+            i++;
+        }
         
         if (error_msg)
             return ;
@@ -1394,7 +1403,6 @@ function handle_pong_btns()
             matchs.push(match);
             pong.initialisation(matchs, true);
         }
-        matchs = [];
     });
 
     two_players_btn.addEventListener('submit', function(event)
@@ -1403,7 +1411,7 @@ function handle_pong_btns()
         let player2 = document.getElementById('2-players-player2_name_field').value;
         let error_msg = null;
         let i = 0;
-        for (let i = 0; i; i++)
+        for (let i = 0; i < 5; i++)
         {
             let error = document.getElementById('error-msg_2-players#' + i);
             if (error)
@@ -1446,7 +1454,20 @@ function handle_pong_btns()
             error_msg.id = "error-msg_2-players#" + i;
             two_players_btn.appendChild(error_msg);
             i++;
-        }   
+        }
+        
+        if (error_msg)
+            return ;
+        else
+        {
+            console.log("On passe ici le sang");
+            let matchs = []
+            let match = {};
+            match["player1"] = currentUser;
+            match["player2"] = player2;
+            matchs.push(match);
+            pong.initialisation(matchs, false);
+        }
     });
 
 }
