@@ -447,7 +447,7 @@ function create_msg(name_text, time_text, profile_picture)
     userInfo.appendChild(sender_name);
 
     const btn_wrapper = document.createElement('div');
-    btn_wrapper.classList.add("m-wrapper__btn-set4");
+    btn_wrapper.classList.add("wrapperBtn");
 
     if (name_text != currentUser)
     {
@@ -473,6 +473,7 @@ function create_msg(name_text, time_text, profile_picture)
     // Arborescence
     msg.appendChild(senderDiv);
     senderDiv.append(btn_img, sender_part, timestamp);
+    // senderDiv.append(btn_wrapper);
     btn_img.appendChild(img);
 
     if (currentUser === name_text)
@@ -541,18 +542,21 @@ function create_msg_text()
 
 function create_user_in_pane(username, userstatus, profile_picture, which_list)
 {
-    const button = create_btn(['m-chat__li'], "");
-    button.setAttribute('id', 'friend_list-' + username);
+    const li = document.createElement('div');
+    li.classList.add('m-chat__li');
+    li.setAttribute('id', 'friend_list-' + username);
 
 
     const btn_img = create_btn_img(['a-user__img'], "https://localhost" + profile_picture);
 
-    const title = document.createElement('span');
-    title.classList.add('a-user__name');
-    title.setAttribute('id', 'friend_list_username-' + username);
-    title.appendChild(document.createTextNode(username));
+    const titleNBtns = document.createElement('div');
+    titleNBtns.classList.add('a-user__name');
+    const name = document.createElement('div');
+    name.classList.add('sender_name');
+    name.setAttribute('id', 'friend_list_username-' + username);
+    name.appendChild(document.createTextNode(username));
 
-    const info = document.createElement('span');
+    const info = document.createElement('div');
     info.classList.add('a-user__info');
     info.setAttribute('id', 'friend_list_status-' + userstatus);
     info.appendChild(document.createTextNode(userstatus));
@@ -562,8 +566,9 @@ function create_user_in_pane(username, userstatus, profile_picture, which_list)
         btns = create_btn_set(username, "btn-set4");
     else if (which_list === "BLOCKED")
         btns = create_block_btn_set(username, "btn-set4");
-    button.append(btn_img, title, info, btns);
-    return (button);
+    li.append(btn_img, titleNBtns, info);
+    titleNBtns.append(name, btns);
+    return (li);
 }
 
 function create_svg(classes)
