@@ -428,37 +428,37 @@ const socket = {
 			console.log('Pong Socket closed');
 		}
 
-		this.pong_socket.onmessage = (event) => 
-		{
-			let data = JSON.parse(event.data);
-			console.log("message recieved ---> " + data.message);
-			if (data.message.command === "pong_game_saved")
-				centerZone.inner.innerHTML = "";
-            (function () {
-					// let requestAnimId;
-					/* const framePerSecond = 60; */
-					let initialisation = function()
-					{
-                                if (intervalId) {
-                                    pong.scorePlayer1 = 0;
-                                    pong.scorePlayer2 = 0;
-                                    clearInterval(intervalId);
-                                }
-								pong.init(centerZone.inner);
-								intervalId = setInterval(run_game, 1000 / 60); // 60 FPS
-					};
-					// un cycle d'affichage = un passage dans main()
-					const run_game = function() {
-								/* setInterval(pong.animate(), 1000 / framePerSecond); */
-								pong.currentState();
-							}
+	// 	this.pong_socket.onmessage = (event) => 
+	// 	{
+	// 		let data = JSON.parse(event.data);
+	// 		console.log("message recieved ---> " + data.message);
+	// 		if (data.message.command === "pong_game_saved")
+	// 			centerZone.inner.innerHTML = "";
+    //         (function () {
+	// 				// let requestAnimId;
+	// 				/* const framePerSecond = 60; */
+	// 				let initialisation = function()
+	// 				{
+    //                             if (intervalId) {
+    //                                 pong.scorePlayer1 = 0;
+    //                                 pong.scorePlayer2 = 0;
+    //                                 clearInterval(intervalId);
+    //                             }
+	// 							pong.init(centerZone.inner);
+	// 							intervalId = setInterval(run_game, 1000 / 60); // 60 FPS
+	// 				};
+	// 				// un cycle d'affichage = un passage dans main()
+	// 				const run_game = function() {
+	// 							/* setInterval(pong.animate(), 1000 / framePerSecond); */
+	// 							pong.currentState();
+	// 						}
 
-					// appel de la fonction initialisation au chargement de la page
-					initialisation(); 
+	// 				// appel de la fonction initialisation au chargement de la page
+	// 				initialisation(); 
 
-				})();
+	// 			})();
 				
-			};
+	// 		};
 	},
 		
 	launch_socket: function ()

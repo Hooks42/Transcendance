@@ -69,7 +69,7 @@
 						{% for history in user_pong_history %}
 						<li>
 							<h2>
-								{% if history.winner == username %}
+								{% if history.winner == True %}
 									Victoire VS {{history.opponent_username}}
 								{% else %}
 									Défaite VS {{history.opponent_username}}

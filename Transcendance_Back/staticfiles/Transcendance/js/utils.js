@@ -1313,6 +1313,7 @@ function getRandomItem(arr)
 function handle_pong_btns()
 {
     let pong_tournament_form = document.getElementById('pong-tournament-form');
+    let two_players_btn = document.getElementById('2-players-form');
     let matchs = [];
     pong_tournament_form.addEventListener('submit', function(event)
     {
@@ -1347,6 +1348,7 @@ function handle_pong_btns()
             error_msg = document.createElement('p');
             error_msg.textContent = "❌ Les pseudos doivent faire moins de 8 caractère et plus de 3 caractères";
             error_msg.id = "error-msg_pong_tournament#" + i;
+            pong_tournament_form.appendChild(error_msg);
             i++;
         }
 
@@ -1355,6 +1357,7 @@ function handle_pong_btns()
             error_msg = document.createElement('p');
             error_msg.textContent = "❌ Les pseudos ne peuvent contenir que des lettres, des chiffres et les caractères suivants: @ . + / -";
             error_msg.id = "error-msg_pong_tournament#" + i;
+            pong_tournament_form.appendChild(error_msg);
             i++;
         }
 
@@ -1363,11 +1366,12 @@ function handle_pong_btns()
             error_msg = document.createElement('p');
             error_msg.textContent = "❌ Vous ne pouvez pas participer à un tournoi contre vous-même";
             error_msg.id = "error-msg_pong_tournament#" + i;
+            pong_tournament_form.appendChild(error_msg);
             i++;
         }
         
         if (error_msg)
-            pong_tournament_form.appendChild(error_msg);
+            return ;
         else
         {
             let players = [currentUser, player1, player2, player3];
@@ -1379,8 +1383,61 @@ function handle_pong_btns()
             match["player1"] = getRandomItem(players);
             match["player2"] = getRandomItem(players);
             matchs.push(match);
-            pong.initialisation(match, true);
+            pong.initialisation(matchs, true);
         }
         matchs = [];
     });
+
+    two_players_btn.addEventListener('submit', function(event)
+    {
+        event.preventDefault();
+        let player2 = document.getElementById('2-players-player2_name_field').value;
+        let error_msg = null;
+        let i = 0;
+        for (let i = 0; i; i++)
+        {
+            let error = document.getElementById('error-msg_2-players#' + i);
+            if (error)
+                error.remove();
+            else
+                break;
+        }
+        if (!player2)
+        {
+            let error_msg = document.createElement('p');
+            error_msg.textContent = "❌ Veuillez remplir le champ";
+            error_msg.id = "error-msg_2-players#" + i;
+            i++;
+            two_players_btn.appendChild(error_msg);
+            return ;
+        }
+
+        if (!(player2.length <= 8 && player2.length >= 3))
+        {
+            error_msg = document.createElement('p');
+            error_msg.textContent = "❌ Le pseudo doit faire moins de 8 caractère et plus de 3 caractères";
+            error_msg.id = "error-msg_2-players#" + i;
+            two_players_btn.appendChild(error_msg);
+            i++;
+        }
+
+        if (!isValid(player2))
+        {
+            error_msg = document.createElement('p');
+            error_msg.textContent = "❌ Le pseudo ne peut contenir que des lettres, des chiffres et les caractères suivants: @ . + / -";
+            error_msg.id = "error-msg_2-players#" + i;
+            two_players_btn.appendChild(error_msg);
+            i++;
+        }
+
+        if (currentUser === player2)
+        {
+            error_msg = document.createElement('p');
+            error_msg.textContent = "❌ Vous ne pouvez pas jouer contre vous-même";
+            error_msg.id = "error-msg_2-players#" + i;
+            two_players_btn.appendChild(error_msg);
+            i++;
+        }   
+    });
+
 }

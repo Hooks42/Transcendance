@@ -12,8 +12,16 @@ const pong = {
 	ballPaddlesLayer: null,
 	noticeLayer: null,
 
-	player1: null,
-	player2: null,
+
+	player1: {},
+	player2: {},
+	player3: {},
+	player4: {},
+	actual_player1: {},
+	actual_player2: {},
+	leaderboard: [],
+	round: 1,
+
 	scorePlayer1: 0,
 	scorePlayer2: 0,
 
@@ -21,9 +29,11 @@ const pong = {
 	textPausedGame: "PAUSE",
 	textNewGame: "touche Entree : commencer une nouvelle partie",
 	textWINLOSE: "WINLOSE",
+	textEndGame: "Fin de la partie",
 
 	currentNotice: "",
 	currentState: null, // states are: start, game, pause and end
+	matchs: null,
 
 	init: function (container, match, is_tournament) {
 		let left = Math.floor(container.getBoundingClientRect().left);
@@ -47,11 +57,26 @@ const pong = {
 		pong.paddleL.init(this.distanceFromEdge);
 		pong.paddleR.init(this.distanceFromEdge);
 
+		pong.player1["name"] = pong.matchs[0].player1;
+		pong.player1["phase_1_w"] = false;
+		pong.player1["phase_2_w"] = false;
+		pong.player2["name"] = pong.matchs[0].player2;
+		pong.player2["phase_1_w"] = false;
+		pong.player2["phase_2_w"] = false;
+		pong.player3["name"] = pong.matchs[1].player1;
+		pong.player3["phase_1_w"] = false;
+		pong.player3["phase_2_w"] = false;
+		pong.player4["name"] = pong.matchs[1].player2;
+		pong.player4["phase_1_w"] = false;
+		pong.player4["phase_2_w"] = false;
+
+		pong.actual_player1["score"] = 0;
+		pong.actual_player2["score"] = 0;
+
 		this.centerBall();
 		this.centerPaddles();
 		this.randomizeBallDirection();
 		// render
-		this.displayScore(this.scorePlayer1, this.scorePlayer2);
 		this.displayBall();
 		this.displayPaddles();
 
@@ -90,7 +115,6 @@ const pong = {
 		pong.display.drawRecInLayer(pong.groundLayer, this.netWidth, this.groundHeight, this.netColor, this.groundWidth / 2 - this.netWidth / 2, 0);
 		pong.paddleL.init(this.distanceFromEdge);
 		pong.paddleR.init(this.distanceFromEdge);
-		pong.displayScore(pong.scorePlayer1, pong.scorePlayer2, match);
 		pong.displayBall();
 		pong.displayPaddles();
 		pong.displayNotice();
@@ -98,6 +122,50 @@ const pong = {
 	
 	// Game state
 	start: function () {
+		pong.clearLayer(pong.scoreLayer);
+		if (pong.round == 1)
+		{
+			pong.actual_player1["name"] = pong.player1["name"];
+			pong.actual_player2["name"] = pong.player2["name"];
+			console.log(pong.actual_player2["name"]);
+			pong.actual_player1["score"] = 0;
+			pong.actual_player2["score"] = 0;
+		}
+		else if (pong.round == 2)
+		{
+			pong.actual_player1["name"] = pong.player3["name"];
+			pong.actual_player2["name"] = pong.player4["name"];
+			pong.actual_player1["score"] = 0;
+			pong.actual_player2["score"] = 0;
+		}
+		else if (pong.round == 3)
+		{
+			loser_name_1 = pong.player1["phase_1_w"] ? pong.player2["name"] : pong.player1["name"];
+			loser_name_2 = pong.player3["phase_1_w"] ? pong.player4["name"] : pong.player3["name"];
+			pong.actual_player1["name"] = loser_name_1;
+			pong.actual_player2["name"] = loser_name_2;
+			pong.actual_player1["score"] = 0;
+			pong.actual_player2["score"] = 0;
+		}
+		else if (pong.round == 4)
+		{
+			winner_name_1 = pong.player1["phase_1_w"] ? pong.player1["name"] : pong.player2["name"];
+			winner_name_2 = pong.player3["phase_1_w"] ? pong.player3["name"] : pong.player4["name"];
+			pong.actual_player1["name"] = winner_name_1;
+			pong.actual_player2["name"] = winner_name_2;
+			pong.actual_player1["score"] = 0;
+			pong.actual_player2["score"] = 0;
+		}
+		else if (pong.round == 5)
+		{
+			console.log("Leaderboard --> " + pong.leaderboard);
+			pong.display_leaderBoard();
+			if (intervalId){
+				clearInterval(intervalId);
+			}
+			return ;
+		}
+		pong.displayScore();
 		if (pong.code["Enter"].pressed) {
 			pong.clearLayer(this.noticeLayer);
 			pong.currentNotice = "";
@@ -155,6 +223,8 @@ const pong = {
 		this.displayNotice();
 		this.currentNotice = this.textWINLOSE;
 		this.displayNotice();
+		this.currentNotice = this.textEndGame;
+		this.displayNotice();
 		// reset paddles and ball's positions
 		pong.centerPaddles();
 		pong.centerBall();
@@ -165,15 +235,16 @@ const pong = {
 			console.log("new game");
 			pong.code["Enter"].pressed = false;
 			// reset score
-			pong.scorePlayer1 = 0;
-			pong.scorePlayer2 = 0;
+			pong.actual_player1['score'] = 0;
+			pong.actual_player2['score'] = 0;
+			pong.round++;
 			// randomize ball direction
 			if ((Math.floor(Math.random() * 2)) % 2)
 				pong.ball.velocityX *= -1;
 			pong.clearLayer(pong.scoreLayer);
 			pong.displayScore();
 			// resume game
-			pong.currentState = pong.game;
+			pong.currentState = pong.start;
 		}
 	},
 
@@ -182,12 +253,12 @@ const pong = {
 		window.onkeyup = onKeyUpFunction;
 	},
 
-	displayScore: function (scorePlayer1, scorePlayer2) {
-		let scoreP1 = pong.player1 +" : " + this.scorePlayer1;
-		let scoreP2 = pong.player2 + " : " + this.scorePlayer2;
+	displayScore: function () {
+		let scoreP1 = pong.actual_player1['name'] +" : " + this.actual_player1['score'];
+		let scoreP2 = pong.actual_player2['name'] + " : " + this.actual_player2['score'];
 		const padding = 30;
 		pong.display.drawTextInLayer(this.scoreLayer, scoreP1, "30px mars", "#FF0000", padding, 30);
-		pong.display.drawTextInLayer(this.scoreLayer, scoreP2, "30px mars", "#FF0000", this.groundWidth - (padding + (pong.player2.length) * 26), 30);
+		pong.display.drawTextInLayer(this.scoreLayer, scoreP2, "30px mars", "#FF0000", this.groundWidth - (padding + (pong.actual_player2["name"].length) * 26), 30);
 	},
 	displayBall: function () {
 		pong.display.drawRecInLayer(this.ballPaddlesLayer, pong.ball.width, pong.ball.height, pong.ball.color, pong.ball.posX, pong.ball.posY);
@@ -208,7 +279,7 @@ const pong = {
 			pong.display.drawCenteredTextInLayer(this.noticeLayer, this.currentNotice, "21px mars", "#FF0000", this.groundWidth, this.groundHeight * 0.5);
 		}
 		else if (this.currentNotice == this.textWINLOSE) {
-			if (this.scorePlayer1 > this.scorePlayer2) {
+			if (this.actual_player1['score'] > this.actual_player2['score']) {
 				pong.display.drawCenteredTextInLayer(this.noticeLayer, "GAGNANT", "16px mars", "#FF0000", this.groundWidth * 0.5, this.groundHeight * 0.2);
 				pong.display.drawCenteredTextInLayer(this.noticeLayer, "PERDANT", "16px mars", "#FF0000", this.groundWidth * 1.5, this.groundHeight * 0.2);
 			}
@@ -243,19 +314,45 @@ const pong = {
 
 	winLoseSystem: function () {
 		// game ends when one player gets 11 points
-		if (this.scorePlayer1 >= 11 || this.scorePlayer2 >= 11) {
-			let winner;
-			let Player2 = 'player2';
-			if (this.scorePlayer1 > this.scorePlayer2)
-				winner = currentUser;
+		if (this.actual_player1['score'] >= 11 || this.actual_player2['score'] >= 11) {
+			let winner = null;
+			let loser = null;
+			let phase;
+			if (this.actual_player1['score'] > this.actual_player2['score'])
+			{
+				winner = this.actual_player1['name'];
+				loser = this.actual_player2['name'];
+			}
 			else
-				winner = Player2;
-			send_msg.pong_finished(Player2, winner, this.scorePlayer1, this.scorePlayer2);
-			pong.currentState = pong.end;
+			{
+				winner = this.actual_player2['name'];
+				loser = this.actual_player1['name'];
+			}
+			if (!(winner === null))
+			{
+				if (pong.round >= 1 && pong.round <= 2)
+					phase = "phase_1_w";
+				else if (pong.round >= 3 && pong.round <= 4)
+				{
+					pong.leaderboard.push(loser);
+					pong.leaderboard.push(winner);
+				}
+
+				if (winner == pong.player1["name"])
+					pong.player1[phase] = true;
+				else if (winner == pong.player2["name"])
+					pong.player2[phase] = true;
+				else if (winner == pong.player3["name"])
+					pong.player3[phase] = true;
+				else if (winner == pong.player4["name"])
+					pong.player4[phase] = true;
+				send_msg.pong_finished(this.player1, this.player2, winner, loser, this.actual_player1['score'], this.actual_player2['score']);
+				pong.currentState = pong.end;
+			}
 		}
 		// left player gagne 1 point
 		if (pong.ball.posX + pong.ball.width >= this.groundWidth) {
-			this.scorePlayer1++;
+			this.actual_player1['score']++;
 			// ball moves toward loser
 			if (pong.ball.velocityX < 0)
 				pong.ball.velocityX *= -1;
@@ -266,7 +363,7 @@ const pong = {
 			this.sleep(500);
 		}
 		else if (pong.ball.posX <= 0) {
-			this.scorePlayer2++;
+			this.actual_player2['score']++;
 			if (pong.ball.velocityX > 0)
 				pong.ball.velocityX *= -1;
 			this.centerBall();
@@ -299,7 +396,7 @@ const pong = {
 	},
 
 
-	initialisation: function(match, is_tournament) {
+	initialisation: function(matchs, is_tournament) {
 		const run_game = function() {
 			pong.currentState();
 		}
@@ -308,18 +405,31 @@ const pong = {
 		modal_instance.hide();
 		centerZone.inner.innerHTML = "";
 		if (intervalId) {
-			pong.player1 = match["player1"];
-			pong.player2 = match["player2"];
-			console.log("player1: " + pong.player1, "player2: " + pong.player2);
-			pong.scorePlayer1 = 0;
-			pong.scorePlayer2 = 0;
 			clearInterval(intervalId);
 		}
-		pong.player1 = match["player1"];
-		pong.player2 = match["player2"];
+		pong.matchs = matchs;
 		pong.init(centerZone.inner, is_tournament);
 		intervalId = setInterval(run_game, 1000 / 60); // 60 FPS
 	},
+
+	display_leaderBoard: function()
+	{
+		centerZone.inner.innerHTML = "";
+		let title = document.createElement('h1');
+		title.textContent = "Classement";
+
+		let leaderboard = document.createElement('ul');
+		let first = document.createElement('li');
+		let second = document.createElement('li');
+		let third = document.createElement('li');
+		let fourth = document.createElement('li');
+
+		first.textContent = pong.leaderboard[3];
+		second.textContent = pong.leaderboard[2];
+		third.textContent = pong.leaderboard[1];
+		fourth.textContent = pong.leaderboard[0];
+		centerZone.inner.append(title, first, second, third, fourth);
+	}
 
 	/* collisionWithBall : function() */
 	/* { */

@@ -1303,27 +1303,27 @@ class PongConsumer(AsyncWebsocketConsumer):
         
         print('\n')
     
-        if command is not None and player1 is not None and player2 is not None and winner is not None and player1_score is not None and player2_score is not None and current_user == player1 or current_user == player2:
+        if command is not None and player1 is not None and player2 is not None and winner is not None and player1_score is not None and player2_score is not None:
             await self.command_handler(command, current_user, player1, player2, winner, player1_score, player2_score)
         else:
             print(f"❌ {current_user.username} tried to cheat ❌ due to these parameters : {command} - {player1} - {player2} - {winner} - {player1_score} - {player2_score}")
         
     async def command_handler(self, command, current_user, player1, player2, winner, player1_score, player2_score):
         if command == 'pong_finished':
-            print(f"🔥 {current_user} finished the game 🔥 player1 --> {player1}")
-            if player1 == current_user:
-                await self.save_pong_game(player1, player2, winner, player1_score, player2_score)
-                status = await self.update_pong_stats(player1, player2, winner, player1_score, player2_score)
-                if status is not None:
-                    await self.channel_layer.group_send(
-                        self.room_group_name,
-                        {
-                            "type": "Pong_message",
-                            'message': {
-                                'command': "pong_game_saved",
-                            }
+            await self.save_pong_game(player1, player2, winner, player1_score, player2_score, current_user)
+            status = await self.update_pong_stats(player1, player2, winner, player1_score, player2_score)
+            print(f"🔥 status --> {status} 🔥")
+            if status is not None:
+                await self.channel_layer.group_send(
+                    self.room_group_name,
+                    {
+                        "type": "Pong_message",
+                        'message': {
+                            'command': "pong_game_saved",
                         }
-                    )
+                    }
+                )
+                print ("message sent")
         else:
             print(f"❌ {current_user} rentre pas dans le if command --> {command} ❌")
                     
@@ -1342,59 +1342,65 @@ class PongConsumer(AsyncWebsocketConsumer):
                 
     
     @database_sync_to_async
-    def save_pong_game(self, player1, player2, winner, player1_score, player2_score):
+    def save_pong_game(self, player1, player2, winner, player1_score, player2_score, current_user):
         print("🔥 Je passe dans le save_pong_game")
         game = PongHistory()
+        player1_instance = None
+        player2_instance = None
         try:
             player1_instance = User.objects.get(username=player1)
         except User.DoesNotExist:
-            return None
-        game.player1 = player1_instance
-        try:
-            player2_instance = User.objects.get(username=player2)
-        except User.DoesNotExist:
-            player2_instance = None
-        game.player2 = player2_instance
-        try:
-            winner_instance = User.objects.get(username=winner)
-        except User.DoesNotExist:
-            winner_instance = None
-        game.winner = winner_instance
-        game.player1_score = player1_score
-        game.player2_score = player2_score
-        timestamp = datetime.now()  # Récupère le timestamp actuel
-        formatted_timestamp = timestamp.strftime('%b. %d, %Y, %I:%M %p')  # Format the timestamp
-        formatted_timestamp = formatted_timestamp.replace("AM", "a.m.").replace("PM", "p.m.")
-        game.timestamp = formatted_timestamp
-        game.save()
+            print(f"🔥 player1 not found {player1}")
+            try:
+                player2_instance = User.objects.get(username=player2)
+            except User.DoesNotExist:
+                print(f"🔥 player2 not found {player2}")
+                return None
+        print(f"🔥 player1_instance --> {player1_instance} || player2_instance --> {player2_instance}")
+        current_player = None
+        other_player = None
+        
+        if player1_instance.username == current_user:
+            current_player = player1_instance
+            other_player = player2
+        elif player2_instance.username == current_user:
+            current_player = player2_instance
+            other_player = player1
+        print(f"🔥 current_player --> {current_player} || other_player --> {other_player} || player1_instance -->  {player1_instance} || player2_instance --> {player2_instance}")
+        if current_player is not None:
+            if winner == current_player.username:
+                game.winner = True
+            game.player1 = current_player
+            game.player2 = other_player
+            game.player1_score = player1_score
+            game.player2_score = player2_score
+            timestamp = datetime.now()  # Récupère le timestamp actuel
+            formatted_timestamp = timestamp.strftime('%b. %d, %Y, %I:%M %p')  # Format the timestamp
+            formatted_timestamp = formatted_timestamp.replace("AM", "a.m.").replace("PM", "p.m.")
+            game.timestamp = formatted_timestamp
+            print(f"game player1 --> {game.player1} || game player2 --> {game.player2} || game winner --> {game.winner} || game player1_score --> {game.player1_score} || game player2_score --> {game.player2_score} || game timestamp --> {game.timestamp}")
+            game.save()
         
     @database_sync_to_async
     def update_pong_stats(self, player1, player2, winner, player1_score, player2_score):
+        current_player = None
         try:
-            player1_instance = User.objects.get(username=player1)
+            current_player = User.objects.get(username=player1)
+        except User.DoesNotExist:
             try:
-                stats = GameStats.objects.get(user=player1_instance)
-            except GameStats.DoesNotExist:
-                stats = GameStats()
-                stats.user = player1_instance
-            if winner == player1:
-                stats.total_pong_win += 1
-            else:
-                stats.total_pong_los += 1
-            stats.total_pong_win_tie += player1_score
-            stats.total_pong_los_tie += player2_score
-            stats.save()
-        except User.DoesNotExist:
-            return None
+                current_player = User.objects.get(username=player2)
+            except User.DoesNotExist:
+                return None 
         try:
-            player2_instance = User.objects.get(username=player2)
-            stats = GameStats.objects.get(user=player2_instance)
-            if winner == player2:
-                stats.total_pong_win += 1
-            else:
-                stats.total_pong_los += 1
-            stats.total_pong_win_tie += player2_score
-            stats.total_pong_los_tie += player1_score
-            stats.save()
-        except User.DoesNotExist:
-            return None
+            stats = GameStats.objects.get(user=current_player)
+        except GameStats.DoesNotExist:
+                stats = GameStats()
+        stats.user = current_player
+        if winner == True:
+            stats.total_pong_win += 1
+        else:
+            stats.total_pong_los += 1
+        stats.total_pong_win_tie += player1_score
+        stats.total_pong_los_tie += player2_score
+        stats.save()
+        return True

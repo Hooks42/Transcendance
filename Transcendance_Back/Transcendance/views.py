@@ -183,8 +183,11 @@ def get_conv_history(request):
     given_conversation = request.GET.get('conversation', None)
     print(f"🌿 Given Conversation --> {given_conversation}")
     if given_conversation == "General":
-        conversation = Conversation.objects.get(is_general=True)
-        message_backup = conversation.messages.all().order_by('timestamp')
+        try:
+            conversation = Conversation.objects.get(is_general=True)
+            message_backup = conversation.messages.all().order_by('timestamp')
+        except Conversation.DoesNotExist:
+            return JsonResponse({'messages': []})
     else:
         try:
             user1 = given_conversation.split('_')[0]
@@ -355,12 +358,12 @@ def UserProfile(request):
             for user_pong_history_instance in user_pong_history_list:
                 current_player_username = user_pong_history_instance.player1.username
                 current_player_score = user_pong_history_instance.player1_score
-                if user_pong_history_instance.winner is None:
-                    winner = "Unknown Player"
+                if user_pong_history_instance.winner is False:
+                    winner = False
                 else:
-                    winner = user_pong_history_instance.winner.username
+                    winner = True
                 if user_pong_history_instance.player2 is not None:
-                    opponent_username = user_pong_history_instance.player2.username
+                    opponent_username = user_pong_history_instance.player2
                 else:
                     opponent_username = "Unknown Player"
                 opponent_score = user_pong_history_instance.player2_score
