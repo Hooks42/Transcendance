@@ -10,8 +10,10 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument('--id', type=str, help='id of the game', nargs='?')
         parser.add_argument('--players', type=str, help='players_name', nargs='?')
+        parser.add_argument('--pong', type=str, help='pong', nargs='?')
 
     def handle(self, *args, **options):
+        
         id = options['id']
         players = options['players']
         if id is not None:

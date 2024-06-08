@@ -37,6 +37,9 @@ const pong = {
 	matchs: null,
 
 	init: function (container, is_tournament) {
+		pong.leaderboard = [];
+		pong.round = 1;
+
 		let left = Math.floor(container.getBoundingClientRect().left);
 		let top = Math.floor(container.getBoundingClientRect().top);
 
@@ -282,7 +285,10 @@ const pong = {
 			pong.clearLayer(pong.scoreLayer);
 			pong.displayScore();
 			// resume game
-			pong.currentState = pong.start;
+			if (pong.is_tournament == true)
+				pong.currentState = pong.start;
+			else
+				pong.currentState = pong.game;
 		}
 	},
 
@@ -354,8 +360,8 @@ const pong = {
 		// game ends when one player gets 11 points
 		if (this.actual_player1['score'] >= 11 || this.actual_player2['score'] >= 11) {
 			let winner = null;
-			let loser = null;
-			let phase;
+			let current_player_score = null;
+			let opponent_score = null;
 			if (this.actual_player1['score'] > this.actual_player2['score'])
 			{
 				winner = this.actual_player1['name'];
@@ -388,7 +394,21 @@ const pong = {
 						pong.player4[phase] = true;
 				}
 			}
-			send_msg.pong_finished(pong.player1["name"], pong.player2['name'], winner, this.actual_player1['score'], this.actual_player2['score']);
+			if (winner == currentUser)
+				winner = true;
+			else
+				winner = false;
+			if (this.actual_player1['name'] == currentUser)
+			{
+				current_player_score = this.actual_player1['score'];
+				opponent_score = this.actual_player2['score'];
+			}
+			else if (this.actual_player2['name'] == currentUser)
+			{
+				current_player_score = this.actual_player2['score'];
+				opponent_score = this.actual_player1['score'];
+			}
+			send_msg.pong_finished(pong.actual_player1["name"], pong.actual_player2['name'], winner, current_player_score, opponent_score);
 			pong.currentState = pong.end;
 		}
 		// left player gagne 1 point

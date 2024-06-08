@@ -1306,7 +1306,7 @@ class PongConsumer(AsyncWebsocketConsumer):
         if command is not None and player1 is not None and player2 is not None and winner is not None and player1_score is not None and player2_score is not None:
             await self.command_handler(command, current_user, player1, player2, winner, player1_score, player2_score)
         else:
-            print(f"❌ {current_user.username} tried to cheat ❌ due to these parameters : {command} - {player1} - {player2} - {winner} - {player1_score} - {player2_score}")
+            print(f"❌ {current_user} tried to cheat ❌ due to these parameters : {command} - {player1} - {player2} - {winner} - {player1_score} - {player2_score}")
         
     async def command_handler(self, command, current_user, player1, player2, winner, player1_score, player2_score):
         if command == 'pong_finished':
@@ -1343,7 +1343,6 @@ class PongConsumer(AsyncWebsocketConsumer):
     
     @database_sync_to_async
     def save_pong_game(self, player1, player2, winner, player1_score, player2_score, current_user):
-        print("🔥 Je passe dans le save_pong_game")
         game = PongHistory()
         player1_instance = None
         player2_instance = None
@@ -1360,26 +1359,28 @@ class PongConsumer(AsyncWebsocketConsumer):
         current_player = None
         other_player = None
         
-        if player1_instance.username == current_user:
+        if player1_instance is not None and player1_instance.username == current_user:
             current_player = player1_instance
             other_player = player2
-        elif player2_instance.username == current_user:
+
+        elif player2_instance is not None and player2_instance.username == current_user:
             current_player = player2_instance
             other_player = player1
-        print(f"🔥 current_player --> {current_player} || other_player --> {other_player} || player1_instance -->  {player1_instance} || player2_instance --> {player2_instance}")
-        if current_player is not None:
-            if winner == current_player.username:
-                game.winner = True
-            game.player1 = current_player
-            game.player2 = other_player
-            game.player1_score = player1_score
-            game.player2_score = player2_score
-            timestamp = datetime.now()  # Récupère le timestamp actuel
-            formatted_timestamp = timestamp.strftime('%b. %d, %Y, %I:%M %p')  # Format the timestamp
-            formatted_timestamp = formatted_timestamp.replace("AM", "a.m.").replace("PM", "p.m.")
-            game.timestamp = formatted_timestamp
-            print(f"game player1 --> {game.player1} || game player2 --> {game.player2} || game winner --> {game.winner} || game player1_score --> {game.player1_score} || game player2_score --> {game.player2_score} || game timestamp --> {game.timestamp}")
-            game.save()
+
+        if winner == True:
+            print(f"✅ J'ai gagné")
+        else:
+            print(f"❌ J'ai perdu")
+        game.player1 = current_player
+        game.player2 = other_player
+        game.player1_score = player1_score
+        game.player2_score = player2_score
+        game.winner = winner
+        timestamp = datetime.now()  # Récupère le timestamp actuel
+        formatted_timestamp = timestamp.strftime('%b. %d, %Y, %I:%M %p')  # Format the timestamp
+        formatted_timestamp = formatted_timestamp.replace("AM", "a.m.").replace("PM", "p.m.")
+        game.timestamp = formatted_timestamp
+        game.save()
         
     @database_sync_to_async
     def update_pong_stats(self, player1, player2, winner, player1_score, player2_score):
@@ -1396,6 +1397,7 @@ class PongConsumer(AsyncWebsocketConsumer):
         except GameStats.DoesNotExist:
                 stats = GameStats()
         stats.user = current_player
+        print(f"🔥 winner --> {winner}")
         if winner == True:
             stats.total_pong_win += 1
         else:
