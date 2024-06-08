@@ -96,6 +96,8 @@ class GameHistory(models.Model):
     player1_penalties = models.IntegerField(default=0)
     player2_penalties = models.IntegerField(default=0)
     timestamp = models.DateTimeField(auto_now_add=True)
+    p1_has_leave = models.BooleanField(default=False)
+    p2_has_leave = models.BooleanField(default=False)
 
     @classmethod
     def get_games_between(cls, player1, player2):

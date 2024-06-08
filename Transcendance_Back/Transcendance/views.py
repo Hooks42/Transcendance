@@ -318,6 +318,10 @@ def UserProfile(request):
                     opponent_score = user_pfc_history_instance.player2_score
                     opponent_penalties = user_pfc_history_instance.player2_penalties
                     opponent_moves = user_pfc_history_instance.player2_moves
+                    if user_pfc_history_instance.p1_has_leave == True:
+                        victory = False
+                    elif user_pfc_history_instance.p2_has_leave == True:
+                        victory = True
                 elif user.username == user_pfc_history_instance.player2.username:
                     current_player_username = user.username
                     current_player_score = user_pfc_history_instance.player2_score
@@ -327,18 +331,24 @@ def UserProfile(request):
                     opponent_score = user_pfc_history_instance.player1_score
                     opponent_penalties = user_pfc_history_instance.player1_penalties
                     opponent_moves = user_pfc_history_instance.player1_moves
+                    if user_pfc_history_instance.p2_has_leave == True:
+                        victory = False
+                    elif user_pfc_history_instance.p1_has_leave == True:
+                        victory = True
+
                 
-                if current_player_score == 7 or opponent_penalties == 3:
-                    victory = True
-                elif opponent_score == 7 or current_player_penalties == 3:
-                    victory = False
+                if victory != None:
+                    pass
                 elif current_player_penalties == 3 and opponent_penalties == 3:
                     victory = None
+                elif current_player_score > opponent_score or opponent_penalties == 3:
+                    victory = True
+                elif opponent_score > current_player_score or current_player_penalties == 3:
+                    victory = False
                 
                 user_pfc_history.append({
-                    'game_id': user_pfc_history_instance.game_id,
                     'current_player_username': current_player_username,
-                    'opponent_userame': opponent_username,
+                    'opponent_username': opponent_username,
                     'round_count': user_pfc_history_instance.round_count,
                     'current_player_moves': current_player_moves,
                     'opponent_moves': opponent_moves,

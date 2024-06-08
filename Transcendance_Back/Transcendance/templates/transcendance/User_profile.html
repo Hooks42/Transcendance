@@ -115,11 +115,13 @@
 						<li>
 							<h2>
 								{% if history.victory == True %}
-									Victoire VS {{history.opponent_userame}}
-								{% elif history.winner == None %}
-									Match nul {{history.current_user_username}} VS {{history.opponent_username}}
+									Victoire VS {{history.opponent_username}}
+								{% elif history.victory == None and history.current_player_score == 0 and history.opponent_score == 0 and history.current_player_penalties == 0 %}
+									Partie Annulée VS {{history.opponent_username}}
+								{% elif history.victory == None %}
+									Match nul {{history.current_username}} VS {{history.opponent_username}}
 								{% else %}
-									Défaite VS {{history.opponent_userame}}
+									Défaite VS {{history.opponent_username}}
 								{% endif %}
 							</h2>
 							<p>Score: {{history.current_player_score}} - {{history.opponent_score}}</p>
@@ -130,20 +132,18 @@
 									{{move}}
 									{% if not forloop.last %}
 										, 
-									{% else %}
-										]
 									{% endif %}
 								{% endfor %}
+								]
 							</p>
 							<p>Move adversaire: [
 								{% for move in history.opponent_moves %}
 									{{move}}
 									{% if not forloop.last %}
 										, 
-									{% else %}
-										]
 									{% endif %}
 								{% endfor %}
+									]
 							</p>
 							<p>Date: {{history.timestamp}}</p>
 						</li>
