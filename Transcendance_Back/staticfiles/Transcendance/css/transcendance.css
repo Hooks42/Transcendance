@@ -52,7 +52,7 @@ h1
   font-size: 90px;
 }
 
-p
+p, li
 {
   font-family: "Comic Neue";
   font-size: var(--paragraph);
@@ -96,6 +96,12 @@ p
 {
   width: max-content;
   width: 100%;
+}
+
+.leaderboard__li
+{
+  font-size: var(--fs-h5);
+  font-family: "CryptOfTomorrow";
 }
 
 .btn-set4

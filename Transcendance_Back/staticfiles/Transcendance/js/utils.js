@@ -391,7 +391,12 @@ function create_disc_li(title_text, info_text)
         let conv_to_show = document.getElementById(this.dataset.username + "-conv");
         console.log("♻️", this.dataset.username + "-conv");
         if (conv_to_show)
+        {
             conv_to_show.style.display = "flex";
+            let inbox = conv_to_show.querySelector('.o-inbox');
+            // scroll automatically to the bottom of the inbox
+            inbox.scrollTop = inbox.scrollHeight;
+        }
     });
     title.appendChild(document.createTextNode(title_text));
 

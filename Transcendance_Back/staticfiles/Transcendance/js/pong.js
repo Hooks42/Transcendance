@@ -70,8 +70,8 @@ const pong = {
 		pong.player4["phase_1_w"] = false;
 		pong.player4["phase_2_w"] = false;
 
-		pong.actual_player1["score"] = 0;
-		pong.actual_player2["score"] = 0;
+		pong.actual_player1["score"] = 10;
+		pong.actual_player2["score"] = 10;
 
 		this.centerBall();
 		this.centerPaddles();
@@ -128,15 +128,15 @@ const pong = {
 			pong.actual_player1["name"] = pong.player1["name"];
 			pong.actual_player2["name"] = pong.player2["name"];
 			console.log(pong.actual_player2["name"]);
-			pong.actual_player1["score"] = 0;
-			pong.actual_player2["score"] = 0;
+			pong.actual_player1["score"] = 10; // change back to 0
+			pong.actual_player2["score"] = 10;
 		}
 		else if (pong.round == 2)
 		{
 			pong.actual_player1["name"] = pong.player3["name"];
 			pong.actual_player2["name"] = pong.player4["name"];
-			pong.actual_player1["score"] = 0;
-			pong.actual_player2["score"] = 0;
+			pong.actual_player1["score"] = 10;
+			pong.actual_player2["score"] = 10;
 		}
 		else if (pong.round == 3)
 		{
@@ -144,8 +144,8 @@ const pong = {
 			loser_name_2 = pong.player3["phase_1_w"] ? pong.player4["name"] : pong.player3["name"];
 			pong.actual_player1["name"] = loser_name_1;
 			pong.actual_player2["name"] = loser_name_2;
-			pong.actual_player1["score"] = 0;
-			pong.actual_player2["score"] = 0;
+			pong.actual_player1["score"] = 10;
+			pong.actual_player2["score"] = 10;
 		}
 		else if (pong.round == 4)
 		{
@@ -153,8 +153,8 @@ const pong = {
 			winner_name_2 = pong.player3["phase_1_w"] ? pong.player3["name"] : pong.player4["name"];
 			pong.actual_player1["name"] = winner_name_1;
 			pong.actual_player2["name"] = winner_name_2;
-			pong.actual_player1["score"] = 0;
-			pong.actual_player2["score"] = 0;
+			pong.actual_player1["score"] = 10;
+			pong.actual_player2["score"] = 10;
 		}
 		else if (pong.round == 5)
 		{
@@ -235,8 +235,8 @@ const pong = {
 			console.log("new game");
 			pong.code["Enter"].pressed = false;
 			// reset score
-			pong.actual_player1['score'] = 0;
-			pong.actual_player2['score'] = 0;
+			pong.actual_player1['score'] = 10; // change back to 0
+			pong.actual_player2['score'] = 10;
 			pong.round++;
 			// randomize ball direction
 			if ((Math.floor(Math.random() * 2)) % 2)
@@ -418,17 +418,32 @@ const pong = {
 		let title = document.createElement('h1');
 		title.textContent = "Classement";
 
-		let leaderboard = document.createElement('ul');
+		let leaderboard = document.createElement('ol');
 		let first = document.createElement('li');
+		first.classList.add('leaderboard__li');
 		let second = document.createElement('li');
+		second.classList.add('leaderboard__li');
 		let third = document.createElement('li');
+		third.classList.add('leaderboard__li');
 		let fourth = document.createElement('li');
+		fourth.classList.add('leaderboard__li');
 
 		first.textContent = pong.leaderboard[3];
 		second.textContent = pong.leaderboard[2];
 		third.textContent = pong.leaderboard[1];
 		fourth.textContent = pong.leaderboard[0];
-		centerZone.inner.append(title, first, second, third, fourth);
+
+		centerZone.inner.append(title, leaderboard);
+		leaderboard.append(first, second, third, fourth);
+
+		const flowey = document.createElement('img');
+		flowey.classList.add('floweyImg');
+		flowey.setAttribute('src', "/media/kindpng_flowey.png" );		
+
+		centerZone.inner.append(flowey);
+
+		// src="/media/cc0-images/grapefruit-slice-332-332.jpg"
+  //alt="Grapefruit slice atop a pile of other slices"
 	}
 
 	/* collisionWithBall : function() */

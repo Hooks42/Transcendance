@@ -11,7 +11,7 @@ chat.listener = {
         chat.disc_tab.classList.toggle("hide");
         chat.user_tab.classList.toggle("hide");
 
-        chat.current_pane = this.get_active_pane();
+        chat.current_pane = chat.get_active_pane();
         chat.current_pane.classList.toggle("active");
         chat.current_pane.classList.toggle("show");
 
@@ -19,6 +19,7 @@ chat.listener = {
         chat.arrow_tab.classList.toggle("hide");
 
         chat.chatroom.style.display = "flex";
+        console.log("click on chat li");
     },
 
     onClickArrowBtn: function (event)
