@@ -95,6 +95,8 @@ class GameHistory(models.Model):
     player2_score = models.IntegerField(default=0)
     player1_penalties = models.IntegerField(default=0)
     player2_penalties = models.IntegerField(default=0)
+    winner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='winner', null=True, blank=True)
+    loser = models.ForeignKey(User, on_delete=models.CASCADE, related_name='loser', null=True, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
     p1_has_leave = models.BooleanField(default=False)
     p2_has_leave = models.BooleanField(default=False)

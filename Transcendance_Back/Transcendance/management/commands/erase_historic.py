@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from Transcendance.models import GameHistory, PFC_Game_ID, User
+from Transcendance.models import GameHistory, PFC_Game_ID, User, GameStats
 from django.core.exceptions import ObjectDoesNotExist
 
 
@@ -8,15 +8,28 @@ class Command(BaseCommand):
     help = 'Erase gamehistory and pfc_game_id from id' 
 
     def add_arguments(self, parser):
+        parser.add_argument('--pfc', type=str, help='who', nargs='?')
         parser.add_argument('--id', type=str, help='id of the game', nargs='?')
         parser.add_argument('--players', type=str, help='players_name', nargs='?')
         parser.add_argument('--pong', type=str, help='pong', nargs='?')
 
     def handle(self, *args, **options):
         
+        pfc = options['pfc']
         id = options['id']
         players = options['players']
-        if id is not None:
+        
+        if pfc == "true":
+            game = GameHistory.objects.all()
+            stats = GameStats.objects.all()
+            game_id = PFC_Game_ID.objects.all()
+            game.delete()
+            stats.delete()
+            game_id.delete()
+            print(f"Tous les historiques PFC ainsi que les stats ont ete delete ✅")
+            
+                
+        elif id is not None:
             try:
                 game = GameHistory.objects.get(game_id=id)
                 game.delete()

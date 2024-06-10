@@ -114,15 +114,14 @@
 						{% for history in user_pfc_history %}
 						<li>
 							<h2>
-								{% if history.victory == True %}
-									Victoire VS {{history.opponent_username}}
-								{% elif history.victory == None and history.current_player_score == 0 and history.opponent_score == 0 and history.current_player_penalties == 0 %}
-									Partie Annulée VS {{history.opponent_username}}
-								{% elif history.victory == None %}
-									Match nul {{history.current_username}} VS {{history.opponent_username}}
+								{% if history.winner.username == user.username %}
+									Victoire VS {{history.loser.username}}
+								{% elif history.loser.username == user.username %}
+									Défaite VS {{history.winner.username}}
 								{% else %}
-									Défaite VS {{history.opponent_username}}
+									Match nul VS {{history.opponent_username}}
 								{% endif %}
+
 							</h2>
 							<p>Score: {{history.current_player_score}} - {{history.opponent_score}}</p>
 							<p>Nombre de pénalitées: {{history.current_player_penalties}} - {{history.opponent_penalties}}</p>

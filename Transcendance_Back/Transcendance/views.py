@@ -308,7 +308,8 @@ def UserProfile(request):
                 opponent_score = None
                 opponent_penalties = None
                 opponent_moves = None
-                victory = None
+                winner = None
+                loser = None
                 if user.username == user_pfc_history_instance.player1.username:
                     current_player_username = user.username
                     current_player_score = user_pfc_history_instance.player1_score
@@ -318,10 +319,7 @@ def UserProfile(request):
                     opponent_score = user_pfc_history_instance.player2_score
                     opponent_penalties = user_pfc_history_instance.player2_penalties
                     opponent_moves = user_pfc_history_instance.player2_moves
-                    if user_pfc_history_instance.p1_has_leave == True:
-                        victory = False
-                    elif user_pfc_history_instance.p2_has_leave == True:
-                        victory = True
+                    
                 elif user.username == user_pfc_history_instance.player2.username:
                     current_player_username = user.username
                     current_player_score = user_pfc_history_instance.player2_score
@@ -331,20 +329,17 @@ def UserProfile(request):
                     opponent_score = user_pfc_history_instance.player1_score
                     opponent_penalties = user_pfc_history_instance.player1_penalties
                     opponent_moves = user_pfc_history_instance.player1_moves
-                    if user_pfc_history_instance.p2_has_leave == True:
-                        victory = False
-                    elif user_pfc_history_instance.p1_has_leave == True:
-                        victory = True
-
                 
-                if victory != None:
-                    pass
-                elif current_player_penalties == 3 and opponent_penalties == 3:
-                    victory = None
-                elif current_player_score > opponent_score or opponent_penalties == 3:
-                    victory = True
-                elif opponent_score > current_player_score or current_player_penalties == 3:
-                    victory = False
+                winner = user_pfc_history_instance.winner
+                loser = user_pfc_history_instance.loser
+                
+                print(f"🔱 Current_Player --> {current_player_username} - {current_player_score}")
+                print(f"🔱 Opponent --> {opponent_username} - {opponent_score}")
+                print(f"🔱 Winner --> {winner}")
+                
+                if winner is None and loser is None:
+                    winner = "Null"
+                    loser = "Null"
                 
                 user_pfc_history.append({
                     'current_player_username': current_player_username,
@@ -357,7 +352,8 @@ def UserProfile(request):
                     'current_player_penalties': current_player_penalties,
                     'opponent_penalties': opponent_penalties,
                     'timestamp': user_pfc_history_instance.timestamp.strftime('%d-%m-%y %H:%M'),
-                    'victory': victory,
+                    'winner': winner,
+                    'loser': loser,
                 })
         except GameHistory.DoesNotExist:
             status = 'history error'
@@ -377,9 +373,6 @@ def UserProfile(request):
                 else:
                     opponent_username = "Unknown Player"
                 opponent_score = user_pong_history_instance.player2_score
-                print(f"🔱 Current_Player --> {current_player_username} - {current_player_score}")
-                print(f"🔱 Opponent --> {opponent_username} - {opponent_score}")
-                print(f"🔱 Winner --> {winner}")
                 user_pong_history.append({
                     'current_player_username': current_player_username,
                     'current_player_score': current_player_score,
