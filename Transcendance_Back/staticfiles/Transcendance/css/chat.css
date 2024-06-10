@@ -98,7 +98,8 @@
     margin: 0px;
     overflow: hidden;
     white-space: nowrap;
-    width: 200px;
+    /* width: 200px; */
+    width: 176px;
     top: 14px;
     left: 64px;
     display: flex;
@@ -153,7 +154,7 @@
     flex: none;
     border: none;
     white-space: nowrap;
-    overflow: hidden;
+    overflow: visible;
     position: relative;
 }
 

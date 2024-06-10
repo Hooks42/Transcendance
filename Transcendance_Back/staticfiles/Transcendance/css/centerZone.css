@@ -125,12 +125,13 @@
 {
   padding: 0 16px;
   display: none;
-  overflow: hidden;
+  overflow: visible; /* needed to have a full view of the dropdown menu in the chat */
 }
 
 .m-collapsible__item
 {
   display: grid;
+  overflow: visible;
   /* grid-template-columns: 200px 1fr; */
   /* column-gap: 16px; */
 
