@@ -246,10 +246,8 @@ const chat = {
     {
         chat.create_nav();
         chat.create_content();
-        //chat.disc_pane.onclick = chat.listener.onClickDiscPane.bind(this);
         chat.arrow_tab.onclick = chat.listener.onClickArrowBtn.bind(this);
-        chat.user_pane.onclick = chat.listener.onClickUserPane.bind(this);
-        // chat.chat.onclick = chat.listener.onClickChat.bind(this);
+        chat.user_pane.onclick = chat.listener.onClickCollapsible.bind(this);
     },
 
     load_nav: function ()

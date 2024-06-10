@@ -1012,19 +1012,19 @@ function create_collapsible(name_coll, function_which_btn)
     // collapsible content
     const ul = document.createElement('ul');
     ul.classList.add('o-collapsible__content');
-    ul.style.display = 'none';
+    // ul.style.display = 'none';
     if (function_which_btn === "FRIEND")
         ul.setAttribute('id', 'friend_list_toogle-btn');
     else if (function_which_btn === "BLOCKED")
         ul.setAttribute('id', 'blocked_list_toogle-btn');
 
-    btn_coll.addEventListener('click', function (event)
-    {
-        if (ul.style.display === 'none')
-            ul.style.display = 'block';
-        else
-            ul.style.display = 'none';
-    });
+    // btn_coll.addEventListener('click', function (event)
+    // {
+    //     if (ul.style.display === 'none')
+    //         ul.style.display = 'block';
+    //     else
+    //         ul.style.display = 'none';
+    // });
 
     btn_coll.append(svg_plus, svg_dash);
     coll.append(btn_coll, ul);

@@ -43,48 +43,31 @@ chat.listener = {
         chat.current_pane.classList.toggle("show");
     },
 
-    onClickUserPane: function (event)
+    onClickCollapsible: function (event)
     {
-        // if (event.target.closest(".-img"))
-        // {
-        //     let target = event.target.closest(".-img");
-        //     if (!target)
-        //         return;
-        //     if (!chat.user_pane.contains(target))
-        //         return;
-        //     event.preventDefault();
-        //     navigateCenterZone("profile");
-        //     // alert("IMG click, go to that user's profile page");
-        // }
-        if (event.target.closest(".btn-set1"))
+        if (event.target.closest(".js-btn-collapsible"))
         {
-
-            let target = event.target.closest(".btn-set1");
+            let target = event.target.closest(".js-btn-collapsible");
             if (!target)
                 return;
-            if (!chat.user_pane.contains(target))
-                return;
             event.preventDefault();
-            alert("USER btn click, do action on that user");
+            target.classList.toggle("active");
+
+            if (target.nextElementSibling.style.display === "block")
+            {
+                target.nextElementSibling.style.display = "none";
+                target.children[0].style.display = "block";
+                target.children[1].style.display = "none";
+            }
+            else
+            {
+                target.nextElementSibling.style.display = "block";
+                target.children[0].style.display = "none";
+                target.children[1].style.display = "block";
+            }
         }
     }
-
-    // onClickChat: function (event)
-    // {
-    //     if (event.target.closest(".-img"))
-    //     {
-    //         console.log("click on img");
-    //         let target = event.target.closest(".-img");
-    //         if (!target)
-    //             return;
-    //         event.preventDefault();
-    //         // navigateCenterZone("profile");
-    //         event.stopPropagation();
-    //         // alert("IMG click, go to that user's profile page");
-    //     }
-    // }
 }
-
 
 // document.querySelector('#the-chat').addEventListener('click', function (event)
 // {
