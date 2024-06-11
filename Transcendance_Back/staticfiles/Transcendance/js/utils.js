@@ -609,12 +609,19 @@ function create_user_in_pane(username, userstatus, profile_picture, which_list)
     dropdownDiv.appendChild(dropdownMenu);
 
     li.append(header);
-    header.append(dropdownDiv, titleNBtns, info);
+    header.append(dropdownDiv, titleNBtns);
     titleNBtns.append(infodiv);
     infodiv.append(name, btns);
 
     // Ajout des éléments du menu déroulant
-    const dropdownItems = ['Voir le profil', 'Inviter à jouer à PFC'];
+   
+    let dropdownItems = ['Voir le profil'];
+    if (which_list === "FRIEND")
+        {
+            header.append(info);
+            dropdownItems.push('Inviter à jouer à PFC');
+        }
+      
     dropdownItems.forEach(item =>
     {
         const dropdownItem = document.createElement('li');
