@@ -70,6 +70,30 @@
     }
 }
 
+.a-btn.-red
+{
+    border: solid red;
+    color: red;
+    font-family: "mars";
+    font-size: 28px;
+    padding: 0px 8px;
+    white-space: nowrap;
+    position: relative;
+
+    &:active:focus,
+    &:active
+    {
+        color: rgba(255, 0, 0, 0.8);
+        border-color: rgba(255, 0, 0, 0.8);
+    }
+
+    &:hover
+    {
+        color: rgb(255, 0, 0);
+        border-color: rgb(255, 0, 0);
+    }
+}
+
 .a-btn.-orange.-lg
 {
     height: 80px;

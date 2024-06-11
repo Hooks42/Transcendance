@@ -72,6 +72,11 @@ async function listen_update_btn()
 				}
 			})
 	});
+
+	document.getElementById('yes-del-btn').addEventListener('click', function ()
+	{
+		send_msg.delete_profile_request(currentUser);
+	});
 }
 
 function listen_toggle_btn()

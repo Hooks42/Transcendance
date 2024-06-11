@@ -20,7 +20,7 @@ function getCookie(name)
 
 async function display_login_page()
 {
-	fetch('/login-page/', {
+	fetch('https://localhost/login-page/', {
 		method: 'GET',
 		headers: {
 			'Accept': 'application/json',

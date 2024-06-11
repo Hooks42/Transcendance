@@ -16,6 +16,7 @@ from Transcendance.management.OAuth20.get_info_from_42 import register_user
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from django.contrib.auth.decorators import login_required
+from django.db import transaction
 import json
 
 
@@ -447,3 +448,6 @@ def Home(request):
 def pfc_game(request):
     pfc_html = render_to_string('pfc.html', {'request': request}, request=request)
     return JsonResponse({'pfc_html': pfc_html})
+            
+
+    
