@@ -43,6 +43,14 @@ async function display_login_page()
 			let inbox = document.getElementById('active-pane');
 			let text_area = document.getElementById('text-area');
 
+			document.getElementById('General-conv').remove();
+			friend_list.forEach((elem) =>
+			{
+				const inbox_to_del = document.getElementById(get_room_name(currentUser, elem) + "-conv");
+				if (inbox_to_del)
+					inbox_to_del.remove();
+			});
+
 	
 			list.push(arrow_btn, inbox, text_area, discuss_btn, disc_pane, tabpanel, user_pane, inbox, user_btn, navbar_icons);
 			list.forEach((elem) =>

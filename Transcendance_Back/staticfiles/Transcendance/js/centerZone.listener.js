@@ -38,7 +38,7 @@ centerZone.listener =
             if (document.getElementById("game_pfc") === null)
                 return;
             console.log("click on pfc");
-            history.pushState({page: 'pierre_feuille_ciseaux'}, '', '/pierre_feuille_ciseaux/');
+            history.pushState({page: 'matchmaking'}, '', '/matchmaking/');
             centerZone.inner.innerHTML = "";
             pfc.launch_queue();
         }
@@ -49,7 +49,6 @@ centerZone.listener =
             if (document.getElementById("game_pong") === null)
                 return;
             console.log("click on pong");
-            history.pushState({page: 'pong'}, 'pong', '/pong/');
             centerZone.inner.innerHTML = "";
             (async function () {
 					// let requestAnimId;
@@ -57,6 +56,7 @@ centerZone.listener =
                     fetch('/pong-mode-choice/')
                         .then(response => response.json())
                         .then(data => {
+                            history.pushState({page: 'pong'}, '', '/pong/');
                             const pong_mode_choice_html = data.pong_mode_choice_html;
                             centerZone.inner.innerHTML = pong_mode_choice_html;
                             handle_pong_btns();

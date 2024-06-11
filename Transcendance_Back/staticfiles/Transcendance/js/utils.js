@@ -429,7 +429,7 @@ function create_btn_img(img_class, img_path)
 }
 
 
-function create_msg(name_text, time_text, profile_picture)
+function create_msg(name_text, time_text, profile_picture, is_bot = false)
 {
     const msg = document.createElement('div');
     msg.classList.add('m-message');
@@ -459,7 +459,7 @@ function create_msg(name_text, time_text, profile_picture)
     const btn_wrapper = document.createElement('div');
     btn_wrapper.classList.add("wrapperBtn");
 
-    if (name_text != currentUser)
+    if (name_text != currentUser && !is_bot)
     {
         if (!friend_list.includes(name_text))
         {
@@ -486,7 +486,7 @@ function create_msg(name_text, time_text, profile_picture)
     // senderDiv.append(btn_wrapper);
     btn_img.appendChild(img);
 
-    if (currentUser === name_text)
+    if (currentUser === name_text || is_bot)
         return msg;
     // Création du menu déroulant
     const dropdownDiv = document.createElement('div');
@@ -575,20 +575,19 @@ function create_user_in_pane(username, userstatus, profile_picture, which_list)
     name.setAttribute('id', 'friend_list_username-' + username);
     name.appendChild(document.createTextNode(username));
 
-
-    const info = document.createElement('div');
-    info.classList.add('a-user__info');
-    info.setAttribute('id', 'friend_list_status-' + userstatus);
-    info.appendChild(document.createTextNode(userstatus));
-
+    let info = null;
+    if (which_list === "FRIEND")
+    {
+        info = document.createElement('div');
+        info.classList.add('a-user__info');
+        info.setAttribute('id', 'friend_list_status-' + username);
+        info.appendChild(document.createTextNode(userstatus));
+    }
     let btns = null;
     if (which_list === "FRIEND")
         btns = create_btn_set(username, "btn-set4");
     else if (which_list === "BLOCKED")
         btns = create_block_btn_set(username, "btn-set4");
-    // li.append(btn_img, titleNBtns, info);
-    // titleNBtns.append(name, btns);
-
 
     // new
 
@@ -1208,11 +1207,17 @@ function update_friend_list_pannel(user_to_edit, new_username)
 {
     let username_to_update = document.getElementById('friend_list_username-' + user_to_edit);
     let friend_block_to_update = document.getElementById('friend_list-' + user_to_edit);
+    let friend_status_to_update = document.getElementById('friend_list_status-' + user_to_edit);
     if (username_to_update)
     {
         username_to_update.textContent = new_username;
         username_to_update.setAttribute('id', 'friend_list_username-' + new_username);
 
+    }
+
+    if (friend_status_to_update)
+    {
+        friend_status_to_update.setAttribute('id', 'friend_list_status-' + new_username);
     }
 
     if (friend_block_to_update)
@@ -1343,31 +1348,21 @@ window.onpopstate = function (event)
         case 'profile':
             display_profile_page();
             break;
-
-        case 'pong':
+        
+        case 'matchmaking':
             centerZone.inner.innerHTML = "";
-            (function ()
-            {
-                let initialisation = function ()
-                {
-                    if (intervalId)
-                    {
-                        pong.scorePlayer1 = 0;
-                        pong.scorePlayer2 = 0;
-                        clearInterval(intervalId);
-                    }
-                    pong.init(centerZone.inner);
-                    intervalId = setInterval(run_game, 1000 / 60); // 60 FPS
-                };
-
-                const run_game = function ()
-                {
-                    pong.currentState();
-                }
-
-                initialisation();
-            })();
+            pfc.launch_queue();
             break;
+        
+            case 'pong':
+                centerZone.inner.innerHTML = "";
+                fetch('/pong-mode-choice/')
+                    .then(response => response.json())
+                    .then(data => {
+                        const pong_mode_choice_html = data.pong_mode_choice_html;
+                        centerZone.inner.innerHTML = pong_mode_choice_html;
+                        handle_pong_btns();
+                    });
     }
 }
 
@@ -1418,7 +1413,7 @@ function handle_pong_btns()
         let player2 = document.getElementById('pong-tournament-player2_name_field').value;
         let player3 = document.getElementById('pong-tournament-player3_name_field').value;
         let error_msg = null;
-        for (let i = 0; i < 5; i++)
+        for (let i = 0; i < 5 ; i++)
         {
             let error = document.getElementById('error-msg_pong_tournament#' + i);
             if (error)
@@ -1465,6 +1460,15 @@ function handle_pong_btns()
             i++;
         }
 
+        if (player1 === player2 || player1 === player3 || player2 === player3)
+        {
+            error_msg = document.createElement('p');
+            error_msg.textContent = "❌ Les pseudos ne peuvent pas être identiques";
+            error_msg.id = "error-msg_pong_tournament#" + i;
+            pong_tournament_form.appendChild(error_msg);
+            i++;
+        }
+        
         if (error_msg)
             return;
         else
@@ -1480,7 +1484,6 @@ function handle_pong_btns()
             matchs.push(match);
             pong.initialisation(matchs, true);
         }
-        matchs = [];
     });
 
     two_players_btn.addEventListener('submit', function (event)
@@ -1489,7 +1492,7 @@ function handle_pong_btns()
         let player2 = document.getElementById('2-players-player2_name_field').value;
         let error_msg = null;
         let i = 0;
-        for (let i = 0; i; i++)
+        for (let i = 0; i < 5; i++)
         {
             let error = document.getElementById('error-msg_2-players#' + i);
             if (error)
@@ -1533,6 +1536,30 @@ function handle_pong_btns()
             two_players_btn.appendChild(error_msg);
             i++;
         }
+        
+        if (error_msg)
+            return ;
+        else
+        {
+            console.log("On passe ici le sang");
+            let matchs = []
+            let match = {};
+            match["player1"] = currentUser;
+            match["player2"] = player2;
+            matchs.push(match);
+            pong.initialisation(matchs, false);
+        }
     });
-
 }
+
+window.addEventListener('storage', function(event) {
+    console.log("je passe ici mais je m'en tape aussi les couilles");
+    // Vérifiez si l'événement `storage` a été déclenché par l'ouverture d'un nouvel onglet
+    if (event.key === 'tab') {
+      // Modifiez le contenu de l'onglet actuel
+      console.log("je passe ici et je m'en tape les couilles");
+      socket.system_socket.close();
+      document.body.innerHTML = '<h1>Disconnected</h1>';
+      document.body.style = 'color: white';
+    }
+  });

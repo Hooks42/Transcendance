@@ -12,7 +12,7 @@ const pong = {
 	ballPaddlesLayer: null,
 	noticeLayer: null,
 
-
+	is_tournament: null,
 	player1: {},
 	player2: {},
 	player3: {},
@@ -21,6 +21,7 @@ const pong = {
 	actual_player2: {},
 	leaderboard: [],
 	round: 1,
+	round_message: 0,
 
 	scorePlayer1: 0,
 	scorePlayer2: 0,
@@ -35,7 +36,10 @@ const pong = {
 	currentState: null, // states are: start, game, pause and end
 	matchs: null,
 
-	init: function (container, match, is_tournament) {
+	init: function (container, is_tournament) {
+		pong.leaderboard = [];
+		pong.round = 1;
+
 		let left = Math.floor(container.getBoundingClientRect().left);
 		let top = Math.floor(container.getBoundingClientRect().top);
 
@@ -57,18 +61,24 @@ const pong = {
 		pong.paddleL.init(this.distanceFromEdge);
 		pong.paddleR.init(this.distanceFromEdge);
 
+		pong.is_tournament = is_tournament;
+
 		pong.player1["name"] = pong.matchs[0].player1;
 		pong.player1["phase_1_w"] = false;
 		pong.player1["phase_2_w"] = false;
 		pong.player2["name"] = pong.matchs[0].player2;
 		pong.player2["phase_1_w"] = false;
 		pong.player2["phase_2_w"] = false;
-		pong.player3["name"] = pong.matchs[1].player1;
-		pong.player3["phase_1_w"] = false;
-		pong.player3["phase_2_w"] = false;
-		pong.player4["name"] = pong.matchs[1].player2;
-		pong.player4["phase_1_w"] = false;
-		pong.player4["phase_2_w"] = false;
+		if (pong.is_tournament == true)
+		{
+			console.log("is_tournament == true dans init");
+			pong.player3["name"] = pong.matchs[1].player1;
+			pong.player3["phase_1_w"] = false;
+			pong.player3["phase_2_w"] = false;
+			pong.player4["name"] = pong.matchs[1].player2;
+			pong.player4["phase_1_w"] = false;
+			pong.player4["phase_2_w"] = false;
+		}
 
 		pong.actual_player1["score"] = 10;
 		pong.actual_player2["score"] = 10;
@@ -123,47 +133,78 @@ const pong = {
 	// Game state
 	start: function () {
 		pong.clearLayer(pong.scoreLayer);
-		if (pong.round == 1)
+
+		if (pong.is_tournament == true)
+		{
+			const general_inbox = document.getElementById('General_inbox');
+			if (pong.round == 1)
+			{
+				pong.actual_player1["name"] = pong.player1["name"];
+				pong.actual_player2["name"] = pong.player2["name"];
+				if (pong.round_message < pong.round)
+				{
+					chat.add_chat("MEE42", new Date().toLocaleString(), "Le match commence entre " + pong.player1["name"] + " et " + pong.player2["name"] + " !", "https://localhost/media/avatars/bot_picture.jpg", general_inbox, true);
+					pong.round_message++;
+				}
+				pong.actual_player1["score"] = 0;
+				pong.actual_player2["score"] = 0;
+			}
+			else if (pong.round == 2)
+			{
+				pong.actual_player1["name"] = pong.player3["name"];
+				pong.actual_player2["name"] = pong.player4["name"];
+				if (pong.round_message < pong.round)
+				{
+					chat.add_chat("MEE42", new Date().toLocaleString(), "Le match commence entre " + pong.player3["name"] + " et " + pong.player4["name"] + " !", "https://localhost/media/avatars/bot_picture.jpg", general_inbox, true);
+					pong.round_message++;
+				}
+				pong.actual_player1["score"] = 0;
+				pong.actual_player2["score"] = 0;
+			}
+			else if (pong.round == 3)
+			{
+				loser_name_1 = pong.player1["phase_1_w"] ? pong.player2["name"] : pong.player1["name"];
+				loser_name_2 = pong.player3["phase_1_w"] ? pong.player4["name"] : pong.player3["name"];
+				if (pong.round_message < pong.round)
+				{
+					chat.add_chat("MEE42", new Date().toLocaleString(), "La petite Finale entre " + loser_name_1 + " et " + loser_name_2 + " commence !", "https://localhost/media/avatars/bot_picture.jpg", general_inbox, true);
+					pong.round_message++;
+				}
+				pong.actual_player1["name"] = loser_name_1;
+				pong.actual_player2["name"] = loser_name_2;
+				pong.actual_player1["score"] = 0;
+				pong.actual_player2["score"] = 0;
+			}
+			else if (pong.round == 4)
+			{
+				winner_name_1 = pong.player1["phase_1_w"] ? pong.player1["name"] : pong.player2["name"];
+				winner_name_2 = pong.player3["phase_1_w"] ? pong.player3["name"] : pong.player4["name"];
+				if (pong.round_message < pong.round)
+				{
+					chat.add_chat("MEE42", new Date().toLocaleString(), "La grande Finale entre " + winner_name_1 + " et " + winner_name_2 + " commence !", "https://localhost/media/avatars/bot_picture.jpg", general_inbox, true);
+					pong.round_message++;
+				}
+				pong.actual_player1["name"] = winner_name_1;
+				pong.actual_player2["name"] = winner_name_2;
+				pong.actual_player1["score"] = 0;
+				pong.actual_player2["score"] = 0;
+			}
+			else if (pong.round == 5)
+			{
+				console.log("Leaderboard --> " + pong.leaderboard);
+				pong.display_leaderBoard();
+				if (intervalId){
+					clearInterval(intervalId);
+				}
+				return ;
+			}
+		}
+		else
 		{
 			pong.actual_player1["name"] = pong.player1["name"];
 			pong.actual_player2["name"] = pong.player2["name"];
-			console.log(pong.actual_player2["name"]);
-			pong.actual_player1["score"] = 10; // change back to 0
-			pong.actual_player2["score"] = 10;
-		}
-		else if (pong.round == 2)
-		{
-			pong.actual_player1["name"] = pong.player3["name"];
-			pong.actual_player2["name"] = pong.player4["name"];
-			pong.actual_player1["score"] = 10;
-			pong.actual_player2["score"] = 10;
-		}
-		else if (pong.round == 3)
-		{
-			loser_name_1 = pong.player1["phase_1_w"] ? pong.player2["name"] : pong.player1["name"];
-			loser_name_2 = pong.player3["phase_1_w"] ? pong.player4["name"] : pong.player3["name"];
-			pong.actual_player1["name"] = loser_name_1;
-			pong.actual_player2["name"] = loser_name_2;
-			pong.actual_player1["score"] = 10;
-			pong.actual_player2["score"] = 10;
-		}
-		else if (pong.round == 4)
-		{
-			winner_name_1 = pong.player1["phase_1_w"] ? pong.player1["name"] : pong.player2["name"];
-			winner_name_2 = pong.player3["phase_1_w"] ? pong.player3["name"] : pong.player4["name"];
-			pong.actual_player1["name"] = winner_name_1;
-			pong.actual_player2["name"] = winner_name_2;
-			pong.actual_player1["score"] = 10;
-			pong.actual_player2["score"] = 10;
-		}
-		else if (pong.round == 5)
-		{
-			console.log("Leaderboard --> " + pong.leaderboard);
-			pong.display_leaderBoard();
-			if (intervalId){
-				clearInterval(intervalId);
-			}
-			return ;
+			pong.actual_player1["score"] = 0;
+			pong.actual_player2["score"] = 0;
 		}
 		pong.displayScore();
 		if (pong.code["Enter"].pressed) {
@@ -244,7 +285,10 @@ const pong = {
 			pong.clearLayer(pong.scoreLayer);
 			pong.displayScore();
 			// resume game
-			pong.currentState = pong.start;
+			if (pong.is_tournament == true)
+				pong.currentState = pong.start;
+			else
+				pong.currentState = pong.game;
 		}
 	},
 
@@ -316,8 +360,8 @@ const pong = {
 		// game ends when one player gets 11 points
 		if (this.actual_player1['score'] >= 11 || this.actual_player2['score'] >= 11) {
 			let winner = null;
-			let loser = null;
-			let phase;
+			let current_player_score = null;
+			let opponent_score = null;
 			if (this.actual_player1['score'] > this.actual_player2['score'])
 			{
 				winner = this.actual_player1['name'];
@@ -328,27 +372,44 @@ const pong = {
 				winner = this.actual_player2['name'];
 				loser = this.actual_player1['name'];
 			}
-			if (!(winner === null))
+			if (pong.is_tournament == true)
 			{
-				if (pong.round >= 1 && pong.round <= 2)
-					phase = "phase_1_w";
-				else if (pong.round >= 3 && pong.round <= 4)
+				if (!(winner === null))
 				{
-					pong.leaderboard.push(loser);
-					pong.leaderboard.push(winner);
-				}
+					if (pong.round >= 1 && pong.round <= 2)
+						phase = "phase_1_w";
+					else if (pong.round >= 3 && pong.round <= 4)
+					{
+						pong.leaderboard.push(loser);
+						pong.leaderboard.push(winner);
+					}
 
-				if (winner == pong.player1["name"])
-					pong.player1[phase] = true;
-				else if (winner == pong.player2["name"])
-					pong.player2[phase] = true;
-				else if (winner == pong.player3["name"])
-					pong.player3[phase] = true;
-				else if (winner == pong.player4["name"])
-					pong.player4[phase] = true;
-				send_msg.pong_finished(this.player1, this.player2, winner, loser, this.actual_player1['score'], this.actual_player2['score']);
-				pong.currentState = pong.end;
+					if (winner == pong.player1["name"])
+						pong.player1[phase] = true;
+					else if (winner == pong.player2["name"])
+						pong.player2[phase] = true;
+					else if (winner == pong.player3["name"])
+						pong.player3[phase] = true;
+					else if (winner == pong.player4["name"])
+						pong.player4[phase] = true;
+				}
 			}
+			if (winner == currentUser)
+				winner = true;
+			else
+				winner = false;
+			if (this.actual_player1['name'] == currentUser)
+			{
+				current_player_score = this.actual_player1['score'];
+				opponent_score = this.actual_player2['score'];
+			}
+			else if (this.actual_player2['name'] == currentUser)
+			{
+				current_player_score = this.actual_player2['score'];
+				opponent_score = this.actual_player1['score'];
+			}
+			send_msg.pong_finished(pong.actual_player1["name"], pong.actual_player2['name'], winner, current_player_score, opponent_score);
+			pong.currentState = pong.end;
 		}
 		// left player gagne 1 point
 		if (pong.ball.posX + pong.ball.width >= this.groundWidth) {
@@ -400,9 +461,18 @@ const pong = {
 		const run_game = function() {
 			pong.currentState();
 		}
-		let modal = document.getElementById('tournament-pong-modal');
-		let modal_instance = bootstrap.Modal.getInstance(modal);
-		modal_instance.hide();
+		if (is_tournament == true)
+		{
+			let modal = document.getElementById('tournament-pong-modal');
+			let modal_instance = bootstrap.Modal.getInstance(modal);
+			modal_instance.hide();
+		}
+		else
+		{
+			let modal = document.getElementById('2-players-modal');
+			let modal_instance = bootstrap.Modal.getInstance(modal);
+			modal_instance.hide();
+		}
 		centerZone.inner.innerHTML = "";
 		if (intervalId) {
 			clearInterval(intervalId);
