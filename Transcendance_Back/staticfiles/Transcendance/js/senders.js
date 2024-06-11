@@ -154,6 +154,17 @@ send_msg = {
 		socket.system_socket.send(messageJson);
 	},
 
+	delete_profile_request: function(user_to_delete)
+	{
+		var message = {
+			'command': 'delete_profile',
+			'user_to_delete': user_to_delete,
+		}
+
+		var messageJson = JSON.stringify(message);
+		socket.system_socket.send(messageJson);
+	},
+
 	pong_finished: function(player1, player2, winner, player1Score, player2Score)
 	{
 		if (winner == currentUser)

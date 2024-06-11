@@ -4,7 +4,7 @@
 	<br></br>
 	{% if user.username == username %}
 		<button class="a-btn -orange -sm" data-bs-toggle="modal" data-bs-target="#edit-profile-modal" id="profile_edit-btn">Editer mon profil</button>
-		<button class="a-btn -red -sm" data-bs-toggle="modal" data-bs-target="#delete-profile-modal" id="delete-profile-btn">Supprimer mon compte</button>
+		<button class="a-btn -red -sm" data-bs-toggle="modal" data-bs-target="#delete-profile-modal" id="delete_profile-btn">Supprimer mon compte</button>
 	{% endif %}
 </div>
 
@@ -44,6 +44,33 @@
 			</div>
 		</div>
 	</div>
+
+	<div class="modal fade" id="delete-profile-modal" tabindex="-1" aria-labelledby="delete-profile-modal" aria-hide="true">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Supprimer définitivement mon compte ?</h5>
+					<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-footer">
+					<button data-bs-dismiss="modal" type="button" class="a-btn -heart">
+						<svg xmlns="http://www.w3.org/2000/svg" class="bi bi-heart-fill " viewBox="0 0 16 16">
+							<path fill-rule="evenodd"
+								d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314" />
+						</svg>
+						Non</button>
+					<button type="submit" class="a-btn -heart" id="yes-del-btn">
+						<svg xmlns="http://www.w3.org/2000/svg" class="bi bi-heart-fill " viewBox="0 0 16 16">
+							<path fill-rule="evenodd"
+								d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314" />
+						</svg>
+						Oui</button>
+				</div>
+			</div>
+		</div>
+	</div>		
+
+
 {% endif %}
 
 <div>
