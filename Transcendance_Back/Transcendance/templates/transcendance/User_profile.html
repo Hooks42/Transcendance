@@ -3,7 +3,8 @@
 	<h3 class="a-profile__input" id="profile_edit-username">Profil de {{username}}</h3>
 	<br></br>
 	{% if user.username == username %}
-		<button class="a-btn -orange" data-bs-toggle="modal" data-bs-target="#edit-profile-modal" id="profile_edit-btn">Editer mon profil</button>
+		<button class="a-btn -orange -sm" data-bs-toggle="modal" data-bs-target="#edit-profile-modal" id="profile_edit-btn">Editer mon profil</button>
+		<button class="a-btn -red -sm" data-bs-toggle="modal" data-bs-target="#delete-profile-modal" id="delete-profile-btn">Supprimer mon compte</button>
 	{% endif %}
 </div>
 
@@ -56,15 +57,16 @@
 				</svg><svg class="bi bi-dash" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
 					<path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8"></path>
 				</svg></button>	
-				<h1 class="o-collapsible__content profile_toggle_pong hide">Stats</h1>
-				<ul class="o-collapsible__content profile_toggle_pong hide">
+				<div class="o-collapsible__content">
+				<h1 >Stats</h1>
+				<ul >
 					<li>Nombre de partie gagnée: {{total_pong_win}}</li>
 					<li>Nombre de partie perdue: {{total_pong_los}}</li>
 					<li>Nombre de point gagné: {{total_pong_win_tie}}</li>
 					<li>Nombre de point perdu: {{total_pong_los_tie}}</li>
 				</ul>
-				<h1 class="o-collapsible__content profile_toggle_pong hide">Historique</h1>
-				<ul class="o-collapsible__content profile_toggle_pong hide">
+				<h1>Historique</h1>
+				<ul>
 					{% if user_pong_history %}
 						{% for history in user_pong_history %}
 						<li>
@@ -80,11 +82,11 @@
 						{% endfor %}
 					{% else %}
 						<li>
-							<h2>Aucun historique</h2>
+							<p>Aucun historique</p>
 						</li>
 					{% endif %}
 				</ul>
-				</div>
+				</div></div>
 			</div>
 		</div>
 
@@ -98,8 +100,9 @@
 					<path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8"></path>
 				</svg></button>
 			
-			<h1 class="o-collapsible__content profile_toggle_pfc hide">Stats</h1>
-				<ul class="o-collapsible__content profile_toggle_pfc hide">
+				<div class="o-collapsible__content">
+			<h1 >Stats</h1>
+				<ul >
 					<li>Nombre de partie gagnée: {{total_spr_win}}</li>
 					<li>Nombre de partie perdue: {{total_spr_los}}</li>
 					<li>Nombre de point gagné: {{total_spr_win_tie}}</li>
@@ -108,8 +111,8 @@
 					<li>Nombre de feuille utilisée: {{total_paper}}</li>
 					<li>Nombre de pierre utilisée: {{total_rock}}</li>
 				</ul>
-			<h1 class="o-collapsible__content profile_toggle_pfc hide">Historique</h1>
-				<ul class="o-collapsible__content profile_toggle_pfc hide">
+			<h1 >Historique</h1>
+				<ul >
 					{% if user_pfc_history %}
 						{% for history in user_pfc_history %}
 						<li>
@@ -149,10 +152,11 @@
 						{% endfor %}
 					{% else %}
 						<li>
-							<h1>Aucun historique</h1>
+							<p>Aucun historique</p>
 						</li>
 					{% endif %}
 				</ul>
 		</div>		
+		</div>
 	</div>
 </div>

@@ -986,7 +986,7 @@ async function display_profile_page(username = null)
             main_div.innerHTML = user_profile_html;
             if (username == null)
                 listen_update_btn();
-            listen_toggle_btn();
+            // listen_toggle_btn();
         });
 }
 
