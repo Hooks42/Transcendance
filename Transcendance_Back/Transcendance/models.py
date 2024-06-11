@@ -41,15 +41,14 @@ class User(AbstractUser):
     id_42 = models.IntegerField(null=True, blank=True)
     avatar = models.ImageField(upload_to='avatars/', default='avatars/default_avatar.jpg', null=True, blank=True)
 
-    is_online = models.BooleanField(default=False)
-    is_in_PFC = models.BooleanField(default=False)
-    is_in_pong = models.BooleanField(default=False)
+    status = models.CharField(max_length=200, default='Hors Ligne')
     main_queue_player = models.BooleanField(default=False)
 
     friends = models.ManyToManyField('self', blank=True)
     friend_request = ArrayField(models.CharField(max_length=200), blank=True, default=list)
     block_list = ArrayField(models.CharField(max_length=200), blank=True, default=list)
-
+    
+    
 
     def is_friend(self, username):
         return self.friends.filter(username=username).exists()

@@ -126,11 +126,24 @@ class PrivateChatConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle clas
 class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de consommateur WebSocket
     async def connect(self):  # Méthode appelée lorsqu'un §client se connecte
         self.room_name = 'system_room'  # Définit le nom de la salle
+        current_user = self.scope['user']
+        await self.set_status(current_user, 'En ligne')
         self.room_group_name = self.room_name # Utilise le nom de la salle comme nom du groupe
         await self.channel_layer.group_add(  # Ajoute le canal du client au groupe
             self.room_group_name, self.channel_name
         )
         await self.accept()  # Accepte la connexion WebSocket
+        await self.channel_layer.group_send(
+                    self.room_group_name,
+                    {
+                        "type": "system_message",
+                        'message': {
+                            'command': 'friends_status_updated',
+                            'user_to_update': current_user.username,
+                            'new_status': "En Ligne",
+                        }
+                    }
+                )
     
     async def disconnect(self, code):  # Méthode appelée lorsqu'un client se déconnecte
         
@@ -139,6 +152,19 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
         player_to_disconnect.append(current_user)
         await self.disconnect_player_in_queue(current_user)
         await self.assign_main_queue(player_to_disconnect)
+        await self.set_status(current_user, 'Hors Ligne')
+        
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                "type": "system_message",
+                'message': {
+                    'command': 'friends_status_updated',
+                    'user_to_update': current_user.username,
+                    'new_status': "Hors Ligne",
+                }
+            }
+        )
         
         await self.channel_layer.group_discard(  # Retire le canal du client du groupe
             self.room_group_name, self.channel_name
@@ -147,6 +173,8 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
     async def receive(self, text_data):  # Méthode appelée lorsqu'un message est reçu du client
         json_text = json.loads(text_data)  # Convertit le texte en JSON
 
+        user_to_update = None
+        new_status = None
         command = None
         original_user = None
         user_to_add = None
@@ -202,14 +230,23 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
             players_to_kick = json_text["players_to_kick"]
             players_to_kick = [await self.get_user(player) for player in players_to_kick]
             print(f"🔱 players_to_kick : {players_to_kick}")
+        
+        if "user_to_update" in json_text:
+            user_to_update = json_text["user_to_update"]
+            user_to_update = await self.get_user(user_to_update)
+            print(f"🔱 user_to_update : {user_to_update}")
+        
+        if "new_status" in json_text:
+            new_status = json_text["new_status"]
+            print(f"🔱 new_status : {new_status}")
 
         print('\n')
     
-        if original_user is not None and user_to_add is not None or "get" in command or friend_to_delete is not None or user_to_edit is not None and new_username is not None or new_avatar is not None or player_to_add_in_queue is not None or players_to_kick is not None and len(players_to_kick) >= 1 or "find_match" in command:
-            await self.command_handler(command, original_user, user_to_add, current_user, friend_to_delete, user_to_edit, new_username, new_avatar, player_to_add_in_queue, players_to_kick)
+        if original_user is not None and user_to_add is not None or "get" in command or friend_to_delete is not None or user_to_edit is not None and new_username is not None or new_avatar is not None or player_to_add_in_queue is not None or players_to_kick is not None and len(players_to_kick) >= 1 or "find_match" in command or "update_friends_status":
+            await self.command_handler(command, original_user, user_to_add, current_user, friend_to_delete, user_to_edit, new_username, new_avatar, player_to_add_in_queue, players_to_kick, user_to_update, new_status)
         else:
-            print(f"❌ {current_user.username} tried to cheat ❌ due to these parameters : {original_user} - {user_to_add} - {friend_to_delete} - {user_to_edit} - {new_username} - {new_avatar} - {player_to_add_in_queue} - {players_to_kick}")
-    async def command_handler(self, command, original_user, user_to_add, current_user, friend_to_delete, user_to_edit, new_username, new_avatar, player_to_add_in_queue, players_to_kick):
+            print(f"❌ {current_user.username} tried to cheat ❌ due to these parameters : {original_user} - {user_to_add} - {friend_to_delete} - {user_to_edit} - {new_username} - {new_avatar} - {player_to_add_in_queue} - {players_to_kick} - {user_to_update} - {new_status} ")
+    async def command_handler(self, command, original_user, user_to_add, current_user, friend_to_delete, user_to_edit, new_username, new_avatar, player_to_add_in_queue, players_to_kick, user_to_update, new_status):
         if command == 'add_friend':
             if current_user == original_user and user_to_add not in current_user.block_list and current_user.username not in user_to_add.block_list:
                 add_friend = await self.add_friend_request(original_user, user_to_add)
@@ -466,6 +503,23 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
                     print(f"🔱 No match found 🔱")
             else:
                 print (f"🌿 resultat du check --> False pour {current_user}")
+        
+        if command == 'update_friends_status':
+            if current_user == user_to_update:
+                await self.set_status(user_to_update, new_status)
+                await self.channel_layer.group_send(
+                    self.room_group_name,
+                    {
+                        "type": "system_message",
+                        'message': {
+                            'command': 'friends_status_updated',
+                            'user_to_update': user_to_update.username,
+                            'new_status': new_status,
+                        }
+                    }
+                )
+    
+    
             
             
             
@@ -480,6 +534,11 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
         }))
 
 
+
+    @database_sync_to_async
+    def set_status(self, user, status):
+        user.status = status
+        user.save()
 
     @database_sync_to_async
     def disconnect_player_in_queue(self, current_user):
@@ -645,12 +704,13 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
     def get_original_and_user_to_add_infos(self, original_user, user_to_add):
         data = {
             'original_user': original_user.username,
-            'original_user_status': original_user.is_online,
+            'original_user_status': original_user.status,
             'original_user_avatar': original_user.avatar.url,
             'user_to_add': user_to_add.username,
-            'user_to_add_status': user_to_add.is_online,
+            'user_to_add_status': user_to_add.status,
             'user_to_add_avatar': user_to_add.avatar.url
         }
+        print(f"💰 {data}")
         return data
             
 
@@ -663,7 +723,7 @@ class SystemConsumer(AsyncWebsocketConsumer):  # Définit une nouvelle classe de
             'friends': [friend.username for friend in user.friends.all()],
             'friend_request': list(user.friend_request),
             'block_list': list(user.block_list),
-            'original_user': user.is_online,
+            'original_user': user.status,
             'avatar': user.avatar.url,
         }
         return data
@@ -839,6 +899,7 @@ class PFCConsumer(AsyncWebsocketConsumer): # Définit une nouvelle classe de con
         self.player1 = self.players[0]
         self.player2 = self.players[1]
         self.game_id = None
+        await self.set_status(self.current_user, 'Joue à PFC')
 
 
     async def disconnect(self, code):  # Méthode appelée lorsqu'un client se déconnecte
@@ -846,6 +907,11 @@ class PFCConsumer(AsyncWebsocketConsumer): # Définit une nouvelle classe de con
             print("🌿 Je passe dans le if game is not finished 🌿")
             await self.fill_has_leave(self.current_user.username)
         await self.clear_pfc_game_id()
+        await self.set_status(self.current_user, 'En ligne')
+        
+        await self.channel_layer.group_discard(  # Retire le canal du client du groupe
+            self.room_group_name, self.channel_name
+        )
 
         
         
@@ -976,6 +1042,11 @@ class PFCConsumer(AsyncWebsocketConsumer): # Définit une nouvelle classe de con
 
 
     @database_sync_to_async
+    def set_status(self, user, status):
+        user.status = status
+        user.save()
+
+    @database_sync_to_async
     def generate_game_id(self):
         game_id_generated = random.randint(10000000000, 99999999999)
         game_id = PFC_Game_ID()
@@ -1078,16 +1149,16 @@ class PFCConsumer(AsyncWebsocketConsumer): # Définit une nouvelle classe de con
             game.loser = player2_instance
             game.save()
             return self.player1
-        if game.player1_penalties == 3 and game.player2_penalties == 3:
+        if game.player1_penalties >= 3 and game.player2_penalties >= 3:
             print(f"🌿 Je fill bien le winner et le loser winner --> {game.winner} || loser --> {game.loser} || player1_instance --> {player1_instance} || player2_instance --> {player2_instance} || self.player1 --> {self.player1} || self.player2 --> {self.player2} 🌿")
             return "null match"
-        if game.player1_penalties == 3:
+        if game.player1_penalties >= 3:
             print(f"🌿 Je fill bien le winner et le loser winner --> {game.winner} || loser --> {game.loser} || player1_instance --> {player1_instance} || player2_instance --> {player2_instance} || self.player1 --> {self.player1} || self.player2 --> {self.player2} 🌿")
             game.winner = player2_instance
             game.loser = player1_instance
             game.save()
             return self.player2
-        if game.player2_penalties == 3:
+        if game.player2_penalties >= 3:
             print(f"🌿 Je fill bien le winner et le loser winner --> {game.winner} || loser --> {game.loser} || player1_instance --> {player1_instance} || player2_instance --> {player2_instance} || self.player1 --> {self.player1} || self.player2 --> {self.player2} 🌿")
             game.winner = player1_instance
             game.loser = player2_instance

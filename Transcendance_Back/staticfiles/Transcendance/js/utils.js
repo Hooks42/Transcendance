@@ -556,17 +556,24 @@ function create_user_in_pane(username, userstatus, profile_picture, which_list)
     name.setAttribute('id', 'friend_list_username-' + username);
     name.appendChild(document.createTextNode(username));
 
-    const info = document.createElement('div');
-    info.classList.add('a-user__info');
-    info.setAttribute('id', 'friend_list_status-' + userstatus);
-    info.appendChild(document.createTextNode(userstatus));
+
+    let info = null;
+    if (which_list === "FRIEND")
+    {
+        info = document.createElement('div');
+        info.classList.add('a-user__info');
+        info.setAttribute('id', 'friend_list_status-' + username);
+        info.appendChild(document.createTextNode(userstatus));
+    }
 
     let btns = null;
     if (which_list === "FRIEND")
         btns = create_btn_set(username, "btn-set4");
     else if (which_list === "BLOCKED")
         btns = create_block_btn_set(username, "btn-set4");
-    li.append(btn_img, titleNBtns, info);
+    li.append(btn_img, titleNBtns);
+    if (which_list === "FRIEND")
+        li.append(info);
     titleNBtns.append(name, btns);
     return (li);
 }
@@ -1127,11 +1134,17 @@ function update_friend_list_pannel(user_to_edit, new_username)
 {
     let username_to_update = document.getElementById('friend_list_username-' + user_to_edit);
     let friend_block_to_update = document.getElementById('friend_list-' + user_to_edit);
+    let friend_status_to_update = document.getElementById('friend_list_status-' + user_to_edit);
     if (username_to_update)
     {
         username_to_update.textContent = new_username;
         username_to_update.setAttribute('id', 'friend_list_username-' + new_username);
 
+    }
+
+    if (friend_status_to_update)
+    {
+        friend_status_to_update.setAttribute('id', 'friend_list_status-' + new_username);
     }
 
     if (friend_block_to_update)
@@ -1262,26 +1275,20 @@ window.onpopstate = function(event)
             display_profile_page();
             break;
         
-        case 'pong':
+        case 'matchmaking':
             centerZone.inner.innerHTML = "";
-            (function () {
-            let initialisation = function() {
-                if (intervalId) {
-                pong.scorePlayer1 = 0;
-                pong.scorePlayer2 = 0;
-                clearInterval(intervalId);
-                }
-                pong.init(centerZone.inner);
-                intervalId = setInterval(run_game, 1000 / 60); // 60 FPS
-            };
-
-            const run_game = function() {
-                pong.currentState();
-            }
-
-            initialisation(); 
-            })();
+            pfc.launch_queue();
             break;
+        
+            case 'pong':
+                centerZone.inner.innerHTML = "";
+                fetch('/pong-mode-choice/')
+                    .then(response => response.json())
+                    .then(data => {
+                        const pong_mode_choice_html = data.pong_mode_choice_html;
+                        centerZone.inner.innerHTML = pong_mode_choice_html;
+                        handle_pong_btns();
+                    });
     }
 }
 
@@ -1469,5 +1476,16 @@ function handle_pong_btns()
             pong.initialisation(matchs, false);
         }
     });
-
 }
+
+window.addEventListener('storage', function(event) {
+    console.log("je passe ici mais je m'en tape aussi les couilles");
+    // Vérifiez si l'événement `storage` a été déclenché par l'ouverture d'un nouvel onglet
+    if (event.key === 'tab') {
+      // Modifiez le contenu de l'onglet actuel
+      console.log("je passe ici et je m'en tape les couilles");
+      socket.system_socket.close();
+      document.body.innerHTML = '<h1>Disconnected</h1>';
+      document.body.style = 'color: white';
+    }
+  });

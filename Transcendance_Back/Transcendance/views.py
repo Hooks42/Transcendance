@@ -224,7 +224,7 @@ def get_friends_list(request):
             friend_list.append({
                 'username': friend.username,
                 'profile_picture': friend.avatar.url,
-                'is_online': friend.is_online,
+                'status': friend.status,
             })
         return JsonResponse({'friends': friend_list})
     except User.DoesNotExist:
@@ -241,7 +241,7 @@ def get_block_list(request):
                 block_list.append({
                     'username': blocked_user.username,
                     'profile_picture': blocked_user.avatar.url,
-                    'is_online': blocked_user.is_online,
+                    'status': blocked_user.status,
                 })
             except User.DoesNotExist:
                 pass

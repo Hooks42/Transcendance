@@ -83,6 +83,8 @@ const chat = {
                     for (let i = 0; i < friends.length; i++)
                     {
                         var friend = friends[i];
+                        console.log("👊 friend vaut " + friend.username);
+                        console.log("👊 friend_status vaut " + friend.status);
                         chat.add_user_panel(friend.username, friend.status, friend.profile_picture, "FRIEND");
                     }
                 }
@@ -105,7 +107,7 @@ const chat = {
 
     add_user_panel: function (user_name, user_status, profile_picture, which_list)
     {
-        const user = create_user_in_pane(user_name, user_status ? "En ligne" : "Hors ligne", profile_picture, which_list);
+        const user = create_user_in_pane(user_name, user_status, profile_picture, which_list);
         // chat.user_pane.children[0].appendChild(user);
 
 		const li = document.createElement('li');

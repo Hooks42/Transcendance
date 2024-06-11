@@ -142,6 +142,18 @@ send_msg = {
 		socket.system_socket.send(messageJson);
 	},
 
+	update_friends_status: function(user_to_update, new_status)
+	{
+		var message = {
+			'command': 'update_friends_status',
+			'user_to_update': user_to_update,
+			'new_status': new_status,
+		}
+
+		var messageJson = JSON.stringify(message);
+		socket.system_socket.send(messageJson);
+	},
+
 	pong_finished: function(player1, player2, winner, player1Score, player2Score)
 	{
 		if (winner == currentUser)
