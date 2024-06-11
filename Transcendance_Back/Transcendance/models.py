@@ -41,15 +41,14 @@ class User(AbstractUser):
     id_42 = models.IntegerField(null=True, blank=True)
     avatar = models.ImageField(upload_to='avatars/', default='avatars/default_avatar.jpg', null=True, blank=True)
 
-    is_online = models.BooleanField(default=False)
-    is_in_PFC = models.BooleanField(default=False)
-    is_in_pong = models.BooleanField(default=False)
+    status = models.CharField(max_length=200, default='Hors Ligne')
     main_queue_player = models.BooleanField(default=False)
 
     friends = models.ManyToManyField('self', blank=True)
     friend_request = ArrayField(models.CharField(max_length=200), blank=True, default=list)
     block_list = ArrayField(models.CharField(max_length=200), blank=True, default=list)
-
+    
+    
 
     def is_friend(self, username):
         return self.friends.filter(username=username).exists()
@@ -73,8 +72,8 @@ class GameStats(models.Model):
     
 class PongHistory(models.Model):
     player1 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='games_as_player1_pong')
-    player2 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='games_as_player2_pong', null=True, blank=True)
-    winner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='games_as_winner_pong', null=True, blank=True)
+    player2 = models.CharField(max_length=200, default='')
+    winner = models.BooleanField(default=False)
     player1_score = models.IntegerField(default=0)
     player2_score = models.IntegerField(default=0)
     timestamp = models.DateTimeField(auto_now_add=True)
@@ -95,7 +94,11 @@ class GameHistory(models.Model):
     player2_score = models.IntegerField(default=0)
     player1_penalties = models.IntegerField(default=0)
     player2_penalties = models.IntegerField(default=0)
+    winner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='winner', null=True, blank=True)
+    loser = models.ForeignKey(User, on_delete=models.CASCADE, related_name='loser', null=True, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
+    p1_has_leave = models.BooleanField(default=False)
+    p2_has_leave = models.BooleanField(default=False)
 
     @classmethod
     def get_games_between(cls, player1, player2):

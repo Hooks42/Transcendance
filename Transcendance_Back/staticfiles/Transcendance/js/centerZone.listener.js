@@ -1,4 +1,4 @@
-let intervalId;
+var intervalId;
 
 centerZone.listener =
 {
@@ -38,7 +38,7 @@ centerZone.listener =
             if (document.getElementById("game_pfc") === null)
                 return;
             console.log("click on pfc");
-            history.pushState({page: 'pierre_feuille_ciseaux'}, '', '/pierre_feuille_ciseaux/');
+            history.pushState({page: 'matchmaking'}, '', '/matchmaking/');
             centerZone.inner.innerHTML = "";
             pfc.launch_queue();
         }
@@ -49,29 +49,36 @@ centerZone.listener =
             if (document.getElementById("game_pong") === null)
                 return;
             console.log("click on pong");
-            history.pushState({page: 'pong'}, 'pong', '/pong/');
             centerZone.inner.innerHTML = "";
-            (function () {
+            (async function () {
 					// let requestAnimId;
 					/* const framePerSecond = 60; */
-					let initialisation = function()
-					{
-                                if (intervalId) {
-                                    pong.scorePlayer1 = 0;
-                                    pong.scorePlayer2 = 0;
-                                    clearInterval(intervalId);
-                                }
-								pong.init(centerZone.inner);
-								intervalId = setInterval(run_game, 1000 / 60); // 60 FPS
-					};
+                    fetch('/pong-mode-choice/')
+                        .then(response => response.json())
+                        .then(data => {
+                            history.pushState({page: 'pong'}, '', '/pong/');
+                            const pong_mode_choice_html = data.pong_mode_choice_html;
+                            centerZone.inner.innerHTML = pong_mode_choice_html;
+                            handle_pong_btns();
+                        });
+					// let initialisation = function()
+					// {
+                    //             if (intervalId) {
+                    //                 pong.scorePlayer1 = 0;
+                    //                 pong.scorePlayer2 = 0;
+                    //                 clearInterval(intervalId);
+                    //             }
+					// 			pong.init(centerZone.inner);
+					// 			intervalId = setInterval(run_game, 1000 / 60); // 60 FPS
+					// };
 					// un cycle d'affichage = un passage dans main()
-					const run_game = function() {
-								/* setInterval(pong.animate(), 1000 / framePerSecond); */
-								pong.currentState();
-							}
+					// const run_game = function() {
+					// 			/* setInterval(pong.animate(), 1000 / framePerSecond); */
+					// 			pong.currentState();
+					// 		}
 
 					// appel de la fonction initialisation au chargement de la page
-					initialisation(); 
+					//initialisation(); 
 
 				})();
         }

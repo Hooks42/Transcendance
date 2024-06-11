@@ -1,6 +1,6 @@
 <div class="m-profile__edit" id="profile_edit-main">
 	<img class="a-profile__img" src={{avatar}} id="profile_edit-avatar"></img>
-	<h3 class="a-profile__input" id="profile_edit-username"> {{username}} </h3>
+	<h3 class="a-profile__input" id="profile_edit-username">Profil de {{username}}</h3>
 	<br></br>
 	{% if user.username == username %}
 		<button class="a-btn -orange" data-bs-toggle="modal" data-bs-target="#edit-profile-modal" id="profile_edit-btn">Editer mon profil</button>
@@ -69,7 +69,7 @@
 						{% for history in user_pong_history %}
 						<li>
 							<h2>
-								{% if history.winner == username %}
+								{% if history.winner == True %}
 									Victoire VS {{history.opponent_username}}
 								{% else %}
 									Défaite VS {{history.opponent_username}}
@@ -114,13 +114,14 @@
 						{% for history in user_pfc_history %}
 						<li>
 							<h2>
-								{% if history.victory == True %}
-									Victoire VS {{history.opponent_userame}}
-								{% elif history.winner == None %}
-									Match nul {{history.current_user_username}} VS {{history.opponent_username}}
+								{% if history.winner.username == user.username %}
+									Victoire VS {{history.loser.username}}
+								{% elif history.loser.username == user.username %}
+									Défaite VS {{history.winner.username}}
 								{% else %}
-									Défaite VS {{history.opponent_userame}}
+									Match nul VS {{history.opponent_username}}
 								{% endif %}
+
 							</h2>
 							<p>Score: {{history.current_player_score}} - {{history.opponent_score}}</p>
 							<p>Nombre de pénalitées: {{history.current_player_penalties}} - {{history.opponent_penalties}}</p>
@@ -130,20 +131,18 @@
 									{{move}}
 									{% if not forloop.last %}
 										, 
-									{% else %}
-										]
 									{% endif %}
 								{% endfor %}
+								]
 							</p>
 							<p>Move adversaire: [
 								{% for move in history.opponent_moves %}
 									{{move}}
 									{% if not forloop.last %}
 										, 
-									{% else %}
-										]
 									{% endif %}
 								{% endfor %}
+									]
 							</p>
 							<p>Date: {{history.timestamp}}</p>
 						</li>

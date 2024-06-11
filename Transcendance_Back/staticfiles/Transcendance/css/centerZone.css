@@ -43,6 +43,14 @@
 //
 --------------------------------------------------------------------------- */
 
+.tournament__form
+{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
 .m-profile__edit
 {
   grid-template-columns: 200px 1fr;
@@ -64,6 +72,7 @@
   border-radius: 50%;
   height: 160px;
   width: 160px;
+  margin: auto;
 }
 
 .m-profile__edit .a-btn.-orange
@@ -80,6 +89,8 @@
   height: fit-content;
   width: fit-content;
   grid-column: 2;
+  margin: auto;
+   /* text-align: center; */
 }
 
 /* ---------------------------------------------------------------------------
@@ -114,14 +125,15 @@
 {
   padding: 0 16px;
   display: none;
-  overflow: hidden;
+  overflow: visible; /* needed to have a full view of the dropdown menu in the chat */
 }
 
 .m-collapsible__item
 {
   display: grid;
-  grid-template-columns: 200px 1fr;
-  column-gap: 16px;
+  overflow: visible;
+  /* grid-template-columns: 200px 1fr; */
+  /* column-gap: 16px; */
 
   &:hover
   {

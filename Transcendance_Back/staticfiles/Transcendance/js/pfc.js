@@ -146,7 +146,6 @@ const pfc = {
 			.then(data => {
 				let pfc_html = data.pfc_html;
 				main_div.innerHTML = pfc_html;
-				history.pushState({page: 'pierre_feuille_ciseaux'}, '', '/pierre_feuille_ciseaux/');
 				pfc.check_game_state('pfc_title', pfc_socket);
 			});
 

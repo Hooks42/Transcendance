@@ -74,6 +74,8 @@ const socket = {
 	launch_pfc_socket: function (room_name, original_user, user_to_add)
 	{
 		let pfc_socket = new WebSocket('wss://localhost/ws/pfc/' + room_name + '/');
+		let player1 = room_name.split('_')[0];
+		let player2 = room_name.split('_')[1];		
 
 		pfc_socket.onopen = function (e)
 		{
@@ -112,6 +114,8 @@ const socket = {
 			if (data.message.command === 'game_finished')
 			{
 				pfc.update_pfc(data, pfc_socket);
+				send_msg.update_friends_status(player1, "En ligne");
+				send_msg.update_friends_status(player2, "En ligne");
 			}
 
 			if (data.message.command === 'game_stopped')
@@ -122,6 +126,16 @@ const socket = {
 				let main_div = document.getElementById('main-div');
 				main_div.innerHTML = "";
 				display_game_button();
+			}
+
+			if (data.message.command === 'friends_status_updated')
+			{
+				console.log("🔥 friends_status_updated ---> " + data.message.user_to_update);
+				if (friend_list.includes(data.message.user_to_update))
+				{
+					console.log("✅ friends_status_updated ---> " + data.message.user_to_update);
+					document.getElementById('friend_list_status-' + data.message.user_to_update).textContent = data.message.new_status;
+				}
 			}
 
 			
@@ -216,7 +230,7 @@ const socket = {
 			if (data.message.command === 'friend_accepted')
 			{
 				original_user = data.message.original_user;
-				original_user_status = data.message.orignal_user_status;
+				original_user_status = data.message.original_user_status;
 				original_user_avatar = data.message.original_user_avatar;
 				user_to_add = data.message.user_to_add;
 				user_to_add_status = data.message.user_to_add_status;
@@ -384,6 +398,7 @@ const socket = {
 			{
 				original_user = data.message.original_user;
 				user_to_add = data.message.user_to_add;
+				send_msg.update_friends_status(currentUser, "Joue à PFC");
 				if (user_to_add === currentUser || original_user === currentUser)
 				{
 					let room_name = original_user + "_" + user_to_add;
@@ -405,12 +420,19 @@ const socket = {
 					{
 						if (match_tab[i]["player1"] == currentUser || match_tab[i]["player2"] == currentUser)
 						{
+							send_msg.update_friends_status(currentUser, "Joue à PFC");
 							let room_name = match_tab[i]["player1"] + "_" + match_tab[i]["player2"];
 							let pfc_socket = this.launch_pfc_socket(room_name, match_tab[i]["player1"], match_tab[i]["player2"]);
 							pfc.display_pfc(pfc_socket);
 						}
 					}
 				}
+			}
+
+			if (data.message.command === 'friends_status_updated')
+			{
+				if (friend_list.includes(data.message.user_to_update))
+					document.getElementById('friend_list_status-' + data.message.user_to_update).textContent = data.message.new_status;
 			}
 		};
 	},
@@ -427,38 +449,6 @@ const socket = {
 		{
 			console.log('Pong Socket closed');
 		}
-
-		this.pong_socket.onmessage = (event) => 
-		{
-			let data = JSON.parse(event.data);
-			console.log("message recieved ---> " + data.message);
-			if (data.message.command === "pong_game_saved")
-				centerZone.inner.innerHTML = "";
-            (function () {
-					// let requestAnimId;
-					/* const framePerSecond = 60; */
-					let initialisation = function()
-					{
-                                if (intervalId) {
-                                    pong.scorePlayer1 = 0;
-                                    pong.scorePlayer2 = 0;
-                                    clearInterval(intervalId);
-                                }
-								pong.init(centerZone.inner);
-								intervalId = setInterval(run_game, 1000 / 60); // 60 FPS
-					};
-					// un cycle d'affichage = un passage dans main()
-					const run_game = function() {
-								/* setInterval(pong.animate(), 1000 / framePerSecond); */
-								pong.currentState();
-							}
-
-					// appel de la fonction initialisation au chargement de la page
-					initialisation(); 
-
-				})();
-				
-			};
 	},
 		
 	launch_socket: function ()

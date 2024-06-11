@@ -22,5 +22,6 @@ async function clear_connexion_page()
 	let log_div = document.getElementById('log-div');
 	if (log_div)
 		log_div.remove();
+	localStorage.setItem('tab', Date.now());
 	socket.launch_socket();
 }

@@ -9,9 +9,20 @@
 //
 --------------------------------------------------------------------------- */
 
+/* hide caret */
+.caret-off::before
+{
+    display: none !important;
+}
+
+.caret-off::after
+{
+    display: none !important;
+}
+
 .a-btn
 {
-    height: fit-content;
+    height: fit-content; 
     width: fit-content;
     background: none;
     color: inherit;
@@ -24,11 +35,14 @@
 
 .a-btn.-img
 {
+    height: 40px;
+    width: 40px;
+    top: 12px;
+    left: 16px;
     border-radius: 50%;
     border: none;
-    height: fit-content;
-    width: fit-content;
     text-decoration: none;
+    position:absolute;
 }
 
 

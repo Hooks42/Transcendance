@@ -75,6 +75,11 @@ def Hello(request):
     print(f"✅ servor returned HTPP_RESPONSE")
     return render(request, 'main.html', {'signup_form': signup_form, 'signin_form': signin_form})
 
+@login_required
+def pong_mode_choice(request):
+    pong_mode_choice_html = render_to_string('pong_mode_choice.html', {'request': request}, request=request)
+    return JsonResponse({'pong_mode_choice_html': pong_mode_choice_html})
+
 def LoginPage(request):
     context = {
         'request': request,
@@ -219,7 +224,7 @@ def get_friends_list(request):
             friend_list.append({
                 'username': friend.username,
                 'profile_picture': friend.avatar.url,
-                'is_online': friend.is_online,
+                'status': friend.status,
             })
         return JsonResponse({'friends': friend_list})
     except User.DoesNotExist:
@@ -236,7 +241,7 @@ def get_block_list(request):
                 block_list.append({
                     'username': blocked_user.username,
                     'profile_picture': blocked_user.avatar.url,
-                    'is_online': blocked_user.is_online,
+                    'status': blocked_user.status,
                 })
             except User.DoesNotExist:
                 pass
@@ -284,7 +289,7 @@ def UserProfile(request):
         user = User.objects.get(username=user_username)
     except User.DoesNotExist:
         print(f"🔱 user {user_username} User.DoesNotExist")
-        return JsonResponse({'user_profile_html': None, 'status': 'fail'})
+        return JsonResponse({'User_profile_html': None, 'status': 'fail'})
     
     is_42 = user.id_42
     print(f"🔱 is_42 --> {is_42}")
@@ -303,7 +308,8 @@ def UserProfile(request):
                 opponent_score = None
                 opponent_penalties = None
                 opponent_moves = None
-                victory = None
+                winner = None
+                loser = None
                 if user.username == user_pfc_history_instance.player1.username:
                     current_player_username = user.username
                     current_player_score = user_pfc_history_instance.player1_score
@@ -313,6 +319,7 @@ def UserProfile(request):
                     opponent_score = user_pfc_history_instance.player2_score
                     opponent_penalties = user_pfc_history_instance.player2_penalties
                     opponent_moves = user_pfc_history_instance.player2_moves
+                    
                 elif user.username == user_pfc_history_instance.player2.username:
                     current_player_username = user.username
                     current_player_score = user_pfc_history_instance.player2_score
@@ -323,17 +330,20 @@ def UserProfile(request):
                     opponent_penalties = user_pfc_history_instance.player1_penalties
                     opponent_moves = user_pfc_history_instance.player1_moves
                 
-                if current_player_score == 7 or opponent_penalties == 3:
-                    victory = True
-                elif opponent_score == 7 or current_player_penalties == 3:
-                    victory = False
-                elif current_player_penalties == 3 and opponent_penalties == 3:
-                    victory = None
+                winner = user_pfc_history_instance.winner
+                loser = user_pfc_history_instance.loser
+                
+                print(f"🔱 Current_Player --> {current_player_username} - {current_player_score}")
+                print(f"🔱 Opponent --> {opponent_username} - {opponent_score}")
+                print(f"🔱 Winner --> {winner}")
+                
+                if winner is None and loser is None:
+                    winner = "Null"
+                    loser = "Null"
                 
                 user_pfc_history.append({
-                    'game_id': user_pfc_history_instance.game_id,
                     'current_player_username': current_player_username,
-                    'opponent_userame': opponent_username,
+                    'opponent_username': opponent_username,
                     'round_count': user_pfc_history_instance.round_count,
                     'current_player_moves': current_player_moves,
                     'opponent_moves': opponent_moves,
@@ -342,7 +352,8 @@ def UserProfile(request):
                     'current_player_penalties': current_player_penalties,
                     'opponent_penalties': opponent_penalties,
                     'timestamp': user_pfc_history_instance.timestamp.strftime('%d-%m-%y %H:%M'),
-                    'victory': victory,
+                    'winner': winner,
+                    'loser': loser,
                 })
         except GameHistory.DoesNotExist:
             status = 'history error'
@@ -353,18 +364,15 @@ def UserProfile(request):
             for user_pong_history_instance in user_pong_history_list:
                 current_player_username = user_pong_history_instance.player1.username
                 current_player_score = user_pong_history_instance.player1_score
-                if user_pong_history_instance.winner is None:
-                    winner = "Unknown Player"
+                if user_pong_history_instance.winner is False:
+                    winner = False
                 else:
-                    winner = user_pong_history_instance.winner.username
+                    winner = True
                 if user_pong_history_instance.player2 is not None:
-                    opponent_username = user_pong_history_instance.player2.username
+                    opponent_username = user_pong_history_instance.player2
                 else:
                     opponent_username = "Unknown Player"
                 opponent_score = user_pong_history_instance.player2_score
-                print(f"🔱 Current_Player --> {current_player_username} - {current_player_score}")
-                print(f"🔱 Opponent --> {opponent_username} - {opponent_score}")
-                print(f"🔱 Winner --> {winner}")
                 user_pong_history.append({
                     'current_player_username': current_player_username,
                     'current_player_score': current_player_score,
@@ -425,7 +433,7 @@ def UserProfile(request):
         if status != "pong history error":
             context['user_pong_history'] = user_pong_history
     
-    user_profile_html = render_to_string('user_profile.html', context, request=request)
+    user_profile_html = render_to_string('User_profile.html', context, request=request)
     return JsonResponse({'user_profile_html': user_profile_html, 'status': status})
             
     
