@@ -153,7 +153,8 @@ function create_btn_orange_w_heart_sword(game_name)
     return (btn);
 }
 
-function create_accept_friend_btn(whichBtn, who) {
+function create_accept_friend_btn(whichBtn, who)
+{
     const btn_accept = create_btn([whichBtn], "");
     btn_accept.setAttribute("title", "Accepter l'ami");
     const svg_accept = create_svg(['bi', 'bi-accept']);
@@ -165,15 +166,16 @@ function create_accept_friend_btn(whichBtn, who) {
     return btn_accept;
 }
 
-function create_delete_friend_btn(whichBtn, who) {
+function create_delete_friend_btn(whichBtn, who)
+{
     const btn_delete_friend = create_btn([whichBtn], "");
     btn_delete_friend.setAttribute("title", "Supprimer l'ami");
     const svg_delete_friend = create_svg(['bi', 'bi-delete-friend']);
     const path_delete_friend = document.createElementNS(svgns, 'path');
     path_delete_friend.setAttribute('fill-rule', 'evenodd');
     path_delete_friend.setAttribute('d', "M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708");
-    
-    
+
+
     btn_delete_friend.dataset.username = who;
     btn_delete_friend.addEventListener('click', function (event)
     {
@@ -184,15 +186,16 @@ function create_delete_friend_btn(whichBtn, who) {
     return btn_delete_friend;
 }
 
-function create_block_friend_btn(whichBtn, who) {
+function create_block_friend_btn(whichBtn, who)
+{
     const btn_block_friend = create_btn([whichBtn], "");
     btn_block_friend.setAttribute("title", "Bloquer l'utilisateur");
     const svg_block_friend = create_svg(['bi', 'bi-block-friend']);
     const path_block_friend = document.createElementNS(svgns, 'path');
     path_block_friend.setAttribute('fill-rule', 'evenodd');
     path_block_friend.setAttribute('d', "M15 8a6.97 6.97 0 0 0-1.71-4.584l-9.874 9.875A7 7 0 0 0 15 8M2.71 12.584l9.874-9.875a7 7 0 0 0-9.874 9.874ZM16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0");
-    
-    
+
+
     btn_block_friend.dataset.username = who;
     btn_block_friend.addEventListener('click', function (event)
     {
@@ -211,8 +214,8 @@ function create_unblock_friend_btn(whichBtn, who)
     const path_unblock_friend = document.createElementNS(svgns, 'path');
     path_unblock_friend.setAttribute('fill-rule', 'evenodd');
     path_unblock_friend.setAttribute('d', "M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708");
-    
-    
+
+
     btn_unblock_friend.dataset.username = who;
     btn_unblock_friend.addEventListener('click', function (event)
     {
@@ -225,7 +228,8 @@ function create_unblock_friend_btn(whichBtn, who)
 
 }
 
-function create_add_friend_btn(whichBtn, who) {
+function create_add_friend_btn(whichBtn, who)
+{
     const btn_add_friend = create_btn([whichBtn], "");
     btn_add_friend.setAttribute("title", "Ajouter en ami");
     const svg_add_friend = create_svg(['bi', 'bi-add-friend']);
@@ -247,7 +251,8 @@ function create_add_friend_btn(whichBtn, who) {
     return btn_add_friend;
 }
 
-function create_btn_set(username, whichBtn) {
+function create_btn_set(username, whichBtn)
+{
     const btns = document.createElement('div');
     btns.classList.add('wrapperBtn');
 
@@ -363,7 +368,7 @@ function create_disc_li(title_text, info_text)
         button.dataset.username = 'General';
     else
         button.dataset.username = get_room_name(currentUser, title_text);
-    
+
     const title = document.createElement('span');
     title.classList.add('a-li__title');
     title.setAttribute('id', 'disc_btn_username-' + title_text);
@@ -391,7 +396,12 @@ function create_disc_li(title_text, info_text)
         let conv_to_show = document.getElementById(this.dataset.username + "-conv");
         console.log("♻️", this.dataset.username + "-conv");
         if (conv_to_show)
+        {
             conv_to_show.style.display = "flex";
+            let inbox = conv_to_show.querySelector('.o-inbox');
+            // scroll automatically to the bottom of the inbox
+            inbox.scrollTop = inbox.scrollHeight;
+        }
     });
     title.appendChild(document.createTextNode(title_text));
 
@@ -429,7 +439,7 @@ function create_msg(name_text, time_text, profile_picture, is_bot = false)
 
     const btn_img = document.createElement('button');
     btn_img.setAttribute('type', 'button');
-    btn_img.classList.add('a-btn');
+    btn_img.classList.add('a-btn', '-img');
 
     const img = document.createElement('img');
     img.classList.add('a-user__img', 'msg_img-' + name_text);
@@ -480,13 +490,15 @@ function create_msg(name_text, time_text, profile_picture, is_bot = false)
         return msg;
     // Création du menu déroulant
     const dropdownDiv = document.createElement('div');
-    dropdownDiv.classList.add('dropdown');
+    dropdownDiv.classList.add('dropend', 'a-message__header');
+    // dropdownDiv.classList.add('dropdown');
 
     // Ajout du bouton qui déclenche le menu déroulant
     const dropdownButton = btn_img.cloneNode(true);
+    dropdownButton.classList.add('caret-off', 'dropdown-toggle');
     dropdownButton.setAttribute('data-bs-toggle', 'dropdown');
     dropdownButton.setAttribute('aria-expanded', 'false');
-    dropdownButton.style.position = 'absolute';
+    // dropdownButton.style.position = 'absolute';
     dropdownDiv.appendChild(dropdownButton);
 
     // Création du menu déroulant
@@ -495,9 +507,11 @@ function create_msg(name_text, time_text, profile_picture, is_bot = false)
     dropdownDiv.appendChild(dropdownMenu);
 
     // Ajout des éléments du menu déroulant
-    const dropdownItems = ['Voir le profil', 'Inviter à jouer à PFC', 'Envoyer un message privé'];
-    dropdownItems.forEach(item => {
+    const dropdownItems = ['Voir le profil', 'Inviter à jouer à PFC'];
+    dropdownItems.forEach(item =>
+    {
         const dropdownItem = document.createElement('li');
+        dropdownItem.classList.add('dropdown-li');
         const dropdownBtn = document.createElement('button');
         dropdownBtn.classList.add('dropdown-item');
         dropdownBtn.textContent = item;
@@ -519,11 +533,11 @@ function create_msg(name_text, time_text, profile_picture, is_bot = false)
                 send_msg.pfc_request(this.dataset.username, currentUser);
             });
         }
-        if (item === 'Envoyer un message privé')
-        {
-            dropdownBtn.classList.add('private_msg_btn-' + name_text);
-        }
-            
+        // if (item === 'Envoyer un message privé')
+        // {
+        //     dropdownBtn.classList.add('private_msg_btn-' + name_text);
+        // }
+
         dropdownItem.appendChild(dropdownBtn);
         dropdownMenu.appendChild(dropdownItem);
     });
@@ -546,16 +560,20 @@ function create_user_in_pane(username, userstatus, profile_picture, which_list)
     li.classList.add('m-chat__li');
     li.setAttribute('id', 'friend_list-' + username);
 
+    const header = document.createElement('div');
+    header.classList.add('a-message__header');
 
     const btn_img = create_btn_img(['a-user__img'], "https://localhost" + profile_picture);
 
+
     const titleNBtns = document.createElement('div');
     titleNBtns.classList.add('a-user__name');
+    const infodiv = document.createElement('div');
+    infodiv.classList.add('user-info');
     const name = document.createElement('div');
     name.classList.add('sender_name');
     name.setAttribute('id', 'friend_list_username-' + username);
     name.appendChild(document.createTextNode(username));
-
 
     let info = null;
     if (which_list === "FRIEND")
@@ -565,16 +583,67 @@ function create_user_in_pane(username, userstatus, profile_picture, which_list)
         info.setAttribute('id', 'friend_list_status-' + username);
         info.appendChild(document.createTextNode(userstatus));
     }
-
     let btns = null;
     if (which_list === "FRIEND")
         btns = create_btn_set(username, "btn-set4");
     else if (which_list === "BLOCKED")
         btns = create_block_btn_set(username, "btn-set4");
-    li.append(btn_img, titleNBtns);
-    if (which_list === "FRIEND")
-        li.append(info);
-    titleNBtns.append(name, btns);
+
+    // new
+
+    // Création du menu déroulant
+    const dropdownDiv = document.createElement('div');
+    dropdownDiv.classList.add('dropend', 'a-message__header');
+
+    // Ajout du bouton qui déclenche le menu déroulant
+    const dropdownButton = btn_img.cloneNode(true);
+    dropdownButton.classList.add('caret-off', 'dropdown-toggle');
+    dropdownButton.setAttribute('data-bs-toggle', 'dropdown');
+    dropdownButton.setAttribute('aria-expanded', 'false');
+    // dropdownButton.style.position = 'absolute';
+    dropdownDiv.appendChild(dropdownButton);
+
+    // Création du menu déroulant
+    const dropdownMenu = document.createElement('ul');
+    dropdownMenu.classList.add('dropdown-menu');
+    dropdownDiv.appendChild(dropdownMenu);
+
+    li.append(header);
+    header.append(dropdownDiv, titleNBtns, info);
+    titleNBtns.append(infodiv);
+    infodiv.append(name, btns);
+
+    // Ajout des éléments du menu déroulant
+    const dropdownItems = ['Voir le profil', 'Inviter à jouer à PFC'];
+    dropdownItems.forEach(item =>
+    {
+        const dropdownItem = document.createElement('li');
+        dropdownItem.classList.add('dropdown-li');
+        const dropdownBtn = document.createElement('button');
+        dropdownBtn.classList.add('dropdown-item');
+        dropdownBtn.textContent = item;
+        dropdownBtn.dataset.username = username;
+        if (item === 'Voir le profil')
+        {
+            dropdownBtn.classList.add('view_profile_btn-' + username);
+            dropdownBtn.addEventListener('click', function (event)
+            {
+                display_profile_page(this.dataset.username);
+                history.pushState({page: 'profile'}, 'profile', '/profile/');
+            });
+        }
+        if (item === 'Inviter à jouer à PFC')
+        {
+            dropdownBtn.classList.add('pfc_request_btn-' + username);
+            dropdownBtn.addEventListener('click', function (event)
+            {
+                send_msg.pfc_request(this.dataset.username, currentUser);
+            });
+        }
+
+        dropdownItem.appendChild(dropdownBtn);
+        dropdownMenu.appendChild(dropdownItem);
+    });
     return (li);
 }
 
@@ -766,9 +835,10 @@ function create_notif(username, action)
 
 function load_notif()
 {
-    fetch ('/get-friends-request')
+    fetch('/get-friends-request')
         .then(response => response.json())
-        .then(data => {
+        .then(data =>
+        {
             let friend_request = data.friends_request;
             if (friend_request.length > 0)
             {
@@ -819,7 +889,8 @@ function navigateCenterZone(page)
     console.log("navigate to " + page);
     fetch("./page/" + page + ".html")
         .then(response => response.text())
-        .then(html => {
+        .then(html =>
+        {
             container.innerHTML = html;
         })
         .catch(error =>
@@ -908,7 +979,8 @@ async function display_profile_page(username = null)
         }
     })
         .then(response => response.json())
-        .then(data => {
+        .then(data =>
+        {
             let user_profile_html = data.user_profile_html;
             let main_div = document.getElementById('main-div');
             main_div.innerHTML = user_profile_html;
@@ -939,19 +1011,19 @@ function create_collapsible(name_coll, function_which_btn)
     // collapsible content
     const ul = document.createElement('ul');
     ul.classList.add('o-collapsible__content');
-    ul.style.display = 'none';
+    // ul.style.display = 'none';
     if (function_which_btn === "FRIEND")
         ul.setAttribute('id', 'friend_list_toogle-btn');
     else if (function_which_btn === "BLOCKED")
         ul.setAttribute('id', 'blocked_list_toogle-btn');
 
-    btn_coll.addEventListener('click', function (event)
-    {
-        if (ul.style.display === 'none')
-            ul.style.display = 'block';
-        else
-            ul.style.display = 'none';
-    });
+    // btn_coll.addEventListener('click', function (event)
+    // {
+    //     if (ul.style.display === 'none')
+    //         ul.style.display = 'block';
+    //     else
+    //         ul.style.display = 'none';
+    // });
 
     btn_coll.append(svg_plus, svg_dash);
     coll.append(btn_coll, ul);
@@ -968,7 +1040,8 @@ function create_collapsed_item(nameText, function_which_btn)
     name.appendChild(document.createTextNode(nameText));
 
     li.appendChild(name);
-    if (function_which_btn != 0) {
+    if (function_which_btn != 0)
+    {
         const wrapper_btn = function_which_btn();
         li.appendChild(wrapper_btn);
     }
@@ -1031,7 +1104,7 @@ function update_msg_names(user_to_edit, new_username, new_avatar)
         msgs_to_edit[i].classList.add('sender_name-' + new_username);
         msgs_to_edit[i].classList.remove('sender_name-' + user_to_edit);
     }
-    
+
     for (let i = 0; i < avatar_to_edit.length; i++)
     {
         avatar_to_edit[i].setAttribute('src', new_avatar);
@@ -1045,7 +1118,7 @@ function update_notif(user_to_edit, new_username)
     let notif = document.getElementById('notif-' + user_to_edit + '-add_friend');
     let element = Array.from(document.getElementsByClassName('username_notif-' + user_to_edit));
     let pfc_notif = Array.from(document.getElementsByClassName('notif-' + user_to_edit + '-challenge'));
-    
+
     if (element.length > 0)
     {
         for (let i = 0; i < element.length; i++)
@@ -1067,7 +1140,7 @@ function update_notif(user_to_edit, new_username)
 
     if (notif)
         notif.setAttribute('id', 'notif-' + new_username + '-add_friend');
-        
+
 }
 
 function update_buttons(user_to_edit, new_username)
@@ -1162,7 +1235,7 @@ function update_private_chat_div_ids(user_to_edit, new_username)
             const big_div = document.getElementById(get_room_name(user_to_edit, friend) + "-conv");
             const inbox_div = document.getElementById(get_room_name(user_to_edit, friend) + "_inbox");
             const conv_name = document.getElementById(friend + "-arrow-title");
-            
+
             if (big_div)
                 big_div.setAttribute('id', get_room_name(new_username, friend) + "-conv");
             if (inbox_div)
@@ -1193,7 +1266,7 @@ function update_private_chat_div_ids(user_to_edit, new_username)
         if (inbox_div)
             inbox_div.setAttribute('id', get_room_name(currentUser, new_username) + "_inbox");
         if (conv_name)
-        {    
+        {
             conv_name.textContent = new_username;
             conv_name.setAttribute('id', new_username + "-arrow-title");
         }
@@ -1215,7 +1288,8 @@ async function display_game_button()
 {
     fetch('/home/')
         .then(response => response.json())
-        .then(data => {
+        .then(data =>
+        {
             let game_button_html = data.home_page_html;
             let main_div = document.getElementById('main-div');
             main_div.innerHTML = game_button_html;
@@ -1228,7 +1302,7 @@ function create_svg_scissor()
     svg.setAttribute('viewBox', "-32 0 512 512");
 
     const path = document.createElementNS(svgns, 'path');
-    path.setAttribute('d',"M362.146 191.976c-13.71-21.649-38.761-34.016-65.006-30.341V74c0-40.804-32.811-74-73.141-74-40.33 0-73.14 33.196-73.14 74L160 168l-18.679-78.85C126.578 50.843 83.85 32.11 46.209 47.208 8.735 62.238-9.571 104.963 5.008 142.85l55.757 144.927c-30.557 24.956-43.994 57.809-24.733 92.218l54.853 97.999C102.625 498.97 124.73 512 148.575 512h205.702c30.744 0 57.558-21.44 64.555-51.797l27.427-118.999a67.801 67.801 0 0 0 1.729-15.203L448 256c0-44.956-43.263-77.343-85.854-64.024zM399.987 326c0 1.488-.169 2.977-.502 4.423l-27.427 119.001c-1.978 8.582-9.29 14.576-17.782 14.576H148.575c-6.486 0-12.542-3.621-15.805-9.449l-54.854-98c-4.557-8.141-2.619-18.668 4.508-24.488l26.647-21.764a16 16 0 0 0 4.812-18.139l-64.09-166.549C37.226 92.956 84.37 74.837 96.51 106.389l59.784 155.357A16 16 0 0 0 171.227 272h11.632c8.837 0 16-7.163 16-16V74c0-34.375 50.281-34.43 50.281 0v182c0 8.837 7.163 16 16 16h6.856c8.837 0 16-7.163 16-16v-28c0-25.122 36.567-25.159 36.567 0v28c0 8.837 7.163 16 16 16h6.856c8.837 0 16-7.163 16-16 0-25.12 36.567-25.16 36.567 0v70z");
+    path.setAttribute('d', "M362.146 191.976c-13.71-21.649-38.761-34.016-65.006-30.341V74c0-40.804-32.811-74-73.141-74-40.33 0-73.14 33.196-73.14 74L160 168l-18.679-78.85C126.578 50.843 83.85 32.11 46.209 47.208 8.735 62.238-9.571 104.963 5.008 142.85l55.757 144.927c-30.557 24.956-43.994 57.809-24.733 92.218l54.853 97.999C102.625 498.97 124.73 512 148.575 512h205.702c30.744 0 57.558-21.44 64.555-51.797l27.427-118.999a67.801 67.801 0 0 0 1.729-15.203L448 256c0-44.956-43.263-77.343-85.854-64.024zM399.987 326c0 1.488-.169 2.977-.502 4.423l-27.427 119.001c-1.978 8.582-9.29 14.576-17.782 14.576H148.575c-6.486 0-12.542-3.621-15.805-9.449l-54.854-98c-4.557-8.141-2.619-18.668 4.508-24.488l26.647-21.764a16 16 0 0 0 4.812-18.139l-64.09-166.549C37.226 92.956 84.37 74.837 96.51 106.389l59.784 155.357A16 16 0 0 0 171.227 272h11.632c8.837 0 16-7.163 16-16V74c0-34.375 50.281-34.43 50.281 0v182c0 8.837 7.163 16 16 16h6.856c8.837 0 16-7.163 16-16v-28c0-25.122 36.567-25.159 36.567 0v28c0 8.837 7.163 16 16 16h6.856c8.837 0 16-7.163 16-16 0-25.12 36.567-25.16 36.567 0v70z");
     svg.append(path);
 
     return (svg);
@@ -1260,17 +1334,17 @@ function create_svg_rock()
 }
 
 
-window.onpopstate = function(event)
+window.onpopstate = function (event)
 {
     let main_div = document.getElementById('main-div');
     main_div.innerHTML = "";
-    
+
     switch (event.state.page)
     {
         case 'hello':
             display_game_button();
             break;
-        
+
         case 'profile':
             display_profile_page();
             break;
@@ -1331,7 +1405,7 @@ function handle_pong_btns()
     let pong_tournament_form = document.getElementById('pong-tournament-form');
     let two_players_btn = document.getElementById('2-players-form');
     let matchs = [];
-    pong_tournament_form.addEventListener('submit', function(event)
+    pong_tournament_form.addEventListener('submit', function (event)
     {
         event.preventDefault();
         let i = 0;
@@ -1356,7 +1430,7 @@ function handle_pong_btns()
             error_msg.id = "error-msg_pong_tournament#" + i;
             i++;
             pong_tournament_form.appendChild(error_msg);
-            return ;
+            return;
         }
 
         if (!(player1.length <= 8 && player1.length >= 3 && player2.length <= 8 && player2.length >= 3 && player3.length <= 8 && player3.length >= 3))
@@ -1396,7 +1470,7 @@ function handle_pong_btns()
         }
         
         if (error_msg)
-            return ;
+            return;
         else
         {
             let players = [currentUser, player1, player2, player3];
@@ -1412,7 +1486,7 @@ function handle_pong_btns()
         }
     });
 
-    two_players_btn.addEventListener('submit', function(event)
+    two_players_btn.addEventListener('submit', function (event)
     {
         event.preventDefault();
         let player2 = document.getElementById('2-players-player2_name_field').value;
@@ -1433,7 +1507,7 @@ function handle_pong_btns()
             error_msg.id = "error-msg_2-players#" + i;
             i++;
             two_players_btn.appendChild(error_msg);
-            return ;
+            return;
         }
 
         if (!(player2.length <= 8 && player2.length >= 3))

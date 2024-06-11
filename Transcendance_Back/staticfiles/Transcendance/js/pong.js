@@ -80,8 +80,8 @@ const pong = {
 			pong.player4["phase_2_w"] = false;
 		}
 
-		pong.actual_player1["score"] = 0;
-		pong.actual_player2["score"] = 0;
+		pong.actual_player1["score"] = 10;
+		pong.actual_player2["score"] = 10;
 
 		this.centerBall();
 		this.centerPaddles();
@@ -276,8 +276,8 @@ const pong = {
 			console.log("new game");
 			pong.code["Enter"].pressed = false;
 			// reset score
-			pong.actual_player1['score'] = 0;
-			pong.actual_player2['score'] = 0;
+			pong.actual_player1['score'] = 10; // change back to 0
+			pong.actual_player2['score'] = 10;
 			pong.round++;
 			// randomize ball direction
 			if ((Math.floor(Math.random() * 2)) % 2)
@@ -488,17 +488,32 @@ const pong = {
 		let title = document.createElement('h1');
 		title.textContent = "Classement";
 
-		let leaderboard = document.createElement('ul');
+		let leaderboard = document.createElement('ol');
 		let first = document.createElement('li');
+		first.classList.add('leaderboard__li');
 		let second = document.createElement('li');
+		second.classList.add('leaderboard__li');
 		let third = document.createElement('li');
+		third.classList.add('leaderboard__li');
 		let fourth = document.createElement('li');
+		fourth.classList.add('leaderboard__li');
 
 		first.textContent = pong.leaderboard[3];
 		second.textContent = pong.leaderboard[2];
 		third.textContent = pong.leaderboard[1];
 		fourth.textContent = pong.leaderboard[0];
-		centerZone.inner.append(title, first, second, third, fourth);
+
+		centerZone.inner.append(title, leaderboard);
+		leaderboard.append(first, second, third, fourth);
+
+		const flowey = document.createElement('img');
+		flowey.classList.add('floweyImg');
+		flowey.setAttribute('src', "/media/kindpng_flowey.png" );		
+
+		centerZone.inner.append(flowey);
+
+		// src="/media/cc0-images/grapefruit-slice-332-332.jpg"
+  //alt="Grapefruit slice atop a pile of other slices"
 	}
 
 	/* collisionWithBall : function() */

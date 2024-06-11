@@ -98,7 +98,8 @@
     margin: 0px;
     overflow: hidden;
     white-space: nowrap;
-    width: 200px;
+    /* width: 200px; */
+    width: 176px;
     top: 14px;
     left: 64px;
     display: flex;
@@ -120,9 +121,9 @@
     border-radius: 50%;
     height: 40px;
     width: 40px;
-    top: 12px;
-    left: 16px;
-    position: absolute;
+    /* top: 12px;
+    left: 16px; */
+    /* position: absolute; */
     z-index: 1000;
 }
 
@@ -153,7 +154,7 @@
     flex: none;
     border: none;
     white-space: nowrap;
-    overflow: hidden;
+    overflow: visible;
     position: relative;
 }
 
@@ -254,6 +255,7 @@
     width: 100%;
     position: relative;
 }
+
 
 .a-message__content
 {

@@ -200,6 +200,9 @@ const chat = {
         textarea.append(textarea_container, btn_send);
         textarea_container.append(typing_area);
         existing_chatContent.appendChild(chat.chatroom[chat.chatroom.length - 1]);
+            // scroll automatically to the bottom of the inbox
+        // inbox.scrollTo(0, inbox.scrollHeight);
+        inbox.scrollTop = inbox.scrollHeight;
     },
 
     add_chat: function(username, timestamp, content, profile_picture, inbox, is_bot = false)
@@ -212,6 +215,8 @@ const chat = {
             msg.classList.add('hide');
         msg.appendChild(msg_text);
         inbox.appendChild(msg);
+        // scroll automatically to the bottom of the inbox
+        inbox.scrollTop = inbox.scrollHeight;
     },
 
 
@@ -243,10 +248,8 @@ const chat = {
     {
         chat.create_nav();
         chat.create_content();
-        //chat.disc_pane.onclick = chat.listener.onClickDiscPane.bind(this);
         chat.arrow_tab.onclick = chat.listener.onClickArrowBtn.bind(this);
-        chat.user_pane.onclick = chat.listener.onClickUserPane.bind(this);
-        chat.chat.onclick = chat.listener.onClickChat.bind(this);
+        chat.user_pane.onclick = chat.listener.onClickCollapsible.bind(this);
     },
 
     load_nav: function ()
@@ -280,6 +283,7 @@ const chat = {
         //     console.log("👊 chatroom vaut " + chat.chatroom[i]);
         //     existing_chatContent.append(chat.chatroom[i]);
         // }
+
         existing_chatContent.append(chat.user_pane);
     },
 

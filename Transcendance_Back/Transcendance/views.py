@@ -289,7 +289,7 @@ def UserProfile(request):
         user = User.objects.get(username=user_username)
     except User.DoesNotExist:
         print(f"🔱 user {user_username} User.DoesNotExist")
-        return JsonResponse({'user_profile_html': None, 'status': 'fail'})
+        return JsonResponse({'User_profile_html': None, 'status': 'fail'})
     
     is_42 = user.id_42
     print(f"🔱 is_42 --> {is_42}")
@@ -433,7 +433,7 @@ def UserProfile(request):
         if status != "pong history error":
             context['user_pong_history'] = user_pong_history
     
-    user_profile_html = render_to_string('user_profile.html', context, request=request)
+    user_profile_html = render_to_string('User_profile.html', context, request=request)
     return JsonResponse({'user_profile_html': user_profile_html, 'status': status})
             
     
