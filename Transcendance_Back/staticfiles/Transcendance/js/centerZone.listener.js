@@ -4,30 +4,25 @@ centerZone.listener =
 {
     onClick: function (event) {
         let target;
-        if (event.target.closest(".js-btn-collapsible")) {
+        if (event.target.closest(".js-btn-collapsible"))
+        {
             target = event.target.closest(".js-btn-collapsible");
             if (!target)
                 return;
-            document.querySelectorAll('.js-btn-collapsible').forEach(e => {
-                if (!e.contains(target))
-                    return;
-            });
             event.preventDefault();
+            target.classList.toggle("active");
 
-            event.target.classList.toggle("active");
-
-            let svgs = event.target.getElementsByTagName("svg");
-            let content = event.target.nextElementSibling;
-
-            if (content.style.display === "block") {
-                content.style.display = "none";
-                svgs[0].style.display = "block"; // svgs[0] === + icon
-                svgs[1].style.display = "none";
+            if (target.nextElementSibling.style.display === "block")
+            {
+                target.nextElementSibling.style.display = "none";
+                target.children[0].style.display = "block";
+                target.children[1].style.display = "none";
             }
-            else {
-                content.style.display = "block";
-                svgs[0].style.display = "none";
-                svgs[1].style.display = "block";
+            else
+            {
+                target.nextElementSibling.style.display = "block";
+                target.children[0].style.display = "none";
+                target.children[1].style.display = "block";
             }
         }
         else if (event.target.closest("#game_pfc"))

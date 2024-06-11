@@ -75,14 +75,6 @@
   margin: auto;
 }
 
-.m-profile__edit .a-btn.-orange
-{
-  font-size: 16px;
-  grid-column: 1;
-  grid-row: 3;
-  place-self: center;
-  /* display: none; */
-}
 
 .a-profile__input
 {
