@@ -6,7 +6,7 @@ pong.ball = {
 	posY : 0,
 	cooldown : false,
 
-	speed : 500,
+	speed : 5,
 
 	velocityX : 0,
 	velocityY : 0,

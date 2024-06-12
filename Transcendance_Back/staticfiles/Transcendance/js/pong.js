@@ -80,8 +80,8 @@ const pong = {
 			pong.player4["phase_2_w"] = false;
 		}
 
-		pong.actual_player1["score"] = 10;
-		pong.actual_player2["score"] = 10;
+		pong.actual_player1["score"] = 0;
+		pong.actual_player2["score"] = 0;
 
 		this.centerBall();
 		this.centerPaddles();
@@ -276,8 +276,8 @@ const pong = {
 			console.log("new game");
 			pong.code["Enter"].pressed = false;
 			// reset score
-			pong.actual_player1['score'] = 10; // change back to 0
-			pong.actual_player2['score'] = 10;
+			pong.actual_player1['score'] = 0; // change back to 0
+			pong.actual_player2['score'] = 0;
 			pong.round++;
 			// randomize ball direction
 			if ((Math.floor(Math.random() * 2)) % 2)
