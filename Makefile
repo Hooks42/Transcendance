@@ -1,15 +1,47 @@
-start:
-	docker compose up -d
+COMPOSE_PROJECT_NAME := Transcendance
 
+DC_FILE := ./docker-compose.yml
+
+DOCKER_COMPOSE	:= docker compose -f $(DC_FILE)
+
+
+.PHONY: all
+all:
+	@echo "Launching containers from project $(COMPOSE_PROJECT_NAME)..."
+	$(DOCKER_COMPOSE) up -d --build
+	$(DOCKER_COMPOSE) ps
+
+.PHONY: stop
 stop:
-	docker compose down
+	@echo "Stopping containers from project $(COMPOSE_PROJECT_NAME)..."
+	$(DOCKER_COMPOSE) stop
+	docker ps
 
-clean:
-	docker compose down -v
+# stop, discard containers, volumes and networks
+.PHONY: down
+down:
+	@echo "Stop and discard containers, volumes, networks from project $(COMPOSE_PROJECT_NAME)..."
+	$(DOCKER_COMPOSE) down --volumes
+	$(DOCKER_COMPOSE) down --remove-orphans
+	docker ps
 
-cleanall:
-	docker system prune -af
-	docker kill $(docker ps -q)
+.PHONY:re
+re: down all
 
+.PHONY: logs
 logs:
-	docker compose logs -f
+	$(DOCKER_COMPOSE) logs
+	docker ps
+
+.PHONY: clean
+clean:
+	docker stop $$(docker ps -qa)
+	docker rm -fv $$(docker ps -qa)
+	docker rmi -f $$(docker images -qa)
+	docker volume rm $$(docker volume ls -q)
+	docker network prune -f
+#	docker network rm $$(docker network ls -q) # this one gives me lots of errors
+
+.PHONY: prune
+prune:
+	docker system prune -af
