@@ -47,7 +47,7 @@ urlpatterns = [
     path('pfc/', pfc_game, name='pfc'),
     path('pong-mode-choice/', pong_mode_choice, name='pong-mode-choice'),
     path('matchmaking/', Hello, name='matchmaking'),
-    path('/', Hello, name='')
+    path('', Hello, name='')
     
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
