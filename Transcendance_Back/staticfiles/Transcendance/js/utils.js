@@ -1345,6 +1345,7 @@ window.onpopstate = function (event)
 {
     let main_div = document.getElementById('main-div');
     main_div.innerHTML = "";
+    hide_all_modals()
 
     switch (event.state.page)
     {
