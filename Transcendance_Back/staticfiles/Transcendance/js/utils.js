@@ -1416,6 +1416,82 @@ function handle_pong_btns()
     pong_tournament_form.addEventListener('submit', function (event)
     {
         event.preventDefault();
+        let i = 0;
+        let player1 = document.getElementById('pong-tournament-player1_name_field').value;
+        let player2 = document.getElementById('pong-tournament-player2_name_field').value;
+        let player3 = document.getElementById('pong-tournament-player3_name_field').value;
+        let error_msg = null;
+        for (let i = 0; i < 5 ; i++)
+        {
+            let error = document.getElementById('error-msg_pong_tournament#' + i);
+            if (error)
+            {
+                console.log("je passe dans le remove");
+                error.remove();
+            }
+        }
+        if (!(player1 && player2 && player3))
+        {
+            console.log("je passe ici");
+            let error_msg = document.createElement('p');
+            error_msg.textContent = "❌ Veuillez remplir tous les champs";
+            error_msg.id = "error-msg_pong_tournament#" + i;
+            i++;
+            pong_tournament_form.appendChild(error_msg);
+            return;
+        }
+
+        if (!(player1.length <= 8 && player1.length >= 3 && player2.length <= 8 && player2.length >= 3 && player3.length <= 8 && player3.length >= 3))
+        {
+            error_msg = document.createElement('p');
+            error_msg.textContent = "❌ Les pseudos doivent faire moins de 8 caractère et plus de 3 caractères";
+            error_msg.id = "error-msg_pong_tournament#" + i;
+            pong_tournament_form.appendChild(error_msg);
+            i++;
+        }
+
+        if (!(isValid(player1) && isValid(player2) && isValid(player3)))
+        {
+            error_msg = document.createElement('p');
+            error_msg.textContent = "❌ Les pseudos ne peuvent contenir que des lettres, des chiffres et les caractères suivants: @ . + / -";
+            error_msg.id = "error-msg_pong_tournament#" + i;
+            pong_tournament_form.appendChild(error_msg);
+            i++;
+        }
+
+        if (currentUser === player1 || currentUser === player2 || currentUser === player3)
+        {
+            error_msg = document.createElement('p');
+            error_msg.textContent = "❌ Vous ne pouvez pas participer à un tournoi contre vous-même";
+            error_msg.id = "error-msg_pong_tournament#" + i;
+            pong_tournament_form.appendChild(error_msg);
+            i++;
+        }
+
+        if (player1 === player2 || player1 === player3 || player2 === player3)
+        {
+            error_msg = document.createElement('p');
+            error_msg.textContent = "❌ Les pseudos ne peuvent pas être identiques";
+            error_msg.id = "error-msg_pong_tournament#" + i;
+            pong_tournament_form.appendChild(error_msg);
+            i++;
+        }
+        
+        if (error_msg)
+            return;
+        else
+        {
+            let players = [currentUser, player1, player2, player3];
+            let match = {};
+            match["player1"] = getRandomItem(players);
+            match["player2"] = getRandomItem(players);
+            matchs.push(match);
+            match = {};
+            match["player1"] = getRandomItem(players);
+            match["player2"] = getRandomItem(players);
+            matchs.push(match);
+            pong.initialisation(matchs, true);
+        }
     });
 
     two_players_btn.addEventListener('submit', function (event)
