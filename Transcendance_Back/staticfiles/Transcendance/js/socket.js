@@ -351,7 +351,6 @@ const socket = {
 				}
 				else if (data.message.user_to_add === currentUser)
 				{
-					block_list.push(data.message.original_user);
 					if (friend_list.includes(data.message.original_user))
 					{
 						document.getElementById("disc_btn-" + data.message.original_user).remove();

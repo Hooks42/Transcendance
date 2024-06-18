@@ -261,6 +261,7 @@
     padding: 8px;
     margin: 0;
     white-space: wrap;
+    overflow-wrap: break-word;
 }
 
 .m-textareaTag
