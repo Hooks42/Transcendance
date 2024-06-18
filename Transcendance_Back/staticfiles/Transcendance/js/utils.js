@@ -1233,6 +1233,8 @@ function update_friend_list_pannel(user_to_edit, new_username)
 
 function update_private_chat_div_ids(user_to_edit, new_username)
 {
+    console.log("🔥 user_to_edit --> ", user_to_edit);
+    console.log("🔥 new_username --> ", new_username);
     if (new_username === currentUser)
     {
         friend_list.forEach(friend =>
@@ -1251,13 +1253,13 @@ function update_private_chat_div_ids(user_to_edit, new_username)
                 conv_name.textContent = friend;
             if (disc_btn)
             {
-                console.log("🔥 old dataset --> ", disc_btn.dataset.username);
                 disc_btn.dataset.username = get_room_name(friend, new_username);
-                console.log("🔥 new dataset --> ", disc_btn.dataset.username);
             }
             if (btn_send)
+            {
                 btn_send.dataset.username = get_room_name(friend, new_username);
-
+                btn_send.setAttribute('id', get_room_name(friend, new_username) + "-send_btn");
+            }
         });
     }
     else
@@ -1285,7 +1287,10 @@ function update_private_chat_div_ids(user_to_edit, new_username)
             console.log("🔥 new dataset --> ", disc_btn.dataset.username);
         }
         if (btn_send)
+        {
             btn_send.dataset.username = get_room_name(currentUser, new_username);
+            btn_send.setAttribute('id', get_room_name(currentUser, new_username) + "-send_btn");
+        }
 
 
     }

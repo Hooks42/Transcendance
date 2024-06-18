@@ -184,7 +184,6 @@ const chat = {
         btn_send.dataset.username = chat_name;
         btn_send.addEventListener('click' , function ()
         {
-            btn_send.preventDefault();
             socket.sendMessage(typing_area.value, btn_send.dataset.username);
             typing_area.value = '';
 
