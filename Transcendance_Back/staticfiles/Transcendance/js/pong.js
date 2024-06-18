@@ -26,9 +26,9 @@ const pong = {
 	scorePlayer1: 0,
 	scorePlayer2: 0,
 
-	textStartGame: "touche Entree : commencer la partie\nBarre d'espace : mettre en pause la partie\n\nTouches de controle :\na q et p m (azerty) ou q a et p ; (qwerty)",
+	textStartGame: "Barre d'espace : commencer la partie\nBarre d'espace : mettre en pause la partie\n\nTouches de controle :\na q et p m (azerty) ou q a et p ; (qwerty)",
 	textPausedGame: "PAUSE",
-	textNewGame: "touche Entree : commencer une nouvelle partie",
+	textNewGame: "Barre d'espace : commencer une nouvelle partie",
 	textWINLOSE: "WINLOSE",
 	textEndGame: "Fin de la partie",
 
@@ -128,6 +128,7 @@ const pong = {
 		pong.displayBall();
 		pong.displayPaddles();
 		pong.displayNotice();
+		pong.displayScore();
 	},
 	
 	// Game state
@@ -207,10 +208,10 @@ const pong = {
 			pong.actual_player2["score"] = 0;
 		}
 		pong.displayScore();
-		if (pong.code["Enter"].pressed) {
+		if (pong.code["Space"].pressed) {
 			pong.clearLayer(this.noticeLayer);
 			pong.currentNotice = "";
-			pong.code["Enter"].pressed = false;
+			pong.code["Space"].pressed = false;
 			pong.currentState = pong.game;
 		}
 	},
@@ -272,9 +273,9 @@ const pong = {
 		pong.clearLayer(pong.ballPaddlesLayer);
 		pong.displayBall();
 		pong.displayPaddles();
-		if (pong.code["Enter"].pressed) {
+		if (pong.code["Space"].pressed) {
 			console.log("new game");
-			pong.code["Enter"].pressed = false;
+			pong.code["Space"].pressed = false;
 			// reset score
 			pong.actual_player1['score'] = 0; // change back to 0
 			pong.actual_player2['score'] = 0;

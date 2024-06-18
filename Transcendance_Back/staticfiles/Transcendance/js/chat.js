@@ -184,6 +184,7 @@ const chat = {
         btn_send.dataset.username = chat_name;
         btn_send.addEventListener('click' , function ()
         {
+            btn_send.preventDefault();
             socket.sendMessage(typing_area.value, btn_send.dataset.username);
             typing_area.value = '';
 
@@ -191,12 +192,23 @@ const chat = {
 
         typing_area.addEventListener('keypress', function (e)
         {
-            if (e.key === 'Enter')
+            if (e.key === 'Enter' && e.shiftKey)
             {
+                e.preventDefault();  // Empêche le comportement par défaut
+                const start = typing_area.selectionStart;
+                const end = typing_area.selectionEnd;
+                typing_area.value = typing_area.value.substring(0, start) + "\n" + typing_area.value.substring(end);
+                typing_area.selectionStart = typing_area.selectionEnd = start + 1;
+            }
+            else if (e.key === 'Enter')
+            {
+                e.preventDefault();
                 socket.sendMessage(typing_area.value, btn_send.dataset.username);
                 typing_area.value = '';
             }
         });
+
+
         textarea.append(textarea_container, btn_send);
         textarea_container.append(typing_area);
         existing_chatContent.appendChild(chat.chatroom[chat.chatroom.length - 1]);

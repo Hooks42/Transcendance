@@ -1076,7 +1076,7 @@ function update_self_profile(new_username, new_avatar)
         if (avatar && username)
         {
             avatar.setAttribute('src', new_avatar);
-            username.textContent = new_username;
+            username.textContent = "Profil de " + new_username;
         }
     }
 }
@@ -1345,8 +1345,15 @@ window.onpopstate = function (event)
 {
     let main_div = document.getElementById('main-div');
     main_div.innerHTML = "";
-    hide_all_modals()
+    hide_all_modals();
+    clearInterval(intervalId);
+    pong.currentState = null;
 
+    if (!event.state)
+    {
+        display_game_button();
+        return ;
+    }
     switch (event.state.page)
     {
         case 'hello':

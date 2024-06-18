@@ -8,6 +8,8 @@ navbar.listener = {
         {
             for (let i = 0; i < main_div.children.length; i++)
                 main_div.children[i].remove();
+            clearInterval(intervalId);
+            pong.currentState = null;
             display_game_button();
         }
     },

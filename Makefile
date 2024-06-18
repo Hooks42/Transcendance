@@ -30,8 +30,7 @@ re: down all
 
 .PHONY: logs
 logs:
-	$(DOCKER_COMPOSE) logs
-	docker ps
+	$(DOCKER_COMPOSE) logs -f backend
 
 .PHONY: clean
 clean:

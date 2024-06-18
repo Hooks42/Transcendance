@@ -18,5 +18,18 @@ done
 
 echo "Starting backend"
 
+export $(grep -v '^#' .env | xargs)
+
+echo "
+from django.contrib.auth import get_user_model;
+User = get_user_model();
+if not User.objects.filter(username='$SUPERUSER_NAME').exists():
+    User.objects.create_superuser('$SUPERUSER_NAME', '$SUPERUSER_EMAIL', '$SUPERUSER_PASSWORD')
+" | python manage.py shell
+
+unset SUPERUSER_NAME
+unset SUPERUSER_EMAIL
+unset SUPERUSER_PASSWORD
+
 # daphne -e ssl:443:privateKey=/etc/ssl/certs/localhost.crt:certKey=/etc/ssl/certs/localhost.key -b 0.0.0.0 -p 8001 Transcendance_Back.asgi:application & gunicorn Transcendance_Back.wsgi:application --bind 0.0.0.0:8000 --certfile "/etc/ssl/certs/localhost.crt" --keyfile "/etc/ssl/certs/localhost.key" --workers 4 --timeout 300
 python manage.py runserver 0.0.0.0:8000

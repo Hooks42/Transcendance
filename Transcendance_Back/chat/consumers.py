@@ -1239,7 +1239,7 @@ class PFCConsumer(AsyncWebsocketConsumer): # Définit une nouvelle classe de con
         if game.p1_has_leave == True and game.p2_has_leave == False:
             print(f"🌿 Je fill bien le winner et le loser winner --> {game.winner} || loser --> {game.loser} || player1_instance --> {player1_instance} || player2_instance --> {player2_instance} || self.player1 --> {self.player1} || self.player2 --> {self.player2} 🌿")
             game.winner = player2_instance
-            game.loser = player1_instance 
+            game.loser = player1_instance
             game.save()
             return self.player2
         elif game.p2_has_leave == True and game.p1_has_leave == False:
@@ -1287,7 +1287,7 @@ class PFCConsumer(AsyncWebsocketConsumer): # Définit une nouvelle classe de con
     @database_sync_to_async
     def update_user_pfc_stats(self, winner):
         game = GameHistory.objects.get(game_id=self.game_id)
-
+        print(f"🔥 winner --> {winner}")
         if winner == self.player1:
             winner = User.objects.get(username=winner)
             #! get or create renvoie 2 valeur, le premier est l'objet et le deuxième est un booléen qui indique si l'objet a été créé ou non
@@ -1375,6 +1375,12 @@ class PFCConsumer(AsyncWebsocketConsumer): # Définit une nouvelle classe de con
                 stats.save()
             except GameStats.DoesNotExist:
                 pass
+            try:
+                stats, _ = GameStats.objects.get_or_create(user=User.objects.get(username=self.player2))
+                stats.total_spr_los += 1
+                stats.save()
+            except GameStats.DoesNotExist:
+                pass
         elif self.current_user.username == self.player2 and game.p1_has_leave == True:
             print(f"🔥 current_user --> {self.current_user.username} || self.player1 --> {self.player1} || self.player2 --> {self.player2} || game.p1_has_leave --> {game.p1_has_leave} || game.p2_has_leave --> {game.p2_has_leave}")
             try:
@@ -1383,13 +1389,19 @@ class PFCConsumer(AsyncWebsocketConsumer): # Définit une nouvelle classe de con
                 stats.save()
             except GameStats.DoesNotExist:
                 pass
-        else:
             try:
-                stats, _ = GameStats.objects.get_or_create(user=self.current_user)
+                stats, _ = GameStats.objects.get_or_create(user=User.objects.get(username=self.player1))
                 stats.total_spr_los += 1
                 stats.save()
             except GameStats.DoesNotExist:
                 pass
+        # else:
+        #     try:
+        #         stats, _ = GameStats.objects.get_or_create(user=self.current_user)
+        #         stats.total_spr_los += 1
+        #         stats.save()
+        #     except GameStats.DoesNotExist:
+        #         pass
             
             
         try:

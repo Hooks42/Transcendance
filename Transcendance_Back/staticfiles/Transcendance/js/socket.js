@@ -244,6 +244,12 @@ const socket = {
 					if (notif_menu.childElementCount == 0)
 						show_no_notif();
 
+					if (friend_list.includes(original_user))
+					{
+						console.log("🔥 " + original_user + " is already in your friend list")
+						return;
+					}
+
 					if (data.message.status === true)
 					{
 						friend_list.push(original_user);
@@ -258,6 +264,11 @@ const socket = {
 				}
 				else if(data.message.original_user === currentUser)
 				{
+					if (friend_list.includes(user_to_add))
+					{
+						console.log("🔥 " + user_to_add + " is already in your friend list")
+						return;
+					}
 					friend_list.push(user_to_add);
 					chat.add_user_panel(data.message.user_to_add, data.message.user_to_add_status, data.message.user_to_add_avatar, "FRIEND");
 					chat.add_disc_panel(data.message.user_to_add);
