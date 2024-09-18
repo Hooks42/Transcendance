@@ -74,7 +74,7 @@ Si sur mac, installer au préalable la version docker Desktop
 ### Interface de chat
 ![Chat Interface](./Transcendance_Back/media/mainPage.png)
 
-### Jeu en ligne
+### Jeu en local
 ![Game Screenshot](./Transcendance_Back/media/Game.png)
 
 ---
@@ -83,5 +83,5 @@ Si sur mac, installer au préalable la version docker Desktop
 
 - **Isabelle Ren** - Développeur Front-End
 - **Cédric Atgié** - Développeur Back-End
-- **Romain Rovillar** - Développeur Back-End
+- **Romain Rovillar** - Développeur Back-End et DevOps
 - **Adrien Maupied** - Intégration et tests
